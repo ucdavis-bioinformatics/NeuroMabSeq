@@ -1,2 +1,2 @@
 # NeuroMabSeq
-A place to track issues and development for NeuroMabSeq project.
+This branch tracks development of the data analysis pipeline.
