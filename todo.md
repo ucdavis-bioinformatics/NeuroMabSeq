@@ -1,0 +1,4 @@
+- website title
+- website icon
+- a few metadata entries for now
+- query database look of view?
