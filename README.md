@@ -24,9 +24,26 @@ NeuroMabSeq
    
     - Setup the Repo
         ```
-        git clone trimmer_lab_repo  TODO
+        git clone --single-branch --branch website https://github.com/ucdavis-bioinformatics/NeuroMabSeq.git
+   
         ```
+    - `sudo apt-get install gcc`
+    - `sudo apt-get install mysql-devel`
+   
     - Setup of the conda env:
         ```
-        conda create --name trimmer_lab --file requirements.txt 
+        conda env create --name trimmer_lab --file environment_linux.yml
+        source activate trimmer_lab
         ```
+    - Django will want to connect using root user with no password to a local db.
+        ```
+        use mysql;
+        update user set authentication_string=password(''), plugin='mysql_native_password' where user='root';
+        ```
+   - Run `python manage.py runserver` and see if it works
+   
+   `python manage.py migrate`
+   
+   `python manage shell`
+   
+   `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04
