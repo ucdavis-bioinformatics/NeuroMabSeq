@@ -1,4 +1,13 @@
-NeuroMabSeq
+# NeuroMabSeq
+
+## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
+
+### TODO:
+- csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
+
+
+
+
 
 1. Check out the Django Project Tutorial in this directory.
 - This will cover:
@@ -46,4 +55,11 @@ NeuroMabSeq
    
    `python manage shell`
    
-   `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04
+   `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04`
+   
+`sudo pkill gunicorn`   
+`git fetch --all`
+`git reset --hard origin/website`
+
+`sudo systemctl restart gunicorn`
+`sudo systemctl restart nginx`

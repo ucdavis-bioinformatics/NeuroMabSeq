@@ -5,6 +5,7 @@ import pandas as pd
 # python manage.py shell
 # from sequence_db.methods import *
 
+
 def data_upload():
     result = pd.read_csv('/Users/keithmitchell/Desktop/Repositories/trimmer_lab/output.csv', index_col=False)
     result = result.to_dict(orient='records')
