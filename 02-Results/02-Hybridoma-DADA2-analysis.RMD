@@ -1,0 +1,190 @@
+---
+title: "Hybridoma Amplicon"
+author: "SH"
+date: "2/13/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_knit$set(root.dir = '/bio/CoreWork/2019.11.18-Trimmer-Hybridoma-Seq/2020-02-07-run-rerun_of_27-samples-SMARTPCR')
+library(dada2)
+library(kableExtra)
+library(ggplot2)
+library(stringr)
+```
+
+### Setup File and Sample Names
+
+```{r setup}
+# Load plate translation:
+outp = './'
+sampleIDs = read.table("../2020-02-12-sample-sheets/n27_sample_sheet-R2.csv", header=T, as.is=T)
+
+plate = "n27"
+
+#path = "../01-PrimerTrim-keep-aberrant-LC/"
+path = "../01-PrimerTrim/"
+
+list.files(path, pattern = "*_SE.fastq.gz")
+
+# Get list of files
+hcfiles = sort(list.files(path, pattern="*_10-REV-HC1_SE.fastq.gz", full.names=T))
+lcfiles = sort(list.files(path, pattern="*_6-REV-LC_SE.fastq.gz", full.names=T))
+
+# Get SMARTPCR index identifier:
+hcindexes = str_remove(basename(hcfiles), "_10-REV-HC1_SE.fastq.gz")
+lcindexes = str_remove(basename(lcfiles), "_6-REV-LC_SE.fastq.gz")
+
+# Filter reads that have errors:
+#filtHC = file.path(path, 'filtered', paste0(hcindexes, "_HC_filt.fastq.gz"))
+#filtLC = file.path(path, 'filtered', paste0(lcindexes, "_LC_filt.fastq.gz"))
+
+#outHC = filterAndTrim(hcfiles, filtHC, maxEE = 2, compress=TRUE, multithread=TRUE)
+#gc()
+
+# Learn Error Rates
+errHC = learnErrors(hcfiles, multithread = TRUE)
+errLC = learnErrors(lcfiles, multithread = TRUE)
+
+```
+
+Plot error rates:
+
+```{r}
+plotErrors(errHC, nominalQ = TRUE)
+
+```
+
+```{r}
+plotErrors(errLC, nominalQ = TRUE)
+
+```
+
+
+### Infer ASVs
+
+```{r}
+
+sp0 = "CAGCATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGG
+TTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAG
+GGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAA
+CAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCA
+GGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGC
+AACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGG
+CTGATGCTGCACCAACTGTATCCA"
+
+#dadaHC = dada(hcfiles, err=errHC, multithread=T, priors=sp0, OMEGA_A=1e-50, OMEGA_C=1, pool=T)
+#dadaHC$`01-SMARTindex_10-REV-HC1_SE.fastq.gz`
+
+# Do denoising for HC:
+dadaHC = dada(hcfiles, err=errHC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
+names(dadaHC) = hcindexes
+#sapply(dadaHC, getN))
+
+# Do denoising for LC:
+dadaLC = dada(lcfiles, err=errLC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
+names(dadaLC) = lcindexes
+#sapply(dadaLC, getN)
+
+#dadaLC$`01-SMARTindex_6-REV-LC_SE.fastq.gz`$denoised
+
+
+# Construct sequence table
+#seqtab <- makeSequenceTable(mergers)
+seqtabHC <- makeSequenceTable(dadaHC)
+
+seqtabLC <- makeSequenceTable(dadaLC)
+
+dim(seqtabHC)
+
+dim(seqtabLC)
+
+############ Filter ASVs and samples ########
+# Filters HC:
+failedidxHC = rowSums(seqtabHC >= 10) > 0 # throw out samples that have no ASV with at least 10 reads of support 
+commonidxHC = colSums(seqtabHC > 1)/nrow(seqtabHC) < .5   # throw out ASVs that show up in > 50% of samples 
+seqtabHC.f = seqtabHC[failedidxHC, commonidxHC]
+seqtabHC.f.pct = 100*seqtabHC.f/rowSums(seqtabHC.f)
+lowcountidxHC = colSums(seqtabHC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
+seqtabHC.f2 = seqtabHC.f[,lowcountidxHC]
+dim(seqtabHC.f2)
+
+# Filters LC:
+failedidxLC = rowSums(seqtabLC >= 10) > 0
+commonidxLC = colSums(seqtabLC > 1)/nrow(seqtabLC) < .5  # throw out ASVs that show up in >2 samples
+seqtabLC.f = seqtabLC[failedidxLC, commonidxLC]
+seqtabLC.f.pct = 100*seqtabLC.f/rowSums(seqtabLC.f)
+lowcountidxLC = colSums(seqtabLC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
+seqtabLC.f2 = seqtabLC.f[,lowcountidxLC]
+dim(seqtabLC.f2)
+
+## Convert HC ASV table to output table:
+options(stringsAsFactors = F)
+HC.out = data.frame()
+for(s in rownames(seqtabHC.f2)){
+  r = seqtabHC.f2[s, ]  
+  trimmerID = sampleIDs$TrimmerID[match(s, sampleIDs$SMARTindex)]
+  for(asv in names(which(r/sum(r) > .3))){
+    HC.out = rbind(HC.out, c(plate, s, trimmerID, r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), asv))
+  }
+}
+colnames(HC.out) = c("plate", "SMARTindex", "TrimmerID", "ASVcount", "PctSupport", "HeavyChain")
+readr::write_tsv(HC.out, paste0(outp, plate, "_", "HeavyChain.tsv"))
+
+## Convert LC ASV table to output table:
+options(stringsAsFactors = F)
+LC.out = data.frame()
+for(s in rownames(seqtabLC.f2)){
+  r = seqtabLC.f2[s, ]  
+  trimmerID = sampleIDs$TrimmerID[match(s, sampleIDs$SMARTindex)]
+  for(asv in names(which(r/sum(r) > .3))){
+    LC.out = rbind(LC.out, c(plate, s, trimmerID, r[asv], 100*r[asv]/sum(seqtabLC[s,]), asv))
+  }
+}
+colnames(LC.out) = c("plate", "SMARTindex", "TrimmerID", "ASVcount", "PctSupport", "LightChain")
+readr::write_tsv(LC.out, paste0(outp, plate, "_", "LightChain.tsv"))
+
+
+
+```
+
+
+```{r}
+# Inspect distribution of sequence lengths
+table(nchar(getSequences(seqtabHC)))
+table(nchar(getSequences(seqtabLC)))
+
+
+```
+
+
+  
+```{r}
+seqtabHC.nochim <- removeBimeraDenovo(seqtabHC, method="consensus", multithread=TRUE, verbose=TRUE)
+dim(seqtabHC.nochim)
+```
+
+
+```{r}
+getN <- function(x) sum(getUniques(x))
+track <- cbind(outHC, sapply(dadaHC, getN), rowSums(seqtabHC.nochim))
+# If processing a single sample, remove the sapply calls: e.g. replace sapply(dadaFs, getN) with getN(dadaFs)
+colnames(track) <- c("input", "filtered", "denoisedF", "nonchim")
+rownames(track) <- sample.names
+head(track)
+```
+
+
+```{r}
+CountTable =  t(seqtab.nochim)
+CountTable = CountTable[order(rowSums(CountTable), decreasing=T), ]
+write.table(data.frame(Sequence=rownames(CountTable), CountTable), row.names=F, file="AllSamples_AmpliconSequenceVariant_count.tsv", sep='\t')
+
+pdf(file="percent_reads_heatmap.pdf", w=20, h=8)
+pheatmap(t(t(CountTable[1:10, ])/colSums(CountTable)), cluster_cols=T, cluster_rows=F, show_rownames=F, main="Fraction of ASVs by sample (10 most common)", ylab="ASV")
+dev.off()
+
+```
+
+

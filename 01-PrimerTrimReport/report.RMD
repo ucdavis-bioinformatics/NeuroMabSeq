@@ -1,0 +1,145 @@
+---
+title: "2019-02-07 27 sample SMARTPCR Amplicon Analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, echo=FALSE, results="hide"}
+library('jsonlite')
+library('stringr')
+library('knitr')
+library('readr')
+library(kableExtra)
+
+#setwd('/bio/CoreWork/2019.11.18-Trimmer-Hybridoma-Seq/2019-12-20-new-191213_M02034-data/Report')
+#opts_knit$set(root.dir = '/bio/CoreWork/2019.11.18-Trimmer-Hybridoma-Seq/2020-02-07-run-rerun_of_27-samples-SMARTPCR/Report')
+
+
+################## Functions #############
+
+hts_Primers = function(obj){
+    rv = unlist( obj[c('totalFragmentsInput', 'totalFragmentsOutput')] )
+    names(rv) = c("RawReads", "ReadsWithPrimer")
+    return(rv)
+}
+
+hts_SeqScreener = function(obj){
+    rv = unlist( obj[c('totalFragmentsInput','totalFragmentsOutput')] )
+    rv = c(rv, obj$Paired_end$PE_hits)
+    names(rv) = c("ReadsToFilter", "PassedAberrantFilter", "Aberrant_LC_reads")
+    return(rv)
+}
+
+hts_QWindowTrim = function(obj){
+    rv =  unlist( obj[c('totalFragmentsInput','totalFragmentsOutput')] )
+    names(rv) = c("Untrimmed", "Qtrimmed")
+    return(rv)
+}
+
+hts_Overlapper = function(obj){
+    PE_in = obj$Paired_end$PE_in
+    Overlapped = obj$sins + obj$mins
+    return(c(PE_in=PE_in, Overlapped=Overlapped))
+}
+
+
+parse_set = function(pattern, path){
+  df = NA
+  samples = c()
+  for(f in dir(path=path, pattern=pattern)){
+    s = str_replace(f, '.log', '')
+    samples = c(samples, s)
+    result = fromJSON(file.path(path,f))
+    tool = names(result)
+    names(tool) = str_replace(names(result), '_[:digit:]*$', '')
+    sdata = c(  hts_Primers(result[[tool['hts_Primers']]]), 
+        hts_SeqScreener(result[[tool['hts_SeqScreener']]]),
+        hts_QWindowTrim(result[[tool['hts_QWindowTrim']]]),
+        hts_Overlapper(result[[tool['hts_Overlapper']]])
+    )
+    if(is.null(dim(df))){ 
+        df = data.frame(sdata) } else {
+            df = cbind(df, sdata)
+        }
+  }
+  colnames(df) = samples
+  return(df)
+}
+
+
+# A function to extract information from JSON files with only hts_SeqScreener and hts_Overlapper
+parse_dbcA_set = function(pattern, path){
+  df = NA
+  primerGroups = c()
+  for(f in dir(path=path, pattern=pattern)){
+    primerGroup = gsub('.log', '', gsub("^.*_.*_", '', f))
+    primerGroups = c(primerGroups, primerGroup)
+    result = fromJSON(file.path(path,f))
+    tool = names(result)
+    names(tool) = str_replace(names(result), '_[:digit:]*$', '')
+    sdata = c(
+        hts_Primers(result[[tool['hts_Primers']]]),
+        #hts_SeqScreener(result[[tool['hts_SeqScreener']]]),
+        hts_Overlapper(result[[tool['hts_Overlapper']]])
+    )
+    if(is.null(dim(df))){ 
+        df = data.frame(sdata) } else {
+            df = cbind(df, sdata)
+        }
+  }
+  colnames(df) = primerGroups
+  return(df)
+}
+
+##################
+
+```
+
+# SMART-PCR strategy
+Analysis for samples prepared with SMART-PCR + (10-REV-HC1 or 6-REV-LC or mIGHG or mIGK) primers:
+
+1. Demultiplexed with bcl2fastq using Illumina barcodes into pools.
+2. Pooled reads were processed through HTStream
+    + Demultiplex based on SMART-PCR primer + oligo sequence and trim primers. 
+    + Overlap paired reads, discard any product < 400bp and only keep reads that overlap.
+
+#### TODO: A number of aberrant sequences make it through the filter. An additional step using BLAT + a ~21bp fragment flanking the deletion may work better.
+
+
+## Heavy Chain:
+
+```{r}
+path = "../01-PrimerTrim/"
+pattern = ".*10-REV-HC1.log"
+p10RevHc1 = parse_set(pattern, path)
+colnames(p10RevHc1) = sapply(strsplit(gsub("1_Short_primers_", '', colnames(p10RevHc1)), '_'), '[', 1)
+#kable(p10RevHc1)
+t.p10RevHc1 = t(p10RevHc1)[,c("RawReads", "ReadsWithPrimer", "Aberrant_LC_reads", "Qtrimmed", "Overlapped")]
+t.p10RevHc1 = t.p10RevHc1[t.p10RevHc1[,"ReadsWithPrimer"] > 0, ]
+
+kable(t.p10RevHc1) %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, angle = 0)
+```
+
+
+
+
+## Light Chain:
+
+```{r}
+path = "../01-PrimerTrim/"
+pattern = ".*6-REV-LC.log"
+p6RevLC = parse_set(pattern, path)
+colnames(p6RevLC) = sapply(strsplit(gsub("1_Short_primers_", '', colnames(p6RevLC)), '_'), '[', 1)
+#kable(p6RevLC)
+t.p6RevLC = t(p6RevLC)[,c("RawReads", "ReadsWithPrimer", "Aberrant_LC_reads", "Qtrimmed", "Overlapped")]
+t.p6RevLC = t.p6RevLC[t.p6RevLC[,'ReadsWithPrimer']>0, ]
+
+kable(t.p6RevLC) %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, angle = 0)
+
+```
+

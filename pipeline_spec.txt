@@ -1,0 +1,31 @@
+Option 1:
+    TrimerID is unique key in everything associated with the database, a set of files (one for each plate) represents the database exactly.
+    1) Read Processing
+        Input:
+            plate_X_R1.fastq.gz
+            plate_X_R2.fastq.gz
+            plate_X_metadata.tsv (SMARTindex, TrimmerID)
+
+        Processing:
+
+
+
+        Output:
+            plate_X_import_table.tsv (TrimmerID, HCseq, LCseq)
+            plate_X_report.html
+            plate_X_SampleStatus.tsv (TrimmerID, pass/fail)
+
+
+
+    2) Web Import
+        plate_X_import_table.tsv --> database
+
+
+    Rules:
+        a) TrimmerID can only occur once in all plate_X_import_table.tsv files.
+        b) If a change to a plate_X_metadata.tsv file is made:
+            * the pipeline is re-run for that plate
+            * the database is dumped and all plates are re-imported
+
+Option 2:
+    plate + TrimmerID (or plate + well) is unique key. 
