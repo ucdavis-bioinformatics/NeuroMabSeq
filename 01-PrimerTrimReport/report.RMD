@@ -1,5 +1,5 @@
 ---
-title: "2019-02-07 27 sample SMARTPCR Amplicon Analysis"
+title: "200214 SMARTPCR Amplicon Analysis"
 output:
   html_document:
     df_print: paged
@@ -101,10 +101,8 @@ Analysis for samples prepared with SMART-PCR + (10-REV-HC1 or 6-REV-LC or mIGHG 
 
 1. Demultiplexed with bcl2fastq using Illumina barcodes into pools.
 2. Pooled reads were processed through HTStream
-    + Demultiplex based on SMART-PCR primer + oligo sequence and trim primers. 
+    + Demultiplex based on SMART-PCR primer + oligo sequence and trim primers (perfect match, anchored primers). 
     + Overlap paired reads, discard any product < 400bp and only keep reads that overlap.
-
-#### TODO: A number of aberrant sequences make it through the filter. An additional step using BLAT + a ~21bp fragment flanking the deletion may work better.
 
 
 ## Heavy Chain:
@@ -116,7 +114,7 @@ p10RevHc1 = parse_set(pattern, path)
 colnames(p10RevHc1) = sapply(strsplit(gsub("1_Short_primers_", '', colnames(p10RevHc1)), '_'), '[', 1)
 #kable(p10RevHc1)
 t.p10RevHc1 = t(p10RevHc1)[,c("RawReads", "ReadsWithPrimer", "Aberrant_LC_reads", "Qtrimmed", "Overlapped")]
-t.p10RevHc1 = t.p10RevHc1[t.p10RevHc1[,"ReadsWithPrimer"] > 0, ]
+#t.p10RevHc1 = t.p10RevHc1[t.p10RevHc1[,"ReadsWithPrimer"] > 0, ]
 
 kable(t.p10RevHc1) %>%
   kable_styling("striped", full_width = F) %>%
@@ -135,7 +133,7 @@ p6RevLC = parse_set(pattern, path)
 colnames(p6RevLC) = sapply(strsplit(gsub("1_Short_primers_", '', colnames(p6RevLC)), '_'), '[', 1)
 #kable(p6RevLC)
 t.p6RevLC = t(p6RevLC)[,c("RawReads", "ReadsWithPrimer", "Aberrant_LC_reads", "Qtrimmed", "Overlapped")]
-t.p6RevLC = t.p6RevLC[t.p6RevLC[,'ReadsWithPrimer']>0, ]
+# t.p6RevLC = t.p6RevLC[t.p6RevLC[,'ReadsWithPrimer']>0, ]
 
 kable(t.p6RevLC) %>%
   kable_styling("striped", full_width = F) %>%
