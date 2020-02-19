@@ -1,4 +1,5 @@
 import sys
+import os
 
 r1f = sys.argv[1]
 r1r = sys.argv[2]
@@ -9,6 +10,8 @@ cmdf = sys.argv[4]
 # r1r = './00-RawData/2_Long_CSP_Pool_S2_L001_R2_001.fastq.gz'
 # primerf = '2_Long_primers.csv'
 # cmdf = '01-trim-2_Long_CSP.sh'
+
+os.system('mkdir -p 01-PrimerTrim')
 
 outf = open(cmdf, 'w')
 
