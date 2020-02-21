@@ -22,7 +22,6 @@ class EntryDetailView(DetailView):
         obj = super(EntryDetailView, self).get_object(*args, **kwargs)
         return obj
 
-
     def get_context_data(self, **kwargs):
         # make sure that the invoices are not too many for the view but are still graphed
         context = super().get_context_data(**kwargs)
