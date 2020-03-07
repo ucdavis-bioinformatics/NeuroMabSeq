@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sequence_db',
     'widget_tweaks',
-    'bootstrap4'
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [
@@ -77,19 +77,12 @@ WSGI_APPLICATION = 'trimmer.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DEVELOPMENT = True
-vm_ip = '0.0.0.0'
-
-if DEVELOPMENT:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'trimmer_lab',
-            'USER': 'root',
-            # 'PASSWORD': 'ZBT100holly',
-            'HOST': vm_ip,
-            'PORT': '3306',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
     }
+}
 
 
 # Password validation
@@ -129,3 +122,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = "/var/www/neuromabseq.ucdavis.edu/static/"
+

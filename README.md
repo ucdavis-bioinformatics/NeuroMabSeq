@@ -4,7 +4,8 @@
 
 ### TODO:
 - csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
-
+- sql lite setup
+- no loading libraries from internet have static files
 
 
 
@@ -57,12 +58,13 @@
    
    `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04`
    
-`sudo pkill gunicorn`   
-
-`git fetch --all`
-
-`git reset --hard origin/website`
-
-`sudo systemctl restart gunicorn`
-
-`sudo systemctl restart nginx`
+   
+# This will fix 99% of problems unless someone pushes something funny to the repo!!!!
+```
+sudo pkill gunicorn   
+git fetch --all
+git reset --hard origin/website
+python location/of/manage.py migrate
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
+```

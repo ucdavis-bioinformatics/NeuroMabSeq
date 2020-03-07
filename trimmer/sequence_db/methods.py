@@ -7,7 +7,7 @@ import pandas as pd
 
 
 def data_upload():
-    result = pd.read_csv('/Users/keithmitchell/Desktop/Repositories/trimmer_lab/output.csv', index_col=False)
+    result = pd.read_csv('/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/output.csv', index_col=False)
     result = result.to_dict(orient='records')
     for row in result:
         vl_seq_obj = VLSeq.objects.create(seq=row['VL sequence'])
