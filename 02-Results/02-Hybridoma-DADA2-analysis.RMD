@@ -16,12 +16,12 @@ library(stringr)
 
 ### Setup File and Sample Names
 
-```{r setup}
+```{r}
 # Load plate translation:
 outp = './'
-sampleIDs = read.table("../2020-02-12-sample-sheets/n27_sample_sheet-R2.csv", header=T, as.is=T)
+sampleIDs = read.table("../samplesheet.tsv", header=T, as.is=T, sep='\t')
 
-plate = "n27"
+plate = "plate3"
 
 #path = "../01-PrimerTrim-keep-aberrant-LC/"
 path = "../01-PrimerTrim/"
@@ -37,15 +37,18 @@ hcindexes = str_remove(basename(hcfiles), "_10-REV-HC1_SE.fastq.gz")
 lcindexes = str_remove(basename(lcfiles), "_6-REV-LC_SE.fastq.gz")
 
 # Filter reads that have errors:
-#filtHC = file.path(path, 'filtered', paste0(hcindexes, "_HC_filt.fastq.gz"))
-#filtLC = file.path(path, 'filtered', paste0(lcindexes, "_LC_filt.fastq.gz"))
+filtHC = file.path(path, 'filtered', paste0(hcindexes, "_HC_filt.fastq.gz"))
+filtLC = file.path(path, 'filtered', paste0(lcindexes, "_LC_filt.fastq.gz"))
 
-#outHC = filterAndTrim(hcfiles, filtHC, maxEE = 2, compress=TRUE, multithread=TRUE)
-#gc()
+outHC = filterAndTrim(hcfiles, filtHC, maxEE = Inf, maxN=0, compress=TRUE, multithread=TRUE, truncQ=0)
+gc()
+outLC = filterAndTrim(lcfiles, filtLC, maxEE = 3, maxN=0, compress=TRUE, multithread=TRUE, truncQ=0)
+gc()
 
 # Learn Error Rates
-errHC = learnErrors(hcfiles, multithread = TRUE)
-errLC = learnErrors(lcfiles, multithread = TRUE)
+errHC = learnErrors(filtHC, multithread = TRUE)
+errLC = learnErrors(filtLC, multithread = TRUE)
+gc()
 
 ```
 
@@ -78,17 +81,17 @@ CTGATGCTGCACCAACTGTATCCA"
 #dadaHC$`01-SMARTindex_10-REV-HC1_SE.fastq.gz`
 
 # Do denoising for HC:
-dadaHC = dada(hcfiles, err=errHC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
+dadaHC = dada(filtHC, err=errHC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
 names(dadaHC) = hcindexes
 #sapply(dadaHC, getN))
 
 # Do denoising for LC:
-dadaLC = dada(lcfiles, err=errLC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
+dadaLC = dada(filtLC, err=errLC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
 names(dadaLC) = lcindexes
 #sapply(dadaLC, getN)
 
 #dadaLC$`01-SMARTindex_6-REV-LC_SE.fastq.gz`$denoised
-
+gc()
 
 # Construct sequence table
 #seqtab <- makeSequenceTable(mergers)
@@ -96,9 +99,18 @@ seqtabHC <- makeSequenceTable(dadaHC)
 
 seqtabLC <- makeSequenceTable(dadaLC)
 
+# Write some non-filtered tables for tracking and analysis
 dim(seqtabHC)
+seqtabHC.tab = data.frame(ASV=colnames(seqtabHC), t(seqtabHC))
+seqtabHC.tab = seqtabHC.tab[order(rowSums(t(seqtabHC)), decreasing = T), ]
+write.table(seqtabHC.tab, file='00-no-filter-seqtab_HC.tsv', sep='\t', row.names=F)
 
 dim(seqtabLC)
+seqtabLC.tab = data.frame(ASV=colnames(seqtabLC), t(seqtabLC))
+seqtabLC.tab = seqtabLC.tab[order(rowSums(t(seqtabLC)), decreasing = T), ]
+write.table(seqtabLC.tab, file='00-no-filter-seqtab_LC.tsv', sep='\t', row.names=F)
+
+
 
 ############ Filter ASVs and samples ########
 # Filters HC:
@@ -109,7 +121,8 @@ seqtabHC.f.pct = 100*seqtabHC.f/rowSums(seqtabHC.f)
 lowcountidxHC = colSums(seqtabHC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
 seqtabHC.f2 = seqtabHC.f[,lowcountidxHC]
 dim(seqtabHC.f2)
-
+write.table(data.frame(ASV=colnames(seqtabHC.f2), t(seqtabHC.f2)), file='01-filtered-seqtab_HC.tsv', sep='\t', row.names = F)
+  
 # Filters LC:
 failedidxLC = rowSums(seqtabLC >= 10) > 0
 commonidxLC = colSums(seqtabLC > 1)/nrow(seqtabLC) < .5  # throw out ASVs that show up in >2 samples
@@ -118,13 +131,14 @@ seqtabLC.f.pct = 100*seqtabLC.f/rowSums(seqtabLC.f)
 lowcountidxLC = colSums(seqtabLC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
 seqtabLC.f2 = seqtabLC.f[,lowcountidxLC]
 dim(seqtabLC.f2)
+write.table(data.frame(ASV=colnames(seqtabLC.f2), t(seqtabLC.f2)), file='01-filtered-seqtab_LC.tsv', sep='\t', row.names=F)
 
 ## Convert HC ASV table to output table:
 options(stringsAsFactors = F)
 HC.out = data.frame()
 for(s in rownames(seqtabHC.f2)){
   r = seqtabHC.f2[s, ]  
-  trimmerID = sampleIDs$TrimmerID[match(s, sampleIDs$SMARTindex)]
+  trimmerID = sampleIDs$TrimmerID[match(s, sampleIDs$InlineIndexDescription)]
   for(asv in names(which(r/sum(r) > .3))){
     HC.out = rbind(HC.out, c(plate, s, trimmerID, r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), asv))
   }
@@ -137,53 +151,15 @@ options(stringsAsFactors = F)
 LC.out = data.frame()
 for(s in rownames(seqtabLC.f2)){
   r = seqtabLC.f2[s, ]  
-  trimmerID = sampleIDs$TrimmerID[match(s, sampleIDs$SMARTindex)]
+  trimmerID = sampleIDs$TrimmerID[match(s, sampleIDs$InlineIndexDescription)]
   for(asv in names(which(r/sum(r) > .3))){
-    LC.out = rbind(LC.out, c(plate, s, trimmerID, r[asv], 100*r[asv]/sum(seqtabLC[s,]), asv))
+    LC.out = rbind(LC.out, c(plate, s, trimmerID, r[asv], signif(100*r[asv]/sum(seqtabLC[s,]), 3), asv))
   }
 }
 colnames(LC.out) = c("plate", "SMARTindex", "TrimmerID", "ASVcount", "PctSupport", "LightChain")
 readr::write_tsv(LC.out, paste0(outp, plate, "_", "LightChain.tsv"))
 
 
-
-```
-
-
-```{r}
-# Inspect distribution of sequence lengths
-table(nchar(getSequences(seqtabHC)))
-table(nchar(getSequences(seqtabLC)))
-
-
-```
-
-
-  
-```{r}
-seqtabHC.nochim <- removeBimeraDenovo(seqtabHC, method="consensus", multithread=TRUE, verbose=TRUE)
-dim(seqtabHC.nochim)
-```
-
-
-```{r}
-getN <- function(x) sum(getUniques(x))
-track <- cbind(outHC, sapply(dadaHC, getN), rowSums(seqtabHC.nochim))
-# If processing a single sample, remove the sapply calls: e.g. replace sapply(dadaFs, getN) with getN(dadaFs)
-colnames(track) <- c("input", "filtered", "denoisedF", "nonchim")
-rownames(track) <- sample.names
-head(track)
-```
-
-
-```{r}
-CountTable =  t(seqtab.nochim)
-CountTable = CountTable[order(rowSums(CountTable), decreasing=T), ]
-write.table(data.frame(Sequence=rownames(CountTable), CountTable), row.names=F, file="AllSamples_AmpliconSequenceVariant_count.tsv", sep='\t')
-
-pdf(file="percent_reads_heatmap.pdf", w=20, h=8)
-pheatmap(t(t(CountTable[1:10, ])/colSums(CountTable)), cluster_cols=T, cluster_rows=F, show_rownames=F, main="Fraction of ASVs by sample (10 most common)", ylab="ASV")
-dev.off()
 
 ```
 
