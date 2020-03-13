@@ -29,6 +29,7 @@ for l in open(primerf, 'r'):
         prefix = './01-PrimerTrim/' + sample
         cmd = "../HTStream/build/bin/hts_Primers -d 0 -l 0 -e 0 -r 2 -x -P " + l2[header.index('Primer1Seq')] + "TGGGG"
         cmd += " -Q " + l2[header.index('Primer2Seq')] + " -1 " + r1f + " -2 " + r1r + " -L " + logf + " | "
+        cmd += "../HTStream/build/bin/hts_NTrimmer -e -AL " + logf + " | "
         cmd += "../HTStream/build/bin/hts_SeqScreener -C -r -x .01 -k 21 -s aberrant_LC.fasta -AL " + logf + " | "
         cmd += "../HTStream/build/bin/hts_QWindowTrim -l -n -q 10 -m 260 -AL " + logf + " | "
         cmd += "../HTStream/build/bin/hts_Overlapper -AL " + logf + " -m 385 -f " + prefix + '\n'
