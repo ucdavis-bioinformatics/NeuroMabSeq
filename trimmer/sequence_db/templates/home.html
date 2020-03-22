@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% load static %}
 
 {% block content %}
 
@@ -19,7 +20,7 @@
 
   <!-- The Header Bio Section -->
   <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:10000px;background-color:#B3A369" id="about_me">
-    <h2 class="w3-wide">NeuroMab Sequence Database</h2>
+    <h1 class="w3-wide">Neuro Mab Sequencing Initiative Sequence Database</h1>
     <!--<p class="w3-opacity"><i>We love music</i></p>-->
 
     <div class="w3-row w3-padding-32">
@@ -29,9 +30,9 @@
                                         <button  label="NeuroMab Website" name="so_link" class="btn btn-primary">NeuroMab Website</button>
             </a>
         </p>
-
-        <img src="http://neuromab.ucdavis.edu/images/NeuroMabLogo2.jpg" alt="Random Name" style="width:30%">
+        <img src="{% static "neuromab_logo.jpg" %}" alt="My image" style="width:35%">
       </div>
+
 
       <div class="w3-third" >
         <p>
@@ -39,55 +40,49 @@
                                         <button  label="Trimmer Lab Website" name="so_link" class="btn btn-primary">Trimmer Lab Website</button>
             </a>
         </p>
-
         <img src="http://trimmer.faculty.ucdavis.edu/wp-content/uploads/sites/530/2018/10/TrimmerLablogo_GS2.png" alt="Random Name" style="width:90%">
       </div>
 
-<!--      <div class="w3-third" >-->
-<!--        <p>-->
-<!--            <a href="https://trimmer.faculty.ucdavis.edu/">-->
-<!--                                        <button  label="Trimmer Lab Website" name="so_link" class="btn btn-primary">Trimmer Lab Website</button>-->
-<!--            </a>-->
-<!--        </p>-->
 
-<!--        <img src="http://trimmer.faculty.ucdavis.edu/wp-content/uploads/sites/530/2018/10/TrimmerLablogo_GS2.png" alt="Random Name" style="width:90%">-->
-<!--      </div>-->
+      <div class="w3-third" >
+        <p>
+            <a href="https://braininitiative.nih.gov/">
+                                        <button  label="Trimmer Lab Website" name="so_link" class="btn btn-primary">Brain Initiative</button>
+            </a>
+        </p>
+        <img src="{% static "brain_logo.jpg" %}" alt="My image" style="width:80%">
+      </div>
 
 
     </div>
   </div>
 
   <!-- The Experience Section -->
-  <div class="w3-gray" id="experience">
+  <div class="w3-white" id="experience">
     <div class="w3-container w3-content w3-padding-64" style="max-width:800px">
       <h3 class="w3-wide w3-center">PROJECT INFORMATION</h3>
-<!--      <ul class="w3-ul w3-border w3-white w3-text-grey">-->
-<!--        <li align="left" id="research" class="w3-padding"><font size="4"><b>RESEARCH</b></font></li>-->
-<!--          <ul>-->
-<!--                      <li align="left"><strong>A comprehensive analysis of the usability and archival stability of omics-->
-<!--                          computational tools and resources (Posted on BioRxiv and entering review.)</strong></li>-->
+            <div>
+                We previously created a valuable collection of monoclonal antibodies (mAbs) validated for
+                neuroscience research. As part of a BRAIN Initiative project to enhance dissemination and utility
+                of this valuable resource, we are applying high-throughput DNA sequencing technologies to determine
+                the sequence of the immunoglobulin heavy and light chain variable domains from our collection of
+                hybridoma cells that are the source of these mAbs.
+            </div>
+            <br>
+            <div>
+                These efforts will allow for permanent archiving of this valuable collection as DNA sequence.
+                The availability of these sequences will also allow researchers to generate plasmids for expression
+                of molecularly defined mAbs, leading to enhanced research transparency and reproducibility.
+                This will also allow for engineering of these antibodies into alternate forms including single
+                chain variable fragments or ScFvs.
+            </div>
+            <br>
+            <div>
+                This website serves as the public DNA sequence repository for the sequences of these mAb heavy and
+                light chain variable domains and serves as an open resource for enhancing dissemination of this
+                valuable collection of validated mAbs.
 
-<!--                          <p>Performed statistical analysis and data visualization of bioinformatics software installation-->
-<!--                          attemps that were chararterized based on package manager, installation, time, number of ciations,-->
-<!--                          number of commands performed, etc. Analysis was performed/documented using Jupyter Notebooks in-->
-<!--                          Python/Seaborn.-->
-<!--                              <strong>Figure 2</strong>.-->
-<!--                          </p>-->
-
-<!--                            <p align="center">-->
-<!--                                  <a href="https://www.biorxiv.org/content/early/2018/10/25/452532.full.pdf+html">-->
-<!--                                    <button  label="BioRxiv" name="so_link" class="btn btn-info">BioRxiv</button>-->
-<!--                                  </a>-->
-
-<!--                            </p>-->
-
-<!--                      &lt;!&ndash;<li align="left">Lab Researcher in Eskin Computational Lab UCLA (Jan. 2018 - Ongoing)</li>&ndash;&gt;-->
-<!--                          &lt;!&ndash;<p>Work on compu&ndash;&gt;-->
-<!--                          &lt;!&ndash;</p>&ndash;&gt;-->
-
-<!--          </ul>-->
-<!--      </ul>-->
-
+            </div>
 <!--      <ul class="w3-ul w3-border w3-white w3-text-grey">-->
 <!--        <li align="left" id="teaching" class="w3-padding"><font size="4"><b>TEACHING </b></font>-->
 <!--                (With-->

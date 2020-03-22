@@ -65,6 +65,7 @@ sudo pkill gunicorn
 git fetch --all
 git reset --hard origin/website
 python location/of/manage.py migrate
+python manage.py collectstatic
 sudo systemctl restart gunicorn
 sudo systemctl restart nginx
 ```

@@ -32,3 +32,36 @@ class Entry(models.Model):
     vlseq = models.OneToOneField(VLSeq, on_delete=models.CASCADE, null=True)
     vhseq = models.OneToOneField(VHSeq, on_delete=models.CASCADE, null=True)
     metadata = models.OneToOneField(Metadata, on_delete=models.CASCADE, null=True)
+
+
+
+class TrimmerEntry(models.Model):
+    id = models.AutoField(primary_key=True)
+    trimmerid = models.CharField(max_length=50, default='')
+
+
+class TrimmerHeavy(models.Model):
+    id = models.AutoField(primary_key=True)
+
+    pctsupport = models.DecimalField(max_digits=10, decimal_places=5)
+    asvcount = models.IntegerField()
+    plate = models.CharField(max_length=15)
+    SMARTindex = models.CharField(max_length=20)
+
+    seq = models.CharField(max_length=1500, default='')
+    entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
+
+
+
+class TrimmerLight(models.Model):
+    id = models.AutoField(primary_key=True)
+
+    pctsupport = models.DecimalField(max_digits=10, decimal_places=5)
+    asvcount = models.IntegerField()
+    plate = models.CharField(max_length=15)
+    SMARTindex = models.CharField(max_length=20)
+
+    seq = models.CharField(max_length=1500, default='')
+    entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
+
+
