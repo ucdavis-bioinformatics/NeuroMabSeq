@@ -60,12 +60,16 @@
    
    
 # This will fix 99% of problems unless someone pushes something funny to the repo!!!!
-```
+```  # from the dirctory with the manage.py script
 sudo pkill gunicorn   
 git fetch --all
 git reset --hard origin/website
-python location/of/manage.py migrate
-python manage.py collectstatic
+python manage.py migrate
+psudo python manage.py collectstatic
 sudo systemctl restart gunicorn
 sudo systemctl restart nginx
 ```
+
+- TODO where is the 
+- Had to add the following line to ~/.bashrc in order to get the psudo to work. 
+`psudo() { sudo env PATH="$PATH" "$@"; } `
