@@ -12,8 +12,8 @@ def clear_new_data_upload():
     TrimmerHeavy.objects.all().delete()
 
 def new_data_upload():
-    light_result = pd.read_csv('/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/LightChain.tsv', delimiter='\t', index_col=False)
-    heavy_result = pd.read_csv('/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/HeavyChain.tsv', delimiter='\t', index_col=False)
+    light_result = pd.read_csv('/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/plate3_LightChain.tsv', delimiter='\t', index_col=False)
+    heavy_result = pd.read_csv('/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/plate3_HeavyChain.tsv', delimiter='\t', index_col=False)
     light_result = light_result.to_dict(orient='records')
     heavy_result = heavy_result.to_dict(orient='records')
     for row in light_result:

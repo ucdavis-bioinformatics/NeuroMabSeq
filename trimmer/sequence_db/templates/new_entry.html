@@ -116,8 +116,29 @@ $(document).ready(function() {
 
       </div>
 
+    <div class="row">
+        {% if graph %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph|safe }}
+            </div>
+        {% endif %}
+    </div>
 
+    <div class="row">
+        {% if graph_pct %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_pct|safe }}
+            </div>
+        {% endif %}
+    </div>
 
+    <div class="row">
+        {% if graph_seq %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_seq|safe }}
+            </div>
+        {% endif %}
+    </div>
 
 
 
