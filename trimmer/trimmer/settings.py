@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '=r!thy7q6ln0dfqov@-3ap8ue6u$%m=cz-t$gk1j8h)qmh^@&^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['neuromabseq.ucdavis.edu', '127.0.0.1']
 
