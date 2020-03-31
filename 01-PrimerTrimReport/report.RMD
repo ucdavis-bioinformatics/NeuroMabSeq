@@ -1,8 +1,9 @@
 ---
-title: "200214 SMARTPCR Amplicon Analysis"
+title: Cleaning Report `r tail(unlist(strsplit(getwd(), '/')), 2)[1]`
 output:
   html_document:
     df_print: paged
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 ```{r setup, echo=FALSE, results="hide"}
@@ -107,7 +108,7 @@ Analysis for samples prepared with SMART-PCR + (10-REV-HC1 or 6-REV-LC or mIGHG 
 
 ## Heavy Chain:
 
-```{r}
+```{r Heavy Chain Results, echo=FALSE}
 path = "../01-PrimerTrim/"
 pattern = ".*10-REV-HC1.log"
 p10RevHc1 = parse_set(pattern, path)
@@ -126,7 +127,7 @@ kable(t.p10RevHc1) %>%
 
 ## Light Chain:
 
-```{r}
+```{r Light Chain Results, echo=FALSE}
 path = "../01-PrimerTrim/"
 pattern = ".*6-REV-LC.log"
 p6RevLC = parse_set(pattern, path)
