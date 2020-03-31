@@ -1,7 +1,7 @@
 ---
 title: "Hybridoma Amplicon"
 author: "SH"
-date: "2/13/2020"
+date: "03/13/2020"
 output: html_document
 ---
 
@@ -12,6 +12,7 @@ library(dada2)
 library(kableExtra)
 library(ggplot2)
 library(stringr)
+options(stringsAsFactors=F)
 ```
 
 ### Setup File and Sample Names
@@ -19,9 +20,13 @@ library(stringr)
 ```{r}
 # Load plate translation:
 outp = './'
-sampleIDs = read.table("../samplesheet.tsv", header=T, as.is=T, sep='\t')
+#sampleIDs = read.table("../samplesheet.tsv", header=T, as.is=T, sep='\t')
 
-plate = "plate3"
+submission = 'b51b81e9ee80'
+plate = "plate2"
+
+sampleData = read.table(paste("https://submissions.dnatech.ucdavis.edu/server/api/submissions/", 
+                              submission, "/download/?format=tsv&data=samples", sep=''), sep='\t', header=T, as.is=T)
 
 #path = "../01-PrimerTrim-keep-aberrant-LC/"
 path = "../01-PrimerTrim/"
@@ -37,17 +42,17 @@ hcindexes = str_remove(basename(hcfiles), "_10-REV-HC1_SE.fastq.gz")
 lcindexes = str_remove(basename(lcfiles), "_6-REV-LC_SE.fastq.gz")
 
 # Filter reads that have errors:
-filtHC = file.path(path, 'filtered', paste0(hcindexes, "_HC_filt.fastq.gz"))
-filtLC = file.path(path, 'filtered', paste0(lcindexes, "_LC_filt.fastq.gz"))
+# filtHC = file.path(path, 'filtered', paste0(hcindexes, "_HC_filt.fastq.gz"))
+# filtLC = file.path(path, 'filtered', paste0(lcindexes, "_LC_filt.fastq.gz"))
 
-outHC = filterAndTrim(hcfiles, filtHC, maxEE = Inf, maxN=0, compress=TRUE, multithread=TRUE, truncQ=0)
-gc()
-outLC = filterAndTrim(lcfiles, filtLC, maxEE = 3, maxN=0, compress=TRUE, multithread=TRUE, truncQ=0)
-gc()
+# outHC = filterAndTrim(hcfiles, filtHC, maxEE = Inf, maxN=0, compress=TRUE, multithread=TRUE, truncQ=0)
+# gc()
+# outLC = filterAndTrim(lcfiles, filtLC, maxEE = 3, maxN=0, compress=TRUE, multithread=TRUE, truncQ=0)
+# gc()
 
 # Learn Error Rates
-errHC = learnErrors(filtHC, multithread = TRUE)
-errLC = learnErrors(filtLC, multithread = TRUE)
+errHC = learnErrors(hcfiles, multithread = TRUE)
+errLC = learnErrors(lcfiles, multithread = TRUE)
 gc()
 
 ```
@@ -81,12 +86,12 @@ CTGATGCTGCACCAACTGTATCCA"
 #dadaHC$`01-SMARTindex_10-REV-HC1_SE.fastq.gz`
 
 # Do denoising for HC:
-dadaHC = dada(filtHC, err=errHC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
+dadaHC = dada(hcfiles, err=errHC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
 names(dadaHC) = hcindexes
 #sapply(dadaHC, getN))
 
 # Do denoising for LC:
-dadaLC = dada(filtLC, err=errLC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
+dadaLC = dada(lcfiles, err=errLC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
 names(dadaLC) = lcindexes
 #sapply(dadaLC, getN)
 
@@ -112,7 +117,11 @@ write.table(seqtabLC.tab, file='00-no-filter-seqtab_LC.tsv', sep='\t', row.names
 
 
 
-############ Filter ASVs and samples ########
+############ Filter ASVs and samples ######## 
+# Rows are ASVs, cols are samples:
+tmp = seqtabHC
+colnames(tmp) = paste0('H', 1:ncol(tmp))
+
 # Filters HC:
 failedidxHC = rowSums(seqtabHC >= 10) > 0 # throw out samples that have no ASV with at least 10 reads of support 
 commonidxHC = colSums(seqtabHC > 1)/nrow(seqtabHC) < .5   # throw out ASVs that show up in > 50% of samples 
@@ -122,7 +131,34 @@ lowcountidxHC = colSums(seqtabHC.f.pct > 30) > 0 # Throw out ASVs that do not ge
 seqtabHC.f2 = seqtabHC.f[,lowcountidxHC]
 dim(seqtabHC.f2)
 write.table(data.frame(ASV=colnames(seqtabHC.f2), t(seqtabHC.f2)), file='01-filtered-seqtab_HC.tsv', sep='\t', row.names = F)
-  
+
+# Build error/warning reports for samples with > 1 ASV and single ASVs reported for more than one sample:
+# Note this is a little tricky because the requirement is that 30% of reads for the sample, pre-filtering, need to support the ASV:
+# seqtabHC.f2.pct = (100*seqtabHC.f2/rowSums(seqtabHC[rownames(seqtabHC.f2),]))
+# samples_with_many_HC = names(which(rowSums(seqtabHC.f2.pct > 30)>1))
+# HCASV_in_many_samples = names(which(colSums(seqtabHC.f2.pct > 30)>1))
+
+# if(length(samples_with_many_HC) > 0){
+#   tmp = seqtabHC.f2[samples_with_many_HC, ,drop=F]
+#   tmp2 = tmp[,colSums(tmp)>0, drop=F]
+#   tmp3 = data.frame(plate=plate, ASV=colnames(tmp2), 
+
+#   ridx = 
+#   tmp = as.data.frame(seqtabHC.f2[samples_with_many_HC,])
+#   colnames(tmp) = samples_with_many_HC
+#   tmp2 = tmp[,colSums(tmp)>0]
+#   tmp3 = data.frame(trimmer_id =sampleData$trimmer_id[match(samples_with_many_HC, sampleData$inline_index_name)
+#   write.table(file="HC_warnings
+# }
+
+# if(length(HCASV_in_many_samples) > 0){
+#   tmp = seqtabHC.f2[,HCASV_in_many_samples, drop=F]
+#   tmp2 = tmp[rowSums(tmp)>0,, drop=F]
+#   }
+
+
+# colSums(seqtabHC.f2[samples_with_many_HC,])
+
 # Filters LC:
 failedidxLC = rowSums(seqtabLC >= 10) > 0
 commonidxLC = colSums(seqtabLC > 1)/nrow(seqtabLC) < .5  # throw out ASVs that show up in >2 samples
@@ -133,13 +169,21 @@ seqtabLC.f2 = seqtabLC.f[,lowcountidxLC]
 dim(seqtabLC.f2)
 write.table(data.frame(ASV=colnames(seqtabLC.f2), t(seqtabLC.f2)), file='01-filtered-seqtab_LC.tsv', sep='\t', row.names=F)
 
+# Build error/warning reports for samples with > 1 ASV and single ASVs reported for more than one sample:
+# Note this is a little tricky because the requirement is that 30% of reads for the sample, pre-filtering, need to support the ASV:
+# seqtabLC.f2.pct = (100*seqtabLC.f2/rowSums(seqtabLC[rownames(seqtabLC.f2),]))
+# samples_with_many_LC = names(which(rowSums(seqtabLC.f2.pct > 30)>1))
+# LCASV_in_many_samples = names(which(rowSums(seqtabLC.f2.pct > 30)>1))
+
+
 ## Convert HC ASV table to output table:
 options(stringsAsFactors = F)
 HC.out = data.frame()
 for(s in rownames(seqtabHC.f2)){
   r = seqtabHC.f2[s, ]  
-  trimmerID = sampleIDs$TrimmerID[match(s, sampleIDs$InlineIndexDescription)]
-  for(asv in names(which(r/sum(r) > .3))){
+  trimmerID = sampleData$trimmer_id[match(s, sampleData$inline_index_name)]
+  for(asv in names(which(r/sum(seqtabHC[s,] > .3))){ 
+    # Only keep ASVs with at least 30% read support:
     HC.out = rbind(HC.out, c(plate, s, trimmerID, r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), asv))
   }
 }
@@ -151,8 +195,8 @@ options(stringsAsFactors = F)
 LC.out = data.frame()
 for(s in rownames(seqtabLC.f2)){
   r = seqtabLC.f2[s, ]  
-  trimmerID = sampleIDs$TrimmerID[match(s, sampleIDs$InlineIndexDescription)]
-  for(asv in names(which(r/sum(r) > .3))){
+  trimmerID = sampleData$trimmer_id[match(s, sampleData$inline_index_name)]
+  for(asv in names(which(r/sum(seqtabLC[s,]) > .3))){
     LC.out = rbind(LC.out, c(plate, s, trimmerID, r[asv], signif(100*r[asv]/sum(seqtabLC[s,]), 3), asv))
   }
 }
