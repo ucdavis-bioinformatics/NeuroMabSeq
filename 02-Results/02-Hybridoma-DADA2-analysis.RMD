@@ -1,5 +1,6 @@
 ---
-title: Hybridoma Amplicon Report `r tail(unlist(strsplit(getwd(), '/')), 2)[1]`
+title: "Hybridoma Amplicon Report"
+plate: "`r tail(unlist(strsplit(getwd(), '/')), 2)[1]`"
 author: Sam Hunter
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
@@ -12,12 +13,14 @@ library(dada2)
 library(kableExtra)
 library(ggplot2)
 library(stringr)
+library(msaR)
+library(DECIPHER)
 options(stringsAsFactors=F)
 ```
 
 ### Setup File and Sample Names
 
-```{r}
+```{r Load Data}
 # Load plate translation:
 outp = './'
 #sampleIDs = read.table("../samplesheet.tsv", header=T, as.is=T, sep='\t')
@@ -59,12 +62,12 @@ gc()
 
 Plot error rates:
 
-```{r}
+```{r Plot HC Error Model}
 plotErrors(errHC, nominalQ = TRUE)
 
 ```
 
-```{r}
+```{r Plot LC Error Models}
 plotErrors(errLC, nominalQ = TRUE)
 
 ```
@@ -72,7 +75,7 @@ plotErrors(errLC, nominalQ = TRUE)
 
 ### Infer ASVs
 
-```{r}
+```{r InferASV}
 
 sp0 = "CAGCATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGG
 TTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAG
@@ -81,27 +84,20 @@ CAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCA
 GGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGC
 AACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGG
 CTGATGCTGCACCAACTGTATCCA"
-
-#dadaHC = dada(hcfiles, err=errHC, multithread=T, priors=sp0, OMEGA_A=1e-50, OMEGA_C=1, pool=T)
-#dadaHC$`01-SMARTindex_10-REV-HC1_SE.fastq.gz`
+sp0 = gsub('\n', '', sp0)
 
 # Do denoising for HC:
 dadaHC = dada(hcfiles, err=errHC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
 names(dadaHC) = hcindexes
-#sapply(dadaHC, getN))
 
 # Do denoising for LC:
 dadaLC = dada(lcfiles, err=errLC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-60, OMEGA_C=0)
 names(dadaLC) = lcindexes
-#sapply(dadaLC, getN)
 
-#dadaLC$`01-SMARTindex_6-REV-LC_SE.fastq.gz`$denoised
 gc()
 
-# Construct sequence table
-#seqtab <- makeSequenceTable(mergers)
+# Construct sequence tables
 seqtabHC <- makeSequenceTable(dadaHC)
-
 seqtabLC <- makeSequenceTable(dadaLC)
 
 # Write some non-filtered tables for tracking and analysis
@@ -115,8 +111,9 @@ seqtabLC.tab = data.frame(ASV=colnames(seqtabLC), t(seqtabLC))
 seqtabLC.tab = seqtabLC.tab[order(rowSums(t(seqtabLC)), decreasing = T), ]
 write.table(seqtabLC.tab, file='00-no-filter-seqtab_LC.tsv', sep='\t', row.names=F)
 
+```
 
-
+```{r Process HC}
 ############ Filter ASVs and samples ######## 
 # Rows are ASVs, cols are samples:
 tmp = seqtabHC
@@ -124,56 +121,13 @@ colnames(tmp) = paste0('H', 1:ncol(tmp))
 
 # Filters HC:
 failedidxHC = rowSums(seqtabHC >= 10) > 0 # throw out samples that have no ASV with at least 10 reads of support 
-commonidxHC = colSums(seqtabHC > 1)/nrow(seqtabHC) < .5   # throw out ASVs that show up in > 50% of samples 
+commonidxHC = colSums(seqtabHC > 5)/nrow(seqtabHC) < .5   # throw out ASVs that show up in > 50% of samples 
 seqtabHC.f = seqtabHC[failedidxHC, commonidxHC]
 seqtabHC.f.pct = 100*seqtabHC.f/rowSums(seqtabHC.f)
 lowcountidxHC = colSums(seqtabHC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
 seqtabHC.f2 = seqtabHC.f[,lowcountidxHC]
 dim(seqtabHC.f2)
 write.table(data.frame(ASV=colnames(seqtabHC.f2), t(seqtabHC.f2)), file='01-filtered-seqtab_HC.tsv', sep='\t', row.names = F)
-
-# Build error/warning reports for samples with > 1 ASV and single ASVs reported for more than one sample:
-# Note this is a little tricky because the requirement is that 30% of reads for the sample, pre-filtering, need to support the ASV:
-# seqtabHC.f2.pct = (100*seqtabHC.f2/rowSums(seqtabHC[rownames(seqtabHC.f2),]))
-# samples_with_many_HC = names(which(rowSums(seqtabHC.f2.pct > 30)>1))
-# HCASV_in_many_samples = names(which(colSums(seqtabHC.f2.pct > 30)>1))
-
-# if(length(samples_with_many_HC) > 0){
-#   tmp = seqtabHC.f2[samples_with_many_HC, ,drop=F]
-#   tmp2 = tmp[,colSums(tmp)>0, drop=F]
-#   tmp3 = data.frame(plate=plate, ASV=colnames(tmp2), 
-
-#   ridx = 
-#   tmp = as.data.frame(seqtabHC.f2[samples_with_many_HC,])
-#   colnames(tmp) = samples_with_many_HC
-#   tmp2 = tmp[,colSums(tmp)>0]
-#   tmp3 = data.frame(trimmer_id =sampleData$trimmer_id[match(samples_with_many_HC, sampleData$inline_index_name)
-#   write.table(file="HC_warnings
-# }
-
-# if(length(HCASV_in_many_samples) > 0){
-#   tmp = seqtabHC.f2[,HCASV_in_many_samples, drop=F]
-#   tmp2 = tmp[rowSums(tmp)>0,, drop=F]
-#   }
-
-
-# colSums(seqtabHC.f2[samples_with_many_HC,])
-
-# Filters LC:
-failedidxLC = rowSums(seqtabLC >= 10) > 0
-commonidxLC = colSums(seqtabLC > 1)/nrow(seqtabLC) < .5  # throw out ASVs that show up in >2 samples
-seqtabLC.f = seqtabLC[failedidxLC, commonidxLC]
-seqtabLC.f.pct = 100*seqtabLC.f/rowSums(seqtabLC.f)
-lowcountidxLC = colSums(seqtabLC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
-seqtabLC.f2 = seqtabLC.f[,lowcountidxLC]
-dim(seqtabLC.f2)
-write.table(data.frame(ASV=colnames(seqtabLC.f2), t(seqtabLC.f2)), file='01-filtered-seqtab_LC.tsv', sep='\t', row.names=F)
-
-# Build error/warning reports for samples with > 1 ASV and single ASVs reported for more than one sample:
-# Note this is a little tricky because the requirement is that 30% of reads for the sample, pre-filtering, need to support the ASV:
-# seqtabLC.f2.pct = (100*seqtabLC.f2/rowSums(seqtabLC[rownames(seqtabLC.f2),]))
-# samples_with_many_LC = names(which(rowSums(seqtabLC.f2.pct > 30)>1))
-# LCASV_in_many_samples = names(which(rowSums(seqtabLC.f2.pct > 30)>1))
 
 
 ## Convert HC ASV table to output table:
@@ -184,13 +138,29 @@ for(s in rownames(seqtabHC.f2)){
   MabID = sampleData$trimmer_id[match(s, sampleData$inline_index_name)]
   for(asv in names(which(r/sum(seqtabHC[s,]) > .2))){ 
     # Only keep ASVs with at least 30% read support:
-    HC.out = rbind(HC.out, c(plate, s, MabID, r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), asv))
+    HC.out = rbind(HC.out, c(plate, s, MabID, r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), sum(seqtabHC[s,]), asv))
   }
 }
-colnames(HC.out) = c("plate", "SMARTindex", "MabID", "ASVcount", "PctSupport", "HeavyChain")
+colnames(HC.out) = c("plate", "SMARTindex", "MabID", "ASVsupport", "PctSupport", "TotalReads", "HeavyChain")
+
 # Find any ASVs reported more than once and note the duplicate
 HC.out$DuplicatedIn =apply(HC.out, 1, function(x){ paste(setdiff(HC.out$MabID[HC.out$HeavyChain %in% x['HeavyChain']], x['MabID']), collapse=', ')})
 readr::write_tsv(HC.out, paste0(outp, plate, "_", "HeavyChain.tsv"))
+
+```
+
+
+```{r, Process LC }
+
+# Filters LC:
+failedidxLC = rowSums(seqtabLC >= 10) > 0
+commonidxLC = colSums(seqtabLC > 5)/nrow(seqtabLC) < .5  # throw out ASVs that show up in >50% samples with at least 5 reads
+seqtabLC.f = seqtabLC[failedidxLC, commonidxLC]
+seqtabLC.f.pct = 100*seqtabLC.f/rowSums(seqtabLC.f)
+lowcountidxLC = colSums(seqtabLC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
+seqtabLC.f2 = seqtabLC.f[,lowcountidxLC]
+dim(seqtabLC.f2)
+write.table(data.frame(ASV=colnames(seqtabLC.f2), t(seqtabLC.f2)), file='01-filtered-seqtab_LC.tsv', sep='\t', row.names=F)
 
 ## Convert LC ASV table to output table:
 options(stringsAsFactors = F)
@@ -199,15 +169,30 @@ for(s in rownames(seqtabLC.f2)){
   r = seqtabLC.f2[s, ]  
   MabID = sampleData$trimmer_id[match(s, sampleData$inline_index_name)]
   for(asv in names(which(r/sum(seqtabLC[s,]) > .2))){
-    LC.out = rbind(LC.out, c(plate, s, MabID, r[asv], signif(100*r[asv]/sum(seqtabLC[s,]), 3), asv))
+    LC.out = rbind(LC.out, c(plate, s, MabID, r[asv], signif(100*r[asv]/sum(seqtabLC[s,]), 3), sum(seqtabLC[s,]), asv))
   }
 }
-colnames(LC.out) = c("plate", "SMARTindex", "MabID", "ASVcount", "PctSupport", "LightChain")
+colnames(LC.out) = c("plate", "SMARTindex", "MabID", "ASVcount", "PctSupport", "TotalReads", "LightChain")
 # Find any ASVs reported more than once and note the duplicate
 LC.out$DuplicatedIn = apply(LC.out, 1, function(x){ paste(setdiff(LC.out$MabID[LC.out$HeavyChain %in% x['LightChain']], x['MabID']), collapse=', ')})
 readr::write_tsv(LC.out, paste0(outp, plate, "_", "LightChain.tsv"))
 
+# Plot alignments of commonidxLC (are these aberrant?)
+# So far haven't figure out how to do this in a loop, so just plot the one with the most total reads:
+putative_aberrant = names(sort(colSums(seqtabLC[,!commonidxLC, drop=F]), decreasing=T))[1]
+dna = DNAStringSet(c(sp0, putative_aberrant))  
+names(dna) = c("AberrantLC", "PutativeALC") 
 
+alignedDNA = AlignSeqs(dna, verbose=F)
+
+
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, )
+
+```
+\
+\
+\
+```{r summary table}
 ## Build Status Table for all samples:
 status.out = data.frame(sampleData,
                   LCs.Reported = as.vector(table(LC.out$MabID)[sampleData$trimmer_id]),
