@@ -182,7 +182,7 @@ HC.out = data.frame()
 for(s in rownames(seqtabHC.f2)){
   r = seqtabHC.f2[s, ]  
   trimmerID = sampleData$trimmer_id[match(s, sampleData$inline_index_name)]
-  for(asv in names(which(r/sum(seqtabHC[s,] > .3))){ 
+  for(asv in names(which(r/sum(seqtabHC[s,]) > .3))){ 
     # Only keep ASVs with at least 30% read support:
     HC.out = rbind(HC.out, c(plate, s, trimmerID, r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), asv))
   }
