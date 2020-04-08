@@ -177,6 +177,10 @@ colnames(LC.out) = c("plate", "SMARTindex", "MabID", "ASVcount", "PctSupport", "
 LC.out$DuplicatedIn = apply(LC.out, 1, function(x){ paste(setdiff(LC.out$MabID[LC.out$HeavyChain %in% x['LightChain']], x['MabID']), collapse=', ')})
 readr::write_tsv(LC.out, paste0(outp, plate, "_", "LightChain.tsv"))
 
+```
+
+### Putative aberrant LC alignment
+```{r plotalignment}
 # Plot alignments of commonidxLC (are these aberrant?)
 # So far haven't figure out how to do this in a loop, so just plot the one with the most total reads:
 putative_aberrant = names(sort(colSums(seqtabLC[,!commonidxLC, drop=F]), decreasing=T))[1]
@@ -184,7 +188,6 @@ dna = DNAStringSet(c(sp0, putative_aberrant))
 names(dna) = c("AberrantLC", "PutativeALC") 
 
 alignedDNA = AlignSeqs(dna, verbose=F)
-
 
 msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, )
 
