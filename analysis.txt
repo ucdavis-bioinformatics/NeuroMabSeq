@@ -32,3 +32,7 @@ Rscript -e "rmarkdown::render('./01-PrimerTrimReport/report.RMD')"
 Rscript -e "rmarkdown::render('./02-Results/02-Hybridoma-DADA2-analysis.RMD')"
 
 #Rscript -e "rmarkdown::render('02-Hybridoma-DADA2-analysis.RMD')"
+
+# Use python to add AA translations to the putative LCS:
+python3 03-annotate-results.py 
+
