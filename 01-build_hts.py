@@ -7,8 +7,8 @@ from glob import glob
 #primerf = sys.argv[3]
 #cmdf = sys.argv[4]
 
-r1f = glob('./00-RawData/*_R1_*.fastq.gz')[0]
-r2f = r1f.replace('_R1_', '_R2_')
+r1 = glob('./00-RawData/*_R1_*.fastq.gz')[0]
+r2 = r1.replace('_R1_', '_R2_')
 primerf = '1_Short_primers.csv'
 cmdf = '01-trim-1_Short_CSP.sh'
 
@@ -38,7 +38,7 @@ for l in open(primerf, 'r'):
         logf = './01-PrimerTrim/' + sample + '.log'
         prefix = './01-PrimerTrim/' + sample
         cmd = "../HTStream/build/bin/hts_Primers -d 0 -l 0 -e 0 -r 2 -x -P " + l2[header.index('Primer1Seq')] + "TGGGG"
-        cmd += " -Q " + l2[header.index('Primer2Seq')] + " -1 " + r1f + " -2 " + r1r + " -L " + logf + " | "
+        cmd += " -Q " + l2[header.index('Primer2Seq')] + " -1 " + r1 + " -2 " + r2 + " -L " + logf + " | "
         cmd += "../HTStream/build/bin/hts_NTrimmer -e -AL " + logf + " | "
         cmd += "../HTStream/build/bin/hts_SeqScreener -C -r -x .01 -k 21 -s aberrant_LC.fasta -AL " + logf + " | "
         cmd += "../HTStream/build/bin/hts_QWindowTrim -l -n -q 10 -m 260 -AL " + logf + " | "
