@@ -20,27 +20,27 @@ library(kableExtra)
 ################## Functions #############
 
 hts_Primers = function(obj){
-    rv = unlist( obj[c('totalFragmentsInput', 'totalFragmentsOutput')] )
+    rv = unlist( obj[['Fragment']][c('in', 'out')] )
     names(rv) = c("RawReads", "ReadsWithPrimer")
     return(rv)
 }
 
 hts_SeqScreener = function(obj){
-    rv = unlist( obj[c('totalFragmentsInput','totalFragmentsOutput')] )
-    rv = c(rv, obj$Paired_end$PE_hits)
+    rv = unlist( obj[['Fragment']][c('in', 'out')]  )
+    rv = c(rv, obj$Paired_end$hits)
     names(rv) = c("ReadsToFilter", "PassedAberrantFilter", "Aberrant_LC_reads")
     return(rv)
 }
 
 hts_QWindowTrim = function(obj){
-    rv =  unlist( obj[c('totalFragmentsInput','totalFragmentsOutput')] )
+    rv =  unlist( obj[['Fragment']][c('in', 'out')]  )
     names(rv) = c("Untrimmed", "Qtrimmed")
     return(rv)
 }
 
 hts_Overlapper = function(obj){
-    PE_in = obj$Paired_end$PE_in
-    Overlapped = obj$sins + obj$mins
+    PE_in = obj$Paired_end$`in`
+    Overlapped = obj$Fragment$short_inserts + obj$Fragment$medium_inserts
     return(c(PE_in=PE_in, Overlapped=Overlapped))
 }
 

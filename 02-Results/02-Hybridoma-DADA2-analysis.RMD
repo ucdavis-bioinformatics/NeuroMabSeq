@@ -25,8 +25,8 @@ options(stringsAsFactors=F)
 outp = './'
 #sampleIDs = read.table("../samplesheet.tsv", header=T, as.is=T, sep='\t')
 
-submission = 'b51b81e9ee80'
-plate = "plate2"
+#submission = 'b51b81e9ee80'
+#plate = "plate2"
 
 sampleData = read.table(paste("https://submissions.dnatech.ucdavis.edu/server/api/submissions/", 
                               submission, "/download/?format=tsv&data=samples", sep=''), sep='\t', header=T, as.is=T)

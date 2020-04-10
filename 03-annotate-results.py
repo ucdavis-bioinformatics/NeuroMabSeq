@@ -22,6 +22,8 @@ import os
 anarciexe = './anarci-1.3/bin/ANARCI'
 outpath = './03-AnnotatedResults/'
 
+os.system('mkdir -p ' + outpath)
+
 def process_file(chain):
     """Process ASV records through ANARCI software tool and write new table to outpath."""
     inf = glob('./02-Results/*_' + chain + '.tsv')[0]
