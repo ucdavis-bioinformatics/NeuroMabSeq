@@ -1,3 +1,11 @@
+####
+
+This file is outdated and replaced with run_pipeline.sh
+
+####
+
+
+
 # Server path:
 # datapath=/share/illumina/miseq/200310_M00384_0237_MS9519139-600V3/MiSeqAnalysis_Original/TrimmerP2-AMP*
 
@@ -9,8 +17,8 @@
 
 
 
-submissionID=44253d7c0358
-plate=plate3
+submissionID=b51b81e9ee80
+plate=plate2
 
 ###
 # plate=2020-03-13-200310-plate2

@@ -1,7 +1,6 @@
 ---
-title: "Hybridoma Amplicon Report"
-plate: "`r tail(unlist(strsplit(getwd(), '/')), 2)[1]`"
-author: Sam Hunter
+title:  '`r paste0("Hybridoma Amplicon Report : ", plate)`'
+author: "Sam Hunter"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 ---

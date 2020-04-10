@@ -1,5 +1,5 @@
-submissionID=44253d7c0358
-plate=plate3
+submissionID=
+plate=
 
 python 01-build_hts.py 
 
@@ -19,7 +19,5 @@ Rscript -e "plate='$plate';submission='$submissionID';rmarkdown::render('./02-Re
 # Use python to add AA translations to the putative LCS:
 python3 03-annotate-results.py 
 
-
 rsync -vrt --no-p --no-g --chmod=ugo=rwX ./03-AnnotatedResults/*.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/AnnotatedResults/
-
 rsync -vrt --no-p --no-g --chmod=ugo=rwX ./02-Results/*_SampleStatus.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/StatusReports/
