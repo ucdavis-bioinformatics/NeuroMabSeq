@@ -144,7 +144,7 @@ for(s in rownames(seqtabHC.f2)){
     HC.out = rbind(HC.out, c(plate, s, MabID, r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), sum(seqtabHC[s,]), "Illumina", asv))
   }
 }
-colnames(HC.out) = c("plate", "SMARTindex", "MabID", "ASVsupport", "PctSupport", "TotalReads", "Sequencing", "HeavyChain")
+colnames(HC.out) = c("plate", "SMARTindex", "MabID", "ASVcount", "PctSupport", "TotalReads", "Sequencing", "HeavyChain")
 
 # Find any ASVs reported more than once and note the duplicate
 HC.out$DuplicatedIn =apply(HC.out, 1, function(x){ paste(setdiff(HC.out$MabID[HC.out$HeavyChain %in% x['HeavyChain']], x['MabID']), collapse=', ')})
@@ -177,7 +177,7 @@ for(s in rownames(seqtabLC.f2)){
 }
 colnames(LC.out) = c("plate", "SMARTindex", "MabID", "ASVcount", "PctSupport", "TotalReads", "Sequencing", "LightChain")
 # Find any ASVs reported more than once and note the duplicate
-LC.out$DuplicatedIn = apply(LC.out, 1, function(x){ paste(setdiff(LC.out$MabID[LC.out$HeavyChain %in% x['LightChain']], x['MabID']), collapse=', ')})
+LC.out$DuplicatedIn = apply(LC.out, 1, function(x){ paste(setdiff(LC.out$MabID[LC.out$LightChain %in% x['LightChain']], x['MabID']), collapse=', ')})
 readr::write_tsv(LC.out, paste0(outp, plate, "_", "LightChain.tsv"))
 
 ```

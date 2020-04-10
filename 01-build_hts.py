@@ -1,15 +1,25 @@
 import sys
 import os
+from glob import glob
 
-r1f = sys.argv[1]
-r1r = sys.argv[2]
-primerf = sys.argv[3]
-cmdf = sys.argv[4]
+#r1f = sys.argv[1]
+#r1r = sys.argv[2]
+#primerf = sys.argv[3]
+#cmdf = sys.argv[4]
+
+r1f = glob('./00-RawData/*_R1_*.fastq.gz')[0]
+r2f = r1f.replace('_R1_', '_R2_')
+primerf = '1_Short_primers.csv'
+cmdf = '01-trim-1_Short_CSP.sh'
 
 # r1f = './00-RawData/2_Long_CSP_Pool_S2_L001_R1_001.fastq.gz'
 # r1r = './00-RawData/2_Long_CSP_Pool_S2_L001_R2_001.fastq.gz'
 # primerf = '2_Long_primers.csv'
 # cmdf = '01-trim-2_Long_CSP.sh'
+
+# python 01-build_hts.py ./00-RawData/Trimmer6_S22_L001_R1_001.fastq.gz \
+#     ./00-RawData/Trimmer6_S22_L001_R2_001.fastq.gz \
+#     1_Short_primers.csv 01-trim-1_Short_CSP.sh
 
 os.system('mkdir -p 01-PrimerTrim')
 

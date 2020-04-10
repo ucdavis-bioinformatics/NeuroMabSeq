@@ -9,8 +9,8 @@
 
 
 
-submissionID=b51b81e9ee80
-plate=plate2
+submissionID=44253d7c0358
+plate=plate3
 
 ###
 # plate=2020-03-13-200310-plate2
@@ -20,12 +20,12 @@ plate=plate2
 
 # mkdir 00-RawData
 
-ln -s /share/illumina/miseq/200310_M00384_0237_MS9519139-600V3/MiSeqAnalysis_Temp/TrimmerP2-AMP_S* ./00-RawData/
+# ln -s /share/illumina/miseq/200310_M00384_0237_MS9519139-600V3/MiSeqAnalysis_Temp/TrimmerP2-AMP_S* ./00-RawData/
 
 ## TODO: update this to build cluster submissions:
 ## TODO: modify 01-build_hts.py so that it finds R1 and R2 by itself:
-python 01-build_hts.py ./00-RawData/TrimmerP2-AMP_S62_L001_R1_001.fastq.gz \
-    ./00-RawData/TrimmerP2-AMP_S62_L001_R2_001.fastq.gz \
+python 01-build_hts.py ./00-RawData/Trimmer6_S22_L001_R1_001.fastq.gz \
+    ./00-RawData/Trimmer6_S22_L001_R2_001.fastq.gz \
     1_Short_primers.csv 01-trim-1_Short_CSP.sh
 
 parallel -j 8 < 01-trim-1_Short_CSP.sh
