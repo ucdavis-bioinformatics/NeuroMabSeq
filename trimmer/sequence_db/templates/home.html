@@ -4,6 +4,22 @@
 
 {% block content %}
 
+
+<style>
+
+
+table {
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+  padding: 10px;
+}
+
+</style>
+
+
 <!-- Page content -->
 <div class="w3-content" style="max-width:2000px;margin-top:46px">
 
@@ -87,6 +103,25 @@
                 valuable collection of validated mAbs.
 
             </div>
+
+            <br>
+              <table style="table-layout: fixed; width: 100%">
+                  <tr>
+                    <th>Total Entries in Database:</th>
+                    <th>Total Heavy Chain Sequences:</th>
+                    <th>Total Light Chain Sequences</th>
+<!--                    <th>Plate</th>-->
+<!--                    <th>Percent Support</th>-->
+                  </tr>
+                  <tr>
+                      <td style="word-wrap: break-word">{{number_entries}}</td>
+                      <td>{{number_light}}</td>
+                      <td>{{number_heavy}}</td>
+<!--                      <td>{{item.SMARTindex}}</td>-->
+<!--                      <td>{{item.plate}}</td>-->
+<!--                      <td>{{item.pctsupport}}</td>-->
+                  </tr>
+              </table>
 <!--      <ul class="w3-ul w3-border w3-white w3-text-grey">-->
 <!--        <li align="left" id="teaching" class="w3-padding"><font size="4"><b>TEACHING </b></font>-->
 <!--                (With-->

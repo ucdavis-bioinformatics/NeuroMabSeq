@@ -15,6 +15,9 @@ import numpy as np
 def main_page(request):
     html = 'home.html'
     context = {}
+    context['number_entries'] = len(TrimmerEntry.objects.filter())
+    context['number_light'] = len(TrimmerLight.objects.filter())
+    context['number_heavy'] = len(TrimmerHeavy.objects.filter())
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
 
@@ -224,7 +227,7 @@ def TrimmerEntryListView(request):
     context = {}
     all_entries = TrimmerEntry.objects.all()
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
-    context['queryset'] = context['filter'].qs.order_by('mabid')[:400]
+    context['queryset'] = context['filter'].qs.order_by('mabid')
     # print(context)
     return render(request, 'new_query.html', context)
 
@@ -233,7 +236,7 @@ def EntryListView(request):
     context = {}
     all_entries = Entry.objects.all()
     context['filter'] = EntryFilter(request.GET, queryset=all_entries)
-    context['queryset'] = context['filter'].qs.order_by('-name')[:400]
+    context['queryset'] = context['filter'].qs.order_by('-name')
     # print(context)
     return render(request, 'query.html', context)
 
