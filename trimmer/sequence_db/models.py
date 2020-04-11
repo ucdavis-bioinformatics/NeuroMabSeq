@@ -37,18 +37,29 @@ class Entry(models.Model):
 
 class TrimmerEntry(models.Model):
     id = models.AutoField(primary_key=True)
-    trimmerid = models.CharField(max_length=50, default='')
+    mabid = models.CharField(max_length=50, default='')
 
 
 class TrimmerHeavy(models.Model):
     id = models.AutoField(primary_key=True)
 
-    pctsupport = models.DecimalField(max_digits=10, decimal_places=5)
-    asvcount = models.IntegerField()
-    plate = models.CharField(max_length=15)
     SMARTindex = models.CharField(max_length=20)
-
+    pct_support = models.DecimalField(max_digits=10, decimal_places=5)
+    asv_support = models.DecimalField(max_digits=10, decimal_places=5)
+    total_reads = models.IntegerField()
+    seq_platform = models.CharField(choices=(('Illumina','Illumina'),('Sanger','Sanger')), max_length=10)
+    plate = models.CharField(max_length=30)
     seq = models.CharField(max_length=1500, default='')
+    e_value = models.CharField(max_length=10, blank=True, null=True)
+    score = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    seq_start_index = models.IntegerField(blank=True, null=True)
+    seq_stop_index = models.IntegerField(blank=True, null=True)
+    scheme = models.CharField(max_length=30, blank=True, null=True)
+    frame = models.IntegerField(blank=True, null=True)
+    aa = models.CharField(max_length=1000, blank=True, null=True)
+    numbering = models.CharField(max_length=3000, blank=True, null=True)
+    domain = models.CharField(max_length=1000, blank=True, null=True)
+
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
 
 
@@ -56,12 +67,23 @@ class TrimmerHeavy(models.Model):
 class TrimmerLight(models.Model):
     id = models.AutoField(primary_key=True)
 
-    pctsupport = models.DecimalField(max_digits=10, decimal_places=5)
-    asvcount = models.IntegerField()
-    plate = models.CharField(max_length=15)
     SMARTindex = models.CharField(max_length=20)
-
+    pct_support = models.DecimalField(max_digits=10, decimal_places=5)
+    asv_support = models.DecimalField(max_digits=10, decimal_places=5)
+    total_reads = models.IntegerField()
+    seq_platform = models.CharField(choices=(('Illumina','Illumina'),('Sanger','Sanger')), max_length=10)
+    plate = models.CharField(max_length=30)
     seq = models.CharField(max_length=1500, default='')
+    e_value = models.CharField(max_length=10, blank=True, null=True)
+    score = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    seq_start_index = models.IntegerField(blank=True, null=True)
+    seq_stop_index = models.IntegerField(blank=True, null=True)
+    scheme = models.CharField(max_length=30, blank=True, null=True)
+    frame = models.IntegerField(blank=True, null=True)
+    aa = models.CharField(max_length=1000, blank=True, null=True)
+    numbering = models.CharField(max_length=3000, blank=True, null=True)
+    domain = models.CharField(max_length=1000, blank=True, null=True)
+
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
 
 

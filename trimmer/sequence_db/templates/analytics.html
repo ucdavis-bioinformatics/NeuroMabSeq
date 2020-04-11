@@ -69,11 +69,42 @@ $(document).ready(function() {
     <div class="row">
         {% if graph_seq %}
             <div class="column" style="width:100%;height:100%">
-            {{ graph_seq|safe }}
+            {{ graph_aa|safe }}
             </div>
         {% endif %}
     </div>
 
+    <div class="row">
+        {% if graph_seq %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_domain|safe }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% if graph_seq %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_seq_start|safe }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% if graph_seq %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_seq_stop|safe }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% if graph_seq %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_score|safe }}
+            </div>
+        {% endif %}
+    </div>
 
 
 </div>

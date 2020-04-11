@@ -58,7 +58,7 @@
    
    `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04`
    
-   
+  
 # This will fix 99% of problems unless someone pushes something funny to the repo!!!!
 ```  # from the dirctory with the manage.py script
 sudo pkill gunicorn   
@@ -71,7 +71,15 @@ sudo systemctl restart nginx
 psudo python manage.py collectstatic
 
 ```
+sudo pkill gunicorn   
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
+
+
 
 - TODO where is the 
 - Had to add the following line to ~/.bashrc in order to get the psudo to work. 
 `psudo() { sudo env PATH="$PATH" "$@"; } `
+
+
+- more options for target, 

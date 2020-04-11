@@ -90,7 +90,7 @@ $(document).ready(function() {
           {% for item in queryset %}
               <tr>
                   <td>{{forloop.counter}}</td>
-                  <td>{{item.trimmerid}}</td>
+                  <td>{{item.mabid}}</td>
                   <td>
                     <a href="/new_entry/{{item.pk}}/">
                       <button  label="Entry Details" name="so_link" class="btn btn-info">See Full Entry</button>
