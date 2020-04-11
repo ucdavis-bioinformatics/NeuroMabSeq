@@ -63,6 +63,12 @@ class TrimmerHeavy(models.Model):
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
 
 
+    @property
+    def strip_domain(self):
+        try:
+            return TrimmerHeavy.objects.get(id=self.id).domain.replace(',', '')
+        except:
+            return ''
 
 class TrimmerLight(models.Model):
     id = models.AutoField(primary_key=True)
@@ -86,4 +92,10 @@ class TrimmerLight(models.Model):
 
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
 
+    @property
+    def strip_domain(self):
+        try:
+            return TrimmerLight.objects.get(id=self.id).domain.replace(',', '')
+        except:
+            return ''
 

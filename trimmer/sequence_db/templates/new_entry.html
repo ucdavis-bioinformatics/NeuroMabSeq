@@ -25,6 +25,12 @@ table {
 
 table, th, td {
   border: 1px solid black;
+  padding: 5px
+}
+
+td {
+  font-family: "Courier New", Courier, monospace;
+
 }
 
 </style>
@@ -46,7 +52,18 @@ $(document).ready(function() {
 } );
 
 </script>
-
+<script>
+function toggle_it(itemID){
+      // Toggle visibility between none and ''
+      if ((document.getElementById(itemID).style.display == 'none')) {
+            document.getElementById(itemID).style.display = ''
+            event.preventDefault()
+      } else {
+            document.getElementById(itemID).style.display = 'none';
+            event.preventDefault()
+      }
+  }
+</script>
 
 <!-- Page content -->
 <div class="w3-content" style="max-width:2000px;margin-top:46px">
@@ -63,25 +80,58 @@ $(document).ready(function() {
 
   <!-- The Header Bio Section -->
   <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="about_me">
-      <h2 class="w3-wide" align="left">Entry {{entry.trimmerid}}</h2>
+      <h2 class="w3-wide" align="left">Entry {{entry.mabid}}</h2>
       <div>
         <h3>Light Chain Results</h3>
               <table style="table-layout: fixed; width: 100%">
                   <tr>
                     <th>Sequence</th>
-<!--                    <th>ASV Count</th>-->
-<!--                    <th>SMART Index</th>-->
-<!--                    <th>Plate</th>-->
-<!--                    <th>Percent Support</th>-->
+
                   </tr>
                   {% for item in light %}
                   <tr>
                       <td style="word-wrap: break-word">{{item.seq}}</td>
-<!--                      <td>{{item.asvcount}}</td>-->
-<!--                      <td>{{item.SMARTindex}}</td>-->
-<!--                      <td>{{item.plate}}</td>-->
-<!--                      <td>{{item.pctsupport}}</td>-->
+
                   </tr>
+                  <tr>
+                      <td>
+                          <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}a');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Sequencing Info</a>
+                          <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}b');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Amino Acid Information</a>
+                               <table  id="light{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%">
+                                      <tr>
+                                        <th>Percent Support</th>
+                                        <th>ASV Count</th>
+                                        <th>Platform</th>
+                                        <th>Plate</th>
+                                        <th>Total Reads</th>
+                                        <th>SMARTindex</th>
+
+                                      </tr>
+                                      <tr>
+                                          <td style="word-wrap: break-word">{{item.pct_support}}</td>
+                                          <td style="word-wrap: break-word">{{item.asv_support}}</td>
+                                          <td style="word-wrap: break-word">{{item.seq_platform}}</td>
+                                          <td style="word-wrap: break-word">{{item.plate}}</td>
+                                          <td style="word-wrap: break-word">{{item.total_reads}}</td>
+                                          <td style="word-wrap: break-word">{{item.SMARTindex}}</td>
+                                      </tr>
+
+                               </table>
+                                <table  id="light{{forloop.counter}}b" style="display:none; table-layout: fixed; width: 100%">
+                                      <tr>
+                                        <th>Amino Acid</th>
+                                        <th>Domain</th>
+
+                                      </tr>
+                                      <tr>
+                                          <td style="word-wrap: break-word">{{item.aa}}</td>
+                                          <td style="word-wrap: break-word">{{item.strip_domain}}</td>
+                                      </tr>
+
+                               </table>
+                      </td>
+                  </tr>
+
                   {% empty %}
                    <div>No entries yet.</div>
                   {% endfor %}
@@ -95,19 +145,52 @@ $(document).ready(function() {
               <table style="table-layout: fixed; width: 100%">
                   <tr>
                     <th>Sequence</th>
-<!--                    <th>ASV Count</th>-->
-<!--                    <th>SMART Index</th>-->
-<!--                    <th>Plate</th>-->
-<!--                    <th>Percent Support</th>-->
+
                   </tr>
                   {% for item in heavy %}
                   <tr>
                       <td style="word-wrap: break-word">{{item.seq}}</td>
-<!--                      <td>{{item.asvcount}}</td>-->
-<!--                      <td>{{item.SMARTindex}}</td>-->
-<!--                      <td>{{item.plate}}</td>-->
-<!--                      <td>{{item.pctsupport}}</td>-->
                   </tr>
+                  <tr>
+                      <td>
+                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}a');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Sequencing Info</a>
+                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}b');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Amino Acid Information</a>
+                               <table  id="{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%">
+                                      <tr>
+                                        <th>Percent Support</th>
+                                        <th>ASV Count</th>
+                                        <th>Platform</th>
+                                        <th>Plate</th>
+                                        <th>Total Reads</th>
+                                        <th>SMARTindex</th>
+
+                                      </tr>
+                                      <tr>
+                                          <td style="word-wrap: break-word">{{item.pct_support}}</td>
+                                          <td style="word-wrap: break-word">{{item.asv_support}}</td>
+                                          <td style="word-wrap: break-word">{{item.seq_platform}}</td>
+                                          <td style="word-wrap: break-word">{{item.plate}}</td>
+                                          <td style="word-wrap: break-word">{{item.total_reads}}</td>
+                                          <td style="word-wrap: break-word">{{item.SMARTindex}}</td>
+                                      </tr>
+
+                               </table>
+                                <table  id="{{forloop.counter}}b" style="display:none; table-layout: fixed; width: 100%">
+                                      <tr>
+                                        <th>Amino Acid</th>
+                                        <th>Domain</th>
+
+                                      </tr>
+                                      <tr>
+                                          <td style="word-wrap: break-word">{{item.aa}}</td>
+                                          <td style="word-wrap: break-word">{{item.strip_domain}}</td>
+                                      </tr>
+
+                               </table>
+                      </td>
+                  </tr>
+
+
                   {% empty %}
                    <div>No entries yet.</div>
                   {% endfor %}
@@ -115,6 +198,7 @@ $(document).ready(function() {
 
 
       </div>
+
 
 <!--    <div class="row">-->
 <!--        {% if graph %}-->
