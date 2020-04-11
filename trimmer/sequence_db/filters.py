@@ -11,7 +11,7 @@ class EntryFilter(django_filters.FilterSet):
 
 
 class TrimmerEntryFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(field_name='trimmerid', lookup_expr='icontains')
+    name = django_filters.CharFilter(field_name='mabid', lookup_expr='icontains')
     class Meta:
         model = TrimmerEntry
         fields = []
