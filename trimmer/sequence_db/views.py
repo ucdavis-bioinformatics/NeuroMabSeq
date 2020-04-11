@@ -9,6 +9,7 @@ import pandas as pd
 import plotly.offline as opy
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
+import numpy as np
 
 
 def main_page(request):
@@ -118,6 +119,10 @@ def GetSeqStopGraph():
     """
     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+
+    df_l = df_l.replace([np.inf, -np.inf], np.nan).dropna(how="all")
+    df_h = df_h.replace([np.inf, -np.inf], np.nan).dropna(how="all")
+
     values = [[i for i in df_l['seq_stop_index'] if i is not None], [i for i in df_h['seq_start_index'] if i is not None]]
     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
 
@@ -132,7 +137,12 @@ def GetSeqStartGraph():
         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
     """
     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+
     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+
+    df_l = df_l.replace([np.inf, -np.inf], np.nan).dropna(how="all")
+    df_h = df_h.replace([np.inf, -np.inf], np.nan).dropna(how="all")
+
     values = [[i for i in df_l['seq_start_index'] if i is not None], [i for i in df_h['seq_start_index'] if i is not None]]
     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
 
@@ -164,11 +174,11 @@ def analytics_view(request):
     context['graph'] = GetAsvGraph()
     context['graph_pct'] = GetPctGraph()
     context['graph_seq'] = GetSeqGraph()
-    context['graph_aa'] = GetAAGraph()
-    context['graph_domain'] = GetDomainGraph()
-    context['graph_seq_start'] = GetSeqStartGraph()
-    context['graph_seq_stop'] = GetSeqStopGraph()
-    context['graph_score'] = GetScoreGraph()
+    #context['graph_aa'] = GetAAGraph()
+    #context['graph_domain'] = GetDomainGraph()
+    #context['graph_seq_start'] = GetSeqStartGraph()
+    #context['graph_seq_stop'] = GetSeqStopGraph()
+    #context['graph_score'] = GetScoreGraph()
     return render(request, 'analytics.html', context)
 
 

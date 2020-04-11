@@ -9,6 +9,6 @@ urlpatterns = [
 
     path('entry/<int:pk>/', views.EntryDetailView.as_view(), name='sequence_entry'),
     path('new_entry/<int:pk>/', views.TrimmerEntryDetailView.as_view(), name='sequence_entry'),
-    #path('analytics/', views.analytics_view, name='analytics'),
+    path('analytics/', views.analytics_view, name='analytics'),
 
 ]
