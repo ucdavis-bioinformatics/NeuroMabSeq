@@ -3,10 +3,12 @@
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
 
 ### TODO:
+- plate stats
+- automate index to see what files need to be added still
 - csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
-- sql lite setup
 - no loading libraries from internet have static files
-
+- each time database is reloaded the id in url changes, make this static for them all somehow
+- finish instance setup documentation
 
 
 
@@ -52,14 +54,16 @@
         ```
    - Run `python manage.py runserver` and see if it works
    
-   `python manage.py migrate`
+       `python manage.py migrate`
+       
+       `python manage shell`
+       
+       `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04`
    
-   `python manage shell`
-   
-   `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04`
-   
+
+
   
-# This will fix 99% of problems unless someone pushes something funny to the repo!!!!
+#### This will fix 99% of problems unless someone pushes something funny to the repo!!!!
 ```  # from the dirctory with the manage.py script
 sudo pkill gunicorn   
 git fetch --all
@@ -67,19 +71,29 @@ git reset --hard origin/website
 python manage.py migrate
 sudo systemctl restart gunicorn
 sudo systemctl restart nginx
-
 psudo python manage.py collectstatic
-
 ```
-sudo pkill gunicorn   
-sudo systemctl restart gunicorn
-sudo systemctl restart nginx
-
-
-
-- TODO where is the 
 - Had to add the following line to ~/.bashrc in order to get the psudo to work. 
 `psudo() { sudo env PATH="$PATH" "$@"; } `
 
 
-- more options for target, 
+#### If not chaning static files but doing the above then:
+```
+cd 
+./restart.sh
+```
+
+#### This will fix 99% of problems but will not update the repo
+```
+sudo pkill gunicorn   
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
+```
+
+#### Resetting the database: (see methods.py)
+```
+./manage.py shell < wipe_db.py
+./manage.py shell < wipe_status_data.py
+./manage.py shell < run_update.py
+./manage.py shell < status_update.py
+```

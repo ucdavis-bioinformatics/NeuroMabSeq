@@ -10,6 +10,7 @@ import plotly.offline as opy
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import numpy as np
+from .methods import *
 
 
 def main_page(request):
@@ -20,6 +21,7 @@ def main_page(request):
     context['number_heavy'] = len(TrimmerHeavy.objects.filter())
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
+
 
 def GetAsvGraph():
     """
@@ -52,6 +54,7 @@ def GetPctGraph():
 
     return div
 
+
 def GetScoreGraph():
     """
         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
@@ -66,6 +69,7 @@ def GetScoreGraph():
     div = opy.plot(figure, auto_open=False, output_type='div')
 
     return div
+
 
 def GetSeqGraph():
     """
@@ -115,7 +119,6 @@ def GetDomainGraph():
     return div
 
 
-
 def GetSeqStopGraph():
     """
         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
@@ -134,6 +137,7 @@ def GetSeqStopGraph():
     div = opy.plot(figure, auto_open=False, output_type='div')
 
     return div
+
 
 def GetSeqStartGraph():
     """
@@ -155,6 +159,7 @@ def GetSeqStartGraph():
 
     return div
 
+
 def ScoreGraph():
     """
         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
@@ -169,7 +174,6 @@ def ScoreGraph():
     div = opy.plot(figure, auto_open=False, output_type='div')
 
     return div
-
 
 
 def analytics_view(request):
@@ -222,14 +226,24 @@ class TrimmerEntryDetailView(DetailView):
         return context
 
 
-
 def TrimmerEntryListView(request):
     context = {}
     all_entries = TrimmerEntry.objects.all()
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs.order_by('mabid')
-    # print(context)
     return render(request, 'new_query.html', context)
+
+
+def TrimmerStatusListView(request):
+    context = {}
+    context['all_entries'] = TrimmerEntryStatus.objects.all()
+    context['status_entries'] = [i.entry.mabid for i in TrimmerEntryStatus.objects.all()]
+    context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
+    context['status_not_in_entries'] = status_not_present()
+    context['entries_not_in_status'] = sorted(list(set(context['entries']) - set(context['status_entries'])))
+    # TODO plate stats for this view
+    context['plate_stats'] = ''
+    return render(request, 'status_list.html', context)
 
 
 def EntryListView(request):
@@ -237,7 +251,6 @@ def EntryListView(request):
     all_entries = Entry.objects.all()
     context['filter'] = EntryFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs.order_by('-name')
-    # print(context)
     return render(request, 'query.html', context)
 
 

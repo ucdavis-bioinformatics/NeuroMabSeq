@@ -39,6 +39,16 @@ class TrimmerEntry(models.Model):
     id = models.AutoField(primary_key=True)
     mabid = models.CharField(max_length=50, default='')
 
+    @property
+    def heavy_count(self):
+        return len(TrimmerHeavy.objects.filter(entry__pk=self.pk))
+
+
+    @property
+    def light_count(self):
+        return len(TrimmerLight.objects.filter(entry__pk=self.pk))
+
+
 
 class TrimmerHeavy(models.Model):
     id = models.AutoField(primary_key=True)
@@ -98,4 +108,25 @@ class TrimmerLight(models.Model):
             return TrimmerLight.objects.get(id=self.id).domain.replace(',', '')
         except:
             return ''
+
+
+class TrimmerEntryStatus(models.Model):
+    id = models.AutoField(primary_key=True)
+    entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
+
+    sample_name = models.CharField(max_length=20)
+    plate_location = models.CharField(max_length=5)
+    volume = models.IntegerField()
+    concentration = models.IntegerField()
+    comments = models.CharField(max_length=50)
+    amplicon_concentration = models.DecimalField(max_digits=10, decimal_places=2)
+    failure = models.CharField(max_length=30)
+    inline_index_name = models.CharField(max_length=30)
+    inline_index = models.CharField(max_length=30)
+    LCs_reported = models.IntegerField()
+    HCs_reported = models.IntegerField()
+
+
+
+
 

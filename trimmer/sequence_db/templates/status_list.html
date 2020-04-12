@@ -53,54 +53,48 @@ $(document).ready(function() {
 </script>
 
 
-  <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:10000px">
-  <form method="get">
-    <div class="well" style="background-color:EAEAEA;padding:10;border-radius:8px;">
-      <h3 style="margin-top: 0">General Filter</h3>
-      <div class="row"  >
+  <div class="w3-container w3-content w3-center w3-padding-64" style=" max-width:10000px">
+  </div>
 
-        <div class="form-group col-sm-4 col-md-3">
-            <strong>Mab ID contains:</strong>
-          {% render_field filter.form.name class="form-control" %}
-        </div>
-        <div class="form-group col-sm-4 col-md-3">
-            <strong>Mab ID choice:</strong> Use Shift/CTRL/CMD to select multiple at once.
-          {% render_field filter.form.name_choice class="form-control" %}
-        </div>
-
-      </div>
-        <button type="submit" class="btn btn-primary">
-            <span class="glyphicon glyphicon-search"></span> Search
-        </button>
-    </div>
-  </form>
-</div>
-
-
-  <div class="w3-container w3-content w3-center w3-padding-5" style="max-width:10000px">
-
-
-
+<div class="w3-container w3-content w3-center w3-padding-5" style="max-width:10000px">
   <h2>Entry Results</h2>
         <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="left">
               <thead>
                 <tr>
                     <th>ID</th>
                     <th>Mab ID</th>
-                    <th># Heavy Chain</th>
-                    <th># Light Chain</th>
+                    <th>Sample Name</th>
+                    <th>Plate Location</th>
+                    <th>Volume</th>
+                    <th>Concentration</th>
+                    <th>Comments</th>
+                    <th>Amplicon</th>
+                    <th>Failure</th>
+                    <th>Inline Index Name</th>
+                    <th>Inline Index</th>
+                    <th>LCs Reported</th>
+                    <th>HCs Reported</th>
                     <th>Full Entry Info</th>
                 </tr>
               </thead>
           <tbody>
-          {% for item in queryset %}
+          {% for item in all_entries %}
               <tr>
                   <td>{{forloop.counter}}</td>
-                  <td>{{item.mabid}}</td>
-                  <td>{{item.heavy_count}}</td>
-                  <td>{{item.light_count}}</td>
+                  <td>{{item.entry.mabid}}</td>
+                  <td>{{item.sample_name}}</td>
+                  <td>{{item.plate_location}}</td>
+                  <td>{{item.volume}}</td>
+                  <td>{{item.concentration}}</td>
+                  <td>{{item.comments}}</td>
+                  <td>{{item.amplicon}}</td>
+                  <td>{{item.failure}}</td>
+                  <td>{{item.inline_index_name}}</td>
+                  <td>{{item.inline_index}}</td>
+                  <td>{{item.LCs_reported}}</td>
+                  <td>{{item.HCs_reported}}</td>
                   <td>
-                    <a href="/new_entry/{{item.pk}}/">
+                    <a href="/new_entry/{{item.entry.pk}}/">
                       <button  label="Entry Details" name="so_link" class="btn btn-info">See Full Entry</button>
                     </a>
                   </td>
@@ -110,6 +104,16 @@ $(document).ready(function() {
           {% endfor %}
            </tbody>
         </table>
+</div>
+<div class="w3-container w3-content w3-center w3-padding-5" style="max-width:10000px">
+
+    <h3>These are Status - Entries MabIDs:</h3>
+    <p>{{status_not_in_entries}}</p>
+    <h3>These are Entries - Status MabIDs: (likely due to the RandD plate for now)</h3>
+    <p>{{entries_not_in_status}}</p>
+    <br>
+    <br>
+    <br>
 </div>
 
 
