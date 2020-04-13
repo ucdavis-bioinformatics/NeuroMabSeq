@@ -1,3 +1,5 @@
+source /share/biocore/projects/Trimmer_James_UCD/2019.11.18-Trimmer-Hybridoma-Seq/ANARCI-venv/bin/activate
+
 submissionID=038b80bc1099
 plate=plate28
 

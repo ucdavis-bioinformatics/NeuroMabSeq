@@ -19,7 +19,7 @@ from glob import glob
 import os
 
 ## Globals
-anarciexe = './anarci-1.3/bin/ANARCI'
+anarciexe = 'ANARCI'
 outpath = './03-AnnotatedResults/'
 
 os.system('mkdir -p ' + outpath)
