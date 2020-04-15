@@ -71,11 +71,11 @@ def new_data_upload():
 
         for row in result:
             try:
-                entry = TrimmerEntry.objects.get(mabid=row['MabID'])
+                entry = TrimmerEntry.objects.get(mabid=row['MabID'].replace('positivecontrol1_', '').replace('POSITIVECONTROL1_', ''))
             except:
                 entry = None
             if not entry:
-                entry_create = TrimmerEntry.objects.create(mabid=row['MabID'])
+                entry_create = TrimmerEntry.objects.create(mabid=row['MabID'].replace('positivecontrol1_', '').replace('POSITIVECONTROL1_', ''))
                 entry_create.save()
                 entry = entry_create
 
@@ -125,6 +125,37 @@ def create_status(row):
         status_create.save()
     return not_found_list
 
+def create_part_status(row):
+    not_found_list = []
+    try:
+        entry = TrimmerEntry.objects.get(mabid=row['trimmer_id'])
+    except:
+        not_found_list.append(row['trimmer_id'])
+        entry = None
+
+    if not entry:
+        pass
+    else:
+        status_create = TrimmerEntryStatus.objects.create(entry=entry,
+                                                            sample_name = '' if math.isnan(row['sample_name']) else row['sample_name'],
+                                                            plate_location = '' if math.isnan(row['plate_location']) else row['plate_location'],
+                                                            volume = 0 if math.isnan(row['volume']) else row['volume'],
+                                                            concentration = 0 if math.isnan(row['concentration']) else row['concentration'],
+                                                            comments = '' if math.isnan(row['comments']) else row['comments'],
+                                                            amplicon_concentration = 0 if math.isnan(row['amplicon_concentration']) else row['amplicon_concentration'],
+                                                            failure = '' if math.isnan(row['failure']) else row['failure'],
+                                                            inline_index_name = '' if type(row['inline_index_name']) != str else row['inline_index_name'],
+                                                            inline_index = '' if math.isnan(row['inline_index']) else row['inline_index'],
+                                                            LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
+                                                            HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
+                                                            )
+
+        status_create.save()
+    return not_found_list
+
+
+
+
 # TODO these next two functions can be the same function
 def status_upload():
     dir = "../data/StatusReports/"
@@ -137,7 +168,12 @@ def status_upload():
         result = result.to_dict(orient='records')
         # check if a light file and do same processing for Trimmer Light entry
         for row in result:
-            not_found_list += create_status(row)
+            if type(row['trimmer_id']) is str:
+                if type(row['sample_name']) is str:
+                    not_found_list += create_status(row)
+                else:
+                    not_found_list += create_part_status(row)
+
 
 def status_not_present():
     dir = "../data/StatusReports/"
@@ -150,11 +186,12 @@ def status_not_present():
         result = result.to_dict(orient='records')
         # check if a light file and do same processing for Trimmer Light entry
         for row in result:
-            try:
-                entry = TrimmerEntry.objects.get(mabid=row['trimmer_id'])
-            except:
-                not_found_list.append(row['trimmer_id'])
-                entry = None
+            if str(row['trimmer_id']) != 'nan':
+                try:
+                    entry = TrimmerEntry.objects.get(mabid=row['trimmer_id'].replace('positivecontrol1_', '').replace('POSITIVECONTROL1_', ''))
+                except:
+                    not_found_list.append(row['trimmer_id'].replace('positivecontrol1_', '').replace('POSITIVECONTROL1_', ''))
+                    entry = None
 
     return not_found_list
 

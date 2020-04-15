@@ -2,7 +2,7 @@ from .models import *
 import django_filters
 
 def get_mab_ids():
-    return lambda: [(entry.mabid, entry.mabid) for entry in TrimmerEntry.objects.all()]
+    return lambda: sorted([(entry.mabid, entry.mabid) for entry in TrimmerEntry.objects.all()])
 
 
 class EntryFilter(django_filters.FilterSet):

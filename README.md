@@ -95,5 +95,5 @@ sudo systemctl restart nginx
 ./manage.py shell < wipe_db.py
 ./manage.py shell < wipe_status_data.py
 ./manage.py shell < run_update.py
-./manage.py shell < status_update.py
+./manage.py shell < run_status_update.py
 ```

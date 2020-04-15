@@ -80,6 +80,16 @@ class TrimmerHeavy(models.Model):
         except:
             return ''
 
+    @property
+    def get_layout(self):
+        try:
+
+            return [{'numbering': x, 'domain': y} for x, y in zip(TrimmerHeavy.objects.get(id=self.id).numbering.split(','),
+                                                                  TrimmerHeavy.objects.get(id=self.id).domain.replace(
+                                                                      ',', ''))]
+        except:
+            return ''
+
 class TrimmerLight(models.Model):
     id = models.AutoField(primary_key=True)
 
@@ -108,6 +118,16 @@ class TrimmerLight(models.Model):
             return TrimmerLight.objects.get(id=self.id).domain.replace(',', '')
         except:
             return ''
+
+    @property
+    def get_layout(self):
+        try:
+
+            return [{'numbering': x, 'domain': y} for x,y in zip(TrimmerLight.objects.get(id=self.id).numbering.split(','),
+                                                                 TrimmerLight.objects.get(id=self.id).domain.replace(',', ''))]
+        except:
+            return ''
+
 
 
 class TrimmerEntryStatus(models.Model):
