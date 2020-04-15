@@ -146,7 +146,7 @@ function toggle_it(itemID){
                                        </tr>
                                        <tr>
                                        {% for value in item.get_layout %}
-                                                  <td style="word-wrap: break-word">{{value.domain}}</td>
+                                           <td bgcolor="{{value.color}}" style="width:20px"><strong>{{value.domain}}</strong></td>
                                        {% endfor %}
                                        </tr>
                                    </table>
@@ -224,7 +224,7 @@ function toggle_it(itemID){
                                        </tr>
                                        <tr>
                                        {% for value in item.get_layout %}
-                                                  <td style="width:20px">{{value.domain}}</td>
+                                           <td bgcolor="{{value.color}}" style="width:20px"><strong>{{value.domain}}</strong></td>
                                        {% endfor %}
                                        </tr>
                                 </div>

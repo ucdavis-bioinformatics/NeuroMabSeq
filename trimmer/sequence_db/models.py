@@ -2,6 +2,32 @@ from django.db import models
 
 # Create your models here.
 
+color_dict = {
+    "R": "#E60606",
+    "K": "#C64200",
+    "Q": "#FF6600",
+    "N": "#FF9900",
+    "E": "#FFCC00",
+    "D": "#FFCC99",
+    "H": "#FFFF99",
+    "P": "#FFFF00",
+    "Y": "#CCFFCC",
+    "W": "#CC99FF",
+    "S": "#CCFF99",
+    "T": "#00FF99",
+    "G": "#00FF00",
+    "A": "#CCFFFF",
+    "M": "#99CCFF",
+    "C": "#00FFFF",
+    "F": "#00CCFF",
+    "L": "#3366FF",
+    "V": "#0000FF",
+    "I": "#000080",
+    "-": "#FFFFFF"
+
+}
+
+
 class VLSeq(models.Model):
     id = models.AutoField(primary_key=True)
     seq = models.CharField(max_length=1500, default='')
@@ -84,7 +110,7 @@ class TrimmerHeavy(models.Model):
     def get_layout(self):
         try:
 
-            return [{'numbering': x, 'domain': y} for x, y in zip(TrimmerHeavy.objects.get(id=self.id).numbering.split(','),
+            return [{'numbering': x, 'domain': y, 'color': color_dict[y]} for x, y in zip(TrimmerHeavy.objects.get(id=self.id).numbering.split(','),
                                                                   TrimmerHeavy.objects.get(id=self.id).domain.replace(
                                                                       ',', ''))]
         except:
@@ -123,7 +149,7 @@ class TrimmerLight(models.Model):
     def get_layout(self):
         try:
 
-            return [{'numbering': x, 'domain': y} for x,y in zip(TrimmerLight.objects.get(id=self.id).numbering.split(','),
+            return [{'numbering': x, 'domain': y, 'color': color_dict[y]} for x,y in zip(TrimmerLight.objects.get(id=self.id).numbering.split(','),
                                                                  TrimmerLight.objects.get(id=self.id).domain.replace(',', ''))]
         except:
             return ''
