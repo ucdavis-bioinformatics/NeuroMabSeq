@@ -66,13 +66,20 @@ class TrimmerEntry(models.Model):
     mabid = models.CharField(max_length=50, default='')
 
     @property
-    def heavy_count(self):
-        return len(TrimmerHeavy.objects.filter(entry__pk=self.pk))
+    def heavy_duplicates(self):
+        return TrimmerHeavy.objects.filter(entry__pk=self.pk, duplicate=True)
 
+    @property
+    def light_duplicates(self):
+        return TrimmerLight.objects.filter(entry__pk=self.pk, duplicate=True)
+
+    @property
+    def heavy_count(self):
+        return len(TrimmerHeavy.objects.filter(entry__pk=self.pk,  duplicate=False))
 
     @property
     def light_count(self):
-        return len(TrimmerLight.objects.filter(entry__pk=self.pk))
+        return len(TrimmerLight.objects.filter(entry__pk=self.pk,  duplicate=False))
 
 
 
@@ -95,7 +102,7 @@ class TrimmerHeavy(models.Model):
     aa = models.CharField(max_length=1000, blank=True, null=True)
     numbering = models.CharField(max_length=3000, blank=True, null=True)
     domain = models.CharField(max_length=1000, blank=True, null=True)
-
+    duplicate = models.BooleanField(default=False)
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
 
 
@@ -135,7 +142,7 @@ class TrimmerLight(models.Model):
     aa = models.CharField(max_length=1000, blank=True, null=True)
     numbering = models.CharField(max_length=3000, blank=True, null=True)
     domain = models.CharField(max_length=1000, blank=True, null=True)
-
+    duplicate = models.BooleanField(default=False)
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
 
     @property

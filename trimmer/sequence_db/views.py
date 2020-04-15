@@ -17,8 +17,8 @@ def main_page(request):
     html = 'home.html'
     context = {}
     context['number_entries'] = len(TrimmerEntry.objects.filter())
-    context['number_light'] = len(TrimmerLight.objects.filter())
-    context['number_heavy'] = len(TrimmerHeavy.objects.filter())
+    context['number_light'] = len(TrimmerLight.objects.filter(duplicate=False))
+    context['number_heavy'] = len(TrimmerHeavy.objects.filter(duplicate=False))
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
 
@@ -216,8 +216,8 @@ class TrimmerEntryDetailView(DetailView):
         # make sure that the invoices are not too many for the view but are still graphed
         context = super().get_context_data(**kwargs)
         context['entry'] = TrimmerEntry.objects.get(pk=self.kwargs['pk'])
-        context['light'] = TrimmerLight.objects.filter(entry=context['entry'])
-        context['heavy'] = TrimmerHeavy.objects.filter(entry=context['entry'])
+        context['light'] = TrimmerLight.objects.filter(entry=context['entry'], duplicate=False)
+        context['heavy'] = TrimmerHeavy.objects.filter(entry=context['entry'], duplicate=False)
         #context['graph'] = GetAsvGraph()
         #context['graph_pct'] = GetPctGraph()
         #context['graph_seq'] = GetSeqGraph()

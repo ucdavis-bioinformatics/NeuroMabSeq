@@ -20,7 +20,7 @@ def clear_status_data():
 ########################################################################################################################
 # ENTRY STUFF
 ########################################################################################################################
-def create_entries(chain_type, entry_list, row):
+def create_entries(chain_type, entry_list, row, duplicate):
     for value in entry_list:
         if row['e-value'] != '-':
             create = eval("Trimmer" + chain_type).objects.create(entry=value,
@@ -40,6 +40,7 @@ def create_entries(chain_type, entry_list, row):
                                                            aa=row['AA'],
                                                            numbering=row['numbering'],
                                                            domain=row['domain'],
+                                                           duplicate=duplicate
                                                            )
         else:
             create = eval("Trimmer" + chain_type).objects.create(entry=value,
@@ -50,8 +51,10 @@ def create_entries(chain_type, entry_list, row):
                                                            seq_platform=row['Sequencing'],
                                                            plate=row['plate'],
                                                            seq=row[chain_type + 'Chain'],
+                                                           duplicate=duplicate
                                                            )
         create.save()
+
 
 # this is called in the run_update.py script
 def new_data_upload():
@@ -81,7 +84,7 @@ def new_data_upload():
 
             entry_list = []
             entry_list.append(entry)
-            create_entries(chain_type, entry_list, row)
+            create_entries(chain_type, entry_list, row, False)
 
         for row in result:
             entry_list = []
@@ -91,7 +94,7 @@ def new_data_upload():
                         entry_list.append(TrimmerEntry.objects.get(mabid=x.replace(' ', '')))
                     except:
                         print("The Duplicate mabID does not exist: %s" % x.replace(' ', ''))
-            create_entries(chain_type, entry_list, row)
+            create_entries(chain_type, entry_list, row, True)
 
 
 ########################################################################################################################
