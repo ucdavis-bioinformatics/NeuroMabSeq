@@ -185,7 +185,7 @@ summary {
 
 <h1 class="title toc-ignore">Hybridoma Amplicon Report : plate28</h1>
 <h4 class="author">Sam Hunter</h4>
-<h4 class="date">13 April, 2020</h4>
+<h4 class="date">14 April, 2020</h4>
 
 </div>
 
@@ -421,8 +421,8 @@ errHC = learnErrors(hcfiles, multithread = TRUE)</code></pre>
 <pre><code>## 100615059 total bases in 235873 reads from 66 samples will be used for learning the error rates.</code></pre>
 <pre class="r"><code>gc()</code></pre>
 <pre><code>##            used  (Mb) gc trigger  (Mb)  max used   (Mb)
-## Ncells  6765667 361.4   11493400 613.9   9916053  529.6
-## Vcells 11764388  89.8  109855564 838.2 137319455 1047.7</code></pre>
+## Ncells  6765662 361.4   11493375 613.9   9916048  529.6
+## Vcells 11764392  89.8  109855568 838.2 137319459 1047.7</code></pre>
 <p>Plot error rates:</p>
 <pre class="r"><code>plotErrors(errHC, nominalQ = TRUE)</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
@@ -454,8 +454,8 @@ dadaLC = dada(lcfiles, err=errLC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-
 
 gc()</code></pre>
 <pre><code>##            used  (Mb) gc trigger   (Mb)  max used   (Mb)
-## Ncells  6891547 368.1   11493400  613.9  11493400  613.9
-## Vcells 14229192 108.6  385533474 2941.4 481916842 3676.8</code></pre>
+## Ncells  6891542 368.1   11493375  613.9  11493375  613.9
+## Vcells 14229196 108.6  385533482 2941.4 481916852 3676.8</code></pre>
 <pre class="r"><code># Construct sequence tables
 seqtabHC &lt;- makeSequenceTable(dadaHC)
 seqtabLC &lt;- makeSequenceTable(dadaLC)
@@ -542,8 +542,8 @@ names(dna) = c(&quot;AberrantLC&quot;, &quot;PutativeALC&quot;)
 alignedDNA = AlignSeqs(dna, verbose=F)
 
 msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, )</code></pre>
-<p><div id="htmlwidget-85159043767a7cc48907" style="width:672px;height:100px;" class="msaR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-85159043767a7cc48907">{"x":{"alignment":">AberrantLC\nCAGCATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGGTTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAGGGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAACAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCAGGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGCAACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGGCTGATGCTGCACCAACTGTATCCA\n>PutativeALC\n----ATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGGTTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAGGGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAACAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCAGGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGCAACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGGCT----------------------","config":{"vis":{"conserv":true,"overviewbox":false,"seqlogo":true,"sequences":true,"markers":true,"metacell":false,"gapHeader":false,"leftHeader":true,"labels":true,"labelName":true,"labelId":true,"labelPartition":false,"labelCheckbox":false,"metaGaps":true,"metaIdentity":true,"metaLinks":true},"conf":{"dropImport":true,"registerMouseHover":false,"registerMouseClicks":true,"eventBus":true,"alphabetSize":20,"debug":false,"hasRef":false,"manualRendering":false},"colorscheme":{"scheme":"nucleotide","colorBackground":true,"showLowerCase":true,"opacity":0.6},"zoomer":{"menuFontsize":"12px","autoResize":true,"alignmentWidth":"auto","alignmentHeight":225,"columnWidth":15,"rowHeight":15,"textVisible":true,"labelIdLength":30,"labelNameLength":100,"labelPartLength":15,"labelCheckLength":15,"labelFontsize":13,"labelLineHeight":"13px","markerFontsize":"10px","stepSize":1,"markerStepSize":2,"markerHeight":20,"residueFont":"13","canvasEventScale":1,"boxRectHeight":2,"boxRectWidth":2,"overviewboxPaddingTop":10,"overviewboxWidth":"auto","overviewboxHeight":"fixed","metaGapWidth":35,"metaIdentWidth":40,"metaLinksWidth":25},"menu":{"menuFontsize":"14px","menuItemFontsize":"14px","menuItemLineHeight":"14px","menuMarginLeft":"3px","menuPadding":"3px 4px 3px 4px"}},"menu":false,"features":null},"evals":[],"jsHooks":[]}</script><br />
+<p><div id="htmlwidget-b48696f39dabaebad9b6" style="width:672px;height:100px;" class="msaR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b48696f39dabaebad9b6">{"x":{"alignment":">AberrantLC\nCAGCATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGGTTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAGGGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAACAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCAGGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGCAACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGGCTGATGCTGCACCAACTGTATCCA\n>PutativeALC\n----ATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGGTTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAGGGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAACAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCAGGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGCAACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGGCT----------------------","config":{"vis":{"conserv":true,"overviewbox":false,"seqlogo":true,"sequences":true,"markers":true,"metacell":false,"gapHeader":false,"leftHeader":true,"labels":true,"labelName":true,"labelId":true,"labelPartition":false,"labelCheckbox":false,"metaGaps":true,"metaIdentity":true,"metaLinks":true},"conf":{"dropImport":true,"registerMouseHover":false,"registerMouseClicks":true,"eventBus":true,"alphabetSize":20,"debug":false,"hasRef":false,"manualRendering":false},"colorscheme":{"scheme":"nucleotide","colorBackground":true,"showLowerCase":true,"opacity":0.6},"zoomer":{"menuFontsize":"12px","autoResize":true,"alignmentWidth":"auto","alignmentHeight":225,"columnWidth":15,"rowHeight":15,"textVisible":true,"labelIdLength":30,"labelNameLength":100,"labelPartLength":15,"labelCheckLength":15,"labelFontsize":13,"labelLineHeight":"13px","markerFontsize":"10px","stepSize":1,"markerStepSize":2,"markerHeight":20,"residueFont":"13","canvasEventScale":1,"boxRectHeight":2,"boxRectWidth":2,"overviewboxPaddingTop":10,"overviewboxWidth":"auto","overviewboxHeight":"fixed","metaGapWidth":35,"metaIdentWidth":40,"metaLinksWidth":25},"menu":{"menuFontsize":"14px","menuItemFontsize":"14px","menuItemLineHeight":"14px","menuMarginLeft":"3px","menuPadding":"3px 4px 3px 4px"}},"menu":false,"features":null},"evals":[],"jsHooks":[]}</script><br />
 <br />
 <br />
 </p>
@@ -751,7 +751,7 @@ P28_E1
 E1
 </td>
 <td style="text-align:left;">
-N6/045.1
+N6/45.1
 </td>
 <td style="text-align:right;">
 15
@@ -1039,7 +1039,7 @@ P28_E2
 E2
 </td>
 <td style="text-align:left;">
-K78/048.1
+K78/48.1
 </td>
 <td style="text-align:right;">
 15
@@ -1111,7 +1111,7 @@ P28_G2
 G2
 </td>
 <td style="text-align:left;">
-L125/076.2
+L125/76.2
 </td>
 <td style="text-align:right;">
 15
@@ -1327,7 +1327,7 @@ P28_E3
 E3
 </td>
 <td style="text-align:left;">
-K64/023.1
+K64/23.1
 </td>
 <td style="text-align:right;">
 15
@@ -1617,7 +1617,7 @@ P28_E4
 E4
 </td>
 <td style="text-align:left;">
-K64/029.1
+K64/29.1
 </td>
 <td style="text-align:right;">
 15
@@ -1908,7 +1908,7 @@ P28_E5
 E5
 </td>
 <td style="text-align:left;">
-K78/011.1
+K78/11.1
 </td>
 <td style="text-align:right;">
 15
@@ -2196,7 +2196,7 @@ P28_E6
 E6
 </td>
 <td style="text-align:left;">
-K78/023.1
+K78/23.1
 </td>
 <td style="text-align:right;">
 15
@@ -2484,7 +2484,7 @@ P28_E7
 E7
 </td>
 <td style="text-align:left;">
-K78/037.1
+K78/37.1
 </td>
 <td style="text-align:right;">
 15
@@ -2736,7 +2736,7 @@ P28_D8
 D8
 </td>
 <td style="text-align:left;">
-K64/021.1
+K64/21.1
 </td>
 <td style="text-align:right;">
 15
@@ -2772,7 +2772,7 @@ P28_E8
 E8
 </td>
 <td style="text-align:left;">
-K78/047.1
+K78/47.1
 </td>
 <td style="text-align:right;">
 15
@@ -3746,7 +3746,7 @@ P28_H11
 H11
 </td>
 <td style="text-align:left;">
-negativecontrol1
+negativecontrol
 </td>
 <td style="text-align:right;">
 15
@@ -3892,7 +3892,7 @@ P28_D12
 D12
 </td>
 <td style="text-align:left;">
-K64/035.1
+K64/35.1
 </td>
 <td style="text-align:right;">
 15
@@ -4036,7 +4036,7 @@ P28_H12
 H12
 </td>
 <td style="text-align:left;">
-negativecontrol2
+negativecontrol
 </td>
 <td style="text-align:right;">
 15

@@ -185,7 +185,7 @@ summary {
 
 <h1 class="title toc-ignore">Hybridoma Amplicon Report : plate30</h1>
 <h4 class="author">Sam Hunter</h4>
-<h4 class="date">13 April, 2020</h4>
+<h4 class="date">14 April, 2020</h4>
 
 </div>
 
@@ -421,7 +421,7 @@ errHC = learnErrors(hcfiles, multithread = TRUE)</code></pre>
 <pre><code>## 40313404 total bases in 94692 reads from 96 samples will be used for learning the error rates.</code></pre>
 <pre class="r"><code>gc()</code></pre>
 <pre><code>##            used  (Mb) gc trigger  (Mb) max used  (Mb)
-## Ncells  6765652 361.4   11493400 613.9  9461285 505.3
+## Ncells  6765647 361.4   11493388 613.9  9461286 505.3
 ## Vcells 11698167  89.3   62170195 474.4 77712743 593.0</code></pre>
 <p>Plot error rates:</p>
 <pre class="r"><code>plotErrors(errHC, nominalQ = TRUE)</code></pre>
@@ -456,7 +456,7 @@ dadaLC = dada(lcfiles, err=errLC, multithread=T, pool=T, priors=sp0, OMEGA_A=1e-
 
 gc()</code></pre>
 <pre><code>##            used  (Mb) gc trigger  (Mb)  max used   (Mb)
-## Ncells  6891434 368.1   11493400 613.9  11493400  613.9
+## Ncells  6891429 368.1   11493388 613.9  11493388  613.9
 ## Vcells 12988939  99.1  128744214 982.3 160930267 1227.9</code></pre>
 <pre class="r"><code># Construct sequence tables
 seqtabHC &lt;- makeSequenceTable(dadaHC)
@@ -544,8 +544,8 @@ names(dna) = c(&quot;AberrantLC&quot;, &quot;PutativeALC&quot;)
 alignedDNA = AlignSeqs(dna, verbose=F)
 
 msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, )</code></pre>
-<p><div id="htmlwidget-8dd5469f73db81d9a103" style="width:672px;height:100px;" class="msaR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8dd5469f73db81d9a103">{"x":{"alignment":">AberrantLC\nCAGCATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGGTTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAGGGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAACAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCAGGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGCAACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGGCTGATGCTGCACCAACTGTATCCA\n>PutativeALC\n----ATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGGTTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAGGGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAACAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCAGGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGCAACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGGCT----------------------","config":{"vis":{"conserv":true,"overviewbox":false,"seqlogo":true,"sequences":true,"markers":true,"metacell":false,"gapHeader":false,"leftHeader":true,"labels":true,"labelName":true,"labelId":true,"labelPartition":false,"labelCheckbox":false,"metaGaps":true,"metaIdentity":true,"metaLinks":true},"conf":{"dropImport":true,"registerMouseHover":false,"registerMouseClicks":true,"eventBus":true,"alphabetSize":20,"debug":false,"hasRef":false,"manualRendering":false},"colorscheme":{"scheme":"nucleotide","colorBackground":true,"showLowerCase":true,"opacity":0.6},"zoomer":{"menuFontsize":"12px","autoResize":true,"alignmentWidth":"auto","alignmentHeight":225,"columnWidth":15,"rowHeight":15,"textVisible":true,"labelIdLength":30,"labelNameLength":100,"labelPartLength":15,"labelCheckLength":15,"labelFontsize":13,"labelLineHeight":"13px","markerFontsize":"10px","stepSize":1,"markerStepSize":2,"markerHeight":20,"residueFont":"13","canvasEventScale":1,"boxRectHeight":2,"boxRectWidth":2,"overviewboxPaddingTop":10,"overviewboxWidth":"auto","overviewboxHeight":"fixed","metaGapWidth":35,"metaIdentWidth":40,"metaLinksWidth":25},"menu":{"menuFontsize":"14px","menuItemFontsize":"14px","menuItemLineHeight":"14px","menuMarginLeft":"3px","menuPadding":"3px 4px 3px 4px"}},"menu":false,"features":null},"evals":[],"jsHooks":[]}</script><br />
+<p><div id="htmlwidget-c422c655cbfa4d0524e6" style="width:672px;height:100px;" class="msaR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c422c655cbfa4d0524e6">{"x":{"alignment":">AberrantLC\nCAGCATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGGTTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAGGGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAACAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCAGGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGCAACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGGCTGATGCTGCACCAACTGTATCCA\n>PutativeALC\n----ATCCTCTCTTCCAGCTCTCAGAGATGGAGACAGACACACTCCTGTTATGGGTACTGCTGCTCTGGGTTCCAGGTTCCACTGGTGACATTGTGCTGACACAGTCTCCTGCTTCCTTAGCTGTATCTCTGGGGCAGAGGGCCACCATCTCATACAGGGCCAGCAAAAGTGTCAGTACATCTGGCTATAGTTATATGCACTGGAACCAACAGAAACCAGGACAGCCACCCAGACTCCTCATCTATCTTGTATCCAACCTAGAATCTGGGGTCCCTGCCAGGTTCAGTGGCAGTGGGTCTGGGACAGACTTCACCCTCAACATCCATCCTGTGGAGGAGGAGGATGCTGCAACCTATTACTGTCAGCACATTAGGGAGCTTACACGTTCGGAGGGGGGACCAAGCTGGAAATAAAACGGGCT----------------------","config":{"vis":{"conserv":true,"overviewbox":false,"seqlogo":true,"sequences":true,"markers":true,"metacell":false,"gapHeader":false,"leftHeader":true,"labels":true,"labelName":true,"labelId":true,"labelPartition":false,"labelCheckbox":false,"metaGaps":true,"metaIdentity":true,"metaLinks":true},"conf":{"dropImport":true,"registerMouseHover":false,"registerMouseClicks":true,"eventBus":true,"alphabetSize":20,"debug":false,"hasRef":false,"manualRendering":false},"colorscheme":{"scheme":"nucleotide","colorBackground":true,"showLowerCase":true,"opacity":0.6},"zoomer":{"menuFontsize":"12px","autoResize":true,"alignmentWidth":"auto","alignmentHeight":225,"columnWidth":15,"rowHeight":15,"textVisible":true,"labelIdLength":30,"labelNameLength":100,"labelPartLength":15,"labelCheckLength":15,"labelFontsize":13,"labelLineHeight":"13px","markerFontsize":"10px","stepSize":1,"markerStepSize":2,"markerHeight":20,"residueFont":"13","canvasEventScale":1,"boxRectHeight":2,"boxRectWidth":2,"overviewboxPaddingTop":10,"overviewboxWidth":"auto","overviewboxHeight":"fixed","metaGapWidth":35,"metaIdentWidth":40,"metaLinksWidth":25},"menu":{"menuFontsize":"14px","menuItemFontsize":"14px","menuItemLineHeight":"14px","menuMarginLeft":"3px","menuPadding":"3px 4px 3px 4px"}},"menu":false,"features":null},"evals":[],"jsHooks":[]}</script><br />
 <br />
 <br />
 </p>
@@ -935,7 +935,7 @@ P30_B2
 B2
 </td>
 <td style="text-align:left;">
-N1/055.1
+N1/55.1
 </td>
 <td style="text-align:right;">
 46.7
@@ -1223,7 +1223,7 @@ P30_B3
 B3
 </td>
 <td style="text-align:left;">
-N26/015.1
+N26/15.1
 </td>
 <td style="text-align:right;">
 19.3
@@ -1801,7 +1801,7 @@ P30_B5
 B5
 </td>
 <td style="text-align:left;">
-N3/022.1
+N3/22.1
 </td>
 <td style="text-align:right;">
 31.7
@@ -2091,7 +2091,7 @@ P30_B6
 B6
 </td>
 <td style="text-align:left;">
-N1/033.1
+N1/33.1
 </td>
 <td style="text-align:right;">
 77.0
@@ -2382,7 +2382,7 @@ P30_B7
 B7
 </td>
 <td style="text-align:left;">
-N11/005.4
+N11/5.4
 </td>
 <td style="text-align:right;">
 42.4
@@ -2673,7 +2673,7 @@ P30_B8
 B8
 </td>
 <td style="text-align:left;">
-N11/024.1
+N11/24.1
 </td>
 <td style="text-align:right;">
 15.3
@@ -3758,7 +3758,7 @@ P30_H11
 H11
 </td>
 <td style="text-align:left;">
-negativecontrol1
+negativecontrol
 </td>
 <td style="text-align:right;">
 7.2
@@ -3796,7 +3796,7 @@ P30_A12
 A12
 </td>
 <td style="text-align:left;">
-N1/049.1
+N1/49.1
 </td>
 <td style="text-align:right;">
 120.2
@@ -4050,7 +4050,7 @@ P30_H12
 H12
 </td>
 <td style="text-align:left;">
-negativecontrol2
+negativecontrol
 </td>
 <td style="text-align:right;">
 7.3
