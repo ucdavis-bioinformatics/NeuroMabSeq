@@ -3,13 +3,27 @@
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
 
 ### TODO:
-- plate stats
+- each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
+- add column to status file for just the plate number
+- finish duplicates links
+- dont show positive controls
+- clean up the google analytics 
+- add color when stripping
+- figure out light chain
+
+### NEEED TO DISCUSS:
+- we will need a staff login and recaptcha 
+- add just one admin user login.
+
+
+### LONG TERM:
+- finish instance setup documentation
 - automate index to see what files need to be added still
 - csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
 - no loading libraries from internet have static files
-- each time database is reloaded the id in url changes, make this static for them all somehow
-- finish instance setup documentation
 
+### TESTING DUPLICATES:
+- N1/55.1    N3/22.1
 
 
 1. Check out the Django Project Tutorial in this directory.
@@ -90,10 +104,12 @@ sudo systemctl restart gunicorn
 sudo systemctl restart nginx
 ```
 
-#### Resetting the database: (see methods.py)
+#### Resetting the database: (see methods.py) need to make this stable for a login though
 ```
 ./manage.py shell < wipe_db.py
 ./manage.py shell < wipe_status_data.py
+rm mydatabase
+python manage.py migrate
 ./manage.py shell < run_update.py
 ./manage.py shell < run_status_update.py
 ```

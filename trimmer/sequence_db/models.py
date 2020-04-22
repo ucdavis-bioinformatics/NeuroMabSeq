@@ -114,14 +114,43 @@ class TrimmerHeavy(models.Model):
             return ''
 
     @property
+    def strip_aa(self):
+        try:
+            return TrimmerHeavy.objects.get(id=self.id).aa.replace('`', '')
+        except:
+            return ''
+
+    @property
     def get_layout(self):
         try:
-
             return [{'numbering': x, 'domain': y, 'color': color_dict[y]} for x, y in zip(TrimmerHeavy.objects.get(id=self.id).numbering.split(','),
                                                                   TrimmerHeavy.objects.get(id=self.id).domain.replace(
                                                                       ',', ''))]
         except:
             return ''
+
+    @property
+    def get_region(self):
+        try:
+            return [{'range': 26, 'label': 'LFR1'}, {'range': 12, 'label': 'CDR-L1'},
+                    {'range': 17, 'label': 'LFR2'}, {'range': 10, 'label': 'CDR-L2'}, {'range': 39, 'label': 'LFR3'},
+                    {'range': 13, 'label': 'CDR-L3'}, {'range': 11, 'label': 'LFR4'}]
+        except:
+            return ''
+
+    @property
+    def get_table(self):
+        try:
+            return [{'range': '1-26', 'label': 'HFR1', 'splice': self.strip_domain[:26].replace('-', ''), 'len_splice': len(self.strip_domain[:26].replace('-', ''))},
+                    {'range': '27-38', 'label': 'CDR-H1', 'splice': self.strip_domain[26:38].replace('-', ''), 'len_splice': len(self.strip_domain[26:38].replace('-', ''))},
+                    {'range': '39-55', 'label': 'HFR2', 'splice': self.strip_domain[38:55].replace('-', ''), 'len_splice': len(self.strip_domain[38:55].replace('-', ''))},
+                    {'range': '56-65', 'label': 'CDR-H2', 'splice': self.strip_domain[55:65].replace('-', ''), 'len_splice': len(self.strip_domain[55:65].replace('-', ''))},
+                    {'range': '66-104', 'label': 'HFR3', 'splice': self.strip_domain[65:104].replace('-', ''), 'len_splice': len(self.strip_domain[65:104].replace('-', ''))},
+                    {'range': '105-117', 'label': 'CDR-H3', 'splice': self.strip_domain[104:117].replace('-', ''), 'len_splice': len(self.strip_domain[104:117].replace('-', ''))},
+                    {'range': '118-128', 'label': 'HFR4', 'splice': self.strip_domain[117:128].replace('-', ''), 'len_splice': len(self.strip_domain[117:128].replace('-', ''))}]
+        except:
+            return ''
+
 
 class TrimmerLight(models.Model):
     id = models.AutoField(primary_key=True)
@@ -153,11 +182,40 @@ class TrimmerLight(models.Model):
             return ''
 
     @property
+    def strip_aa(self):
+        try:
+            return TrimmerLight.objects.get(id=self.id).aa.replace('`', '')
+        except:
+            return ''
+
+    @property
     def get_layout(self):
         try:
 
             return [{'numbering': x, 'domain': y, 'color': color_dict[y]} for x,y in zip(TrimmerLight.objects.get(id=self.id).numbering.split(','),
                                                                  TrimmerLight.objects.get(id=self.id).domain.replace(',', ''))]
+        except:
+            return ''
+
+    @property
+    def get_region(self):
+        try:
+            return [{'range': 26, 'label': 'HFR1'}, {'range': 12, 'label': 'CDR-H1'},
+                    {'range': 17, 'label': 'HFR2'}, {'range': 10, 'label': 'CDR-H2'}, {'range': 39, 'label': 'HFR3'},
+                    {'range': 13, 'label': 'CDR-H3'}, {'range': 11, 'label': 'HFR4'}]
+        except:
+            return ''
+
+    @property
+    def get_table(self):
+        try:
+            return [{'range': '1-26', 'label': 'HFR1', 'splice': self.strip_domain[:26].replace('-', ''), 'len_splice': len(self.strip_domain[:26].replace('-', ''))},
+                    {'range': '27-38', 'label': 'CDR-H1', 'splice': self.strip_domain[26:38].replace('-', ''), 'len_splice': len(self.strip_domain[26:38].replace('-', ''))},
+                    {'range': '39-55', 'label': 'HFR2', 'splice': self.strip_domain[38:55].replace('-', ''), 'len_splice': len(self.strip_domain[38:55].replace('-', ''))},
+                    {'range': '56-65', 'label': 'CDR-H2', 'splice': self.strip_domain[55:65].replace('-', ''), 'len_splice': len(self.strip_domain[55:65].replace('-', ''))},
+                    {'range': '66-104', 'label': 'HFR3', 'splice': self.strip_domain[65:104].replace('-', ''), 'len_splice': len(self.strip_domain[65:104].replace('-', ''))},
+                    {'range': '105-117', 'label': 'CDR-H3', 'splice': self.strip_domain[104:117].replace('-', ''), 'len_splice': len(self.strip_domain[104:117].replace('-', ''))},
+                    {'range': '118-128', 'label': 'HFR4', 'splice': self.strip_domain[117:128].replace('-', ''), 'len_splice': len(self.strip_domain[117:128].replace('-', ''))}]
         except:
             return ''
 

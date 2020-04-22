@@ -100,11 +100,24 @@ function toggle_it(itemID){
                   </tr>
                   <tr>
                       <td>
-                          <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}a');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Sequencing Info</a>
+                          <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}a');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>Sequencing Info</a>
                           <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}b');toggle_it('light{{forloop.counter}}c');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Amino Acid Information</a>
+<!--                          <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}d');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>See Entries with Duplicates</a>-->
+
+                               <table  id="light{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">
+
+                                      <tr>
+                                      {% for dup in item.entry.light_duplicates %}
+                                          <td><a href="/{{dup.entry.pk}}">{{dup.entry.mabid}}</a></td>
+                                      {% empty %}
+                                          <td>No entries yet.</td>
+                                      {% endfor %}
+                                      </tr>
+
+                               </table>
                                <table  id="light{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
-                                        <th>Percent Support</th>
+<!--                                        <th>Percent Support</th>-->
                                         <th>ASV Count</th>
                                         <th>Platform</th>
                                         <th>Plate</th>
@@ -113,8 +126,8 @@ function toggle_it(itemID){
 
                                       </tr>
                                       <tr>
-                                          <td style="word-wrap: break-word">{{item.pct_support}}</td>
-                                          <td style="word-wrap: break-word">{{item.asv_support}}</td>
+<!--                                          <td style="word-wrap: break-word">{{item.pct_support|floatformat:2 }}%</td>-->
+                                          <td style="word-wrap: break-word">{{item.asv_support|floatformat:0}}</td>
                                           <td style="word-wrap: break-word">{{item.seq_platform}}</td>
                                           <td style="word-wrap: break-word">{{item.plate}}</td>
                                           <td style="word-wrap: break-word">{{item.total_reads}}</td>
@@ -125,11 +138,11 @@ function toggle_it(itemID){
                                 <table  id="light{{forloop.counter}}b" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
                                         <th>Amino Acid</th>
-                                        <th>ANARCI prediction of IMTG amino acids 1-127</th>
+                                        <th>ANARCI prediction of IMGT amino acids 1-127</th>
 
                                       </tr>
                                       <tr>
-                                          <td style="word-wrap: break-word">{{item.aa}}</td>
+                                          <td style="word-wrap: break-word">{{item.strip_aa}}</td>
                                           <td style="word-wrap: break-word">{{item.strip_domain}}</td>
                                       </tr>
 
@@ -176,10 +189,23 @@ function toggle_it(itemID){
                   <tr>
                       <td>
                           <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}a');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Sequencing Info</a>
-                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}b');toggle_it('{{forloop.counter}}c');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Amino Acid Information</a>
+                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}b');toggle_it('{{forloop.counter}}c');toggle_it('{{forloop.counter}}d')"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Amino Acid Information</a>
+<!--                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}d');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>See Entries with Duplicates</a>-->
+
+                               <table  id="{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">
+
+                                      <tr>
+                                      {% for dup in item.entry.heavy_duplicates %}
+                                          <td><a href=/new_entry/{{dup.entry.pk}}>{{dup.entry.mabid}}</a></td>
+                                      {% empty %}
+                                          <td>No entries yet.</td>
+                                      {% endfor %}
+                                      </tr>
+
+                               </table>
                                <table  id="{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
-                                        <th>Percent Support</th>
+<!--                                        <th>Percent Support</th>-->
                                         <th>ASV Count</th>
                                         <th>Platform</th>
                                         <th>Plate</th>
@@ -188,8 +214,8 @@ function toggle_it(itemID){
 
                                       </tr>
                                       <tr>
-                                          <td style="word-wrap: break-word">{{item.pct_support}}</td>
-                                          <td style="word-wrap: break-word">{{item.asv_support}}</td>
+<!--                                          <td style="word-wrap: break-word">{{item.pct_support|floatformat:2 }}%</td>-->
+                                          <td style="word-wrap: break-word">{{item.asv_support|floatformat:0}}</td>
                                           <td style="word-wrap: break-word">{{item.seq_platform}}</td>
                                           <td style="word-wrap: break-word">{{item.plate}}</td>
                                           <td style="word-wrap: break-word">{{item.total_reads}}</td>
@@ -200,13 +226,13 @@ function toggle_it(itemID){
                                 <table  id="{{forloop.counter}}b" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
                                         <th>Amino Acid</th>
-                                        <th>ANARCI prediction of IMTG amino acids 1-128
+                                        <th>ANARCI prediction of IMGT amino acids 1-128
 
                                       </th>
 
                                       </tr>
                                       <tr>
-                                          <td style="word-wrap: break-word">{{item.aa}}</td>
+                                          <td style="word-wrap: break-word">{{item.strip_aa}}</td>
                                           <td style="word-wrap: break-word">{{item.strip_domain}}</td>
                                       </tr>
 
@@ -227,9 +253,34 @@ function toggle_it(itemID){
                                            <td bgcolor="{{value.color}}" style="width:20px"><strong>{{value.domain}}</strong></td>
                                        {% endfor %}
                                        </tr>
+<!--                                       <tr>-->
+<!--                                       {% for value in item.get_region %}-->
+<!--                                           <td colspan="{{value.range}}" style="width:20px"><strong>{{value.label}}</strong></td>-->
+<!--                                       {% endfor %}-->
+<!--                                       </tr>-->
+                                   </table>
                                 </div>
+<!--                                <div  id="{{forloop.counter}}d" style="display:none">-->
+<!--                                   <table style="table-layout: fixed; width: 100%">-->
+<!--                                       <tr>-->
+<!--                                           <td>Length</td>-->
+<!--                                           <td>Region</td>-->
+<!--                                           <td>Splice</td>-->
+<!--                                           <td>Splice Length</td>-->
+<!--                                       </tr>-->
 
-                           </table>
+<!--                                       {% for value in item.get_table %}-->
+<!--                                       <tr>-->
+<!--                                                <td style="word-wrap: break-word">{{value.range}}</td>-->
+<!--                                                <td style="word-wrap: break-word">{{value.label}}</td>-->
+<!--                                                <td style="word-wrap: break-word">{{value.splice}}</td>-->
+<!--                                                <td style="word-wrap: break-word">{{value.len_splice}}</td>-->
+<!--                                       </tr>-->
+<!--                                       {% endfor %}-->
+<!--                                   </table>-->
+<!--                                </div>-->
+
+
                       </td>
                   </tr>
 
