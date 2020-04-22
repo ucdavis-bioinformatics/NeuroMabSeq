@@ -238,6 +238,11 @@ class TrimmerEntryStatus(models.Model):
     HCs_reported = models.IntegerField()
 
 
-
+    @property
+    def plate_name(self):
+        try:
+            return TrimmerEntryStatus.objects.get(id=self.id).sample_name.split('_')[0]
+        except:
+            return ''
 
 
