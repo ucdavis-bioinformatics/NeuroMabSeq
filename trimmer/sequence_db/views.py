@@ -16,9 +16,9 @@ from .methods import *
 def main_page(request):
     html = 'home.html'
     context = {}
-    context['number_entries'] = len(TrimmerEntry.objects.filter())
-    context['number_light'] = len(TrimmerLight.objects.filter(duplicate=False))
-    context['number_heavy'] = len(TrimmerHeavy.objects.filter(duplicate=False))
+    context['number_entries'] = len(TrimmerEntry.objects.filter(show_on_web=True))
+    context['number_light'] = len(TrimmerLight.objects.filter(duplicate=False, entry__show_on_web=True))
+    context['number_heavy'] = len(TrimmerHeavy.objects.filter(duplicate=False, entry__show_on_web=True))
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
 
@@ -230,7 +230,7 @@ class TrimmerEntryDetailView(DetailView):
 
 def TrimmerEntryListView(request):
     context = {}
-    all_entries = TrimmerEntry.objects.all()
+    all_entries = TrimmerEntry.objects.filter(show_on_web=True)
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs.order_by('mabid')
     return render(request, 'new_query.html', context)
@@ -243,6 +243,7 @@ def TrimmerStatusListView(request):
     context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
     context['status_not_in_entries'] = status_not_present()
     context['entries_not_in_status'] = sorted(list(set(context['entries']) - set(context['status_entries'])))
+    context['messages'] = Messages.objects.all()
     # TODO plate stats for this view
     context['plate_stats'] = ''
     return render(request, 'status_list.html', context)

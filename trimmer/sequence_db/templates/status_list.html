@@ -109,11 +109,23 @@ $(document).ready(function() {
 
     <h3>These are Status - Entries MabIDs:</h3>
     <p>{{status_not_in_entries}}</p>
-    <h3>These are Entries - Status MabIDs: (likely due to the RandD plate for now)</h3>
+    <h3>These are Entries - Status MabIDs: (likely due to the Sanger plate for now)</h3>
     <p>{{entries_not_in_status}}</p>
     <br>
     <br>
     <br>
+</div>
+
+
+<div class="w3-container w3-content w3-center w3-padding-5" style="max-width:10000px">
+    <h3>Messages: </h3>
+
+    {% for item in messages %}
+          <p>{{item.message}}</p>
+  {% empty %}
+   <div>No entries yet.</div>
+  {% endfor %}
+
 </div>
 
 

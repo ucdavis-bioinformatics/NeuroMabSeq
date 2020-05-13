@@ -28,6 +28,14 @@ color_dict = {
 }
 
 
+categories = {
+    1: "NeuroMab IM subclones",
+    2: "Non-NeuroMab High Priority Subclones",
+    3: "NeuroMab Alternative Subclones",
+    4: "High Priority Parents",
+    5: "Other Parents",
+              }
+
 class VLSeq(models.Model):
     id = models.AutoField(primary_key=True)
     seq = models.CharField(max_length=1500, default='')
@@ -36,6 +44,7 @@ class VLSeq(models.Model):
 class VHSeq(models.Model):
     id = models.AutoField(primary_key=True)
     seq = models.CharField(max_length=1500, default='')
+
 
 class Metadata(models.Model):
     id = models.AutoField(primary_key=True)
@@ -52,6 +61,7 @@ class Metadata(models.Model):
     tcsupe = models.CharField(max_length=25, default='', blank=True)
     pure = models.CharField(max_length=25, default='', blank=True)
 
+
 class Entry(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, default='')
@@ -64,6 +74,18 @@ class Entry(models.Model):
 class TrimmerEntry(models.Model):
     id = models.AutoField(primary_key=True)
     mabid = models.CharField(max_length=50, default='')
+    show_on_web = models.BooleanField(default=True)
+    category = models.IntegerField(blank=True, null=True)
+    protein_target = models.CharField(max_length=100, blank=True, null=True)
+
+    @property
+    def get_category(self):
+        return categories[self.category] if self.category != 'nan' and self.category else ''
+
+    @property
+    def get_protein_target(self):
+        return self.protein_target if self.protein_target != 'nan' and self.protein_target else ''
+
 
     @property
     def heavy_duplicates(self):
@@ -82,10 +104,8 @@ class TrimmerEntry(models.Model):
         return len(TrimmerLight.objects.filter(entry__pk=self.pk,  duplicate=False))
 
 
-
 class TrimmerHeavy(models.Model):
     id = models.AutoField(primary_key=True)
-
     SMARTindex = models.CharField(max_length=20)
     pct_support = models.DecimalField(max_digits=10, decimal_places=5)
     asv_support = models.DecimalField(max_digits=10, decimal_places=5)
@@ -104,7 +124,6 @@ class TrimmerHeavy(models.Model):
     domain = models.CharField(max_length=1000, blank=True, null=True)
     duplicate = models.BooleanField(default=False)
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
-
 
     @property
     def strip_domain(self):
@@ -132,9 +151,9 @@ class TrimmerHeavy(models.Model):
     @property
     def get_region(self):
         try:
-            return [{'range': 26, 'label': 'LFR1'}, {'range': 12, 'label': 'CDR-L1'},
-                    {'range': 17, 'label': 'LFR2'}, {'range': 10, 'label': 'CDR-L2'}, {'range': 39, 'label': 'LFR3'},
-                    {'range': 13, 'label': 'CDR-L3'}, {'range': 11, 'label': 'LFR4'}]
+            return [{'range': 26, 'label': 'HFR1'}, {'range': 12, 'label': 'CDR-H1'},
+                    {'range': 17, 'label': 'HFR2'}, {'range': 10, 'label': 'CDR-H2'}, {'range': 39, 'label': 'HFR3'},
+                    {'range': 13, 'label': 'CDR-H3'}, {'range': 11, 'label': 'HFR4'}]
         except:
             return ''
 
@@ -191,7 +210,6 @@ class TrimmerLight(models.Model):
     @property
     def get_layout(self):
         try:
-
             return [{'numbering': x, 'domain': y, 'color': color_dict[y]} for x,y in zip(TrimmerLight.objects.get(id=self.id).numbering.split(','),
                                                                  TrimmerLight.objects.get(id=self.id).domain.replace(',', ''))]
         except:
@@ -220,7 +238,6 @@ class TrimmerLight(models.Model):
             return ''
 
 
-
 class TrimmerEntryStatus(models.Model):
     id = models.AutoField(primary_key=True)
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
@@ -237,7 +254,6 @@ class TrimmerEntryStatus(models.Model):
     LCs_reported = models.IntegerField()
     HCs_reported = models.IntegerField()
 
-
     @property
     def plate_name(self):
         try:
@@ -246,3 +262,6 @@ class TrimmerEntryStatus(models.Model):
             return ''
 
 
+class Messages(models.Model):
+    id = models.AutoField(primary_key=True)
+    message = models.CharField(max_length=400)

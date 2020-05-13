@@ -1,0 +1,16 @@
+Share: NeuroMabSeq None
+	  <table>
+	  <thead><tr><th>Name</th></tr></thead>
+	  <tbody>
+	  
+	  
+		<tr class="directory real-directory"><td class="name"><i class="fam-folder"></i><a href="HTML_Reports/wget_index.html">HTML_Reports</a></td></tr>    
+	  
+		<tr class="directory real-directory"><td class="name"><i class="fam-folder"></i><a href="AnnotatedResults/wget_index.html">AnnotatedResults</a></td></tr>    
+	  
+		<tr class="directory real-directory"><td class="name"><i class="fam-folder"></i><a href="StatusReports/wget_index.html">StatusReports</a></td></tr>    
+	  
+	  
+	  </tbody>
+	  </table>
+

@@ -4,12 +4,13 @@
 
 ### TODO:
 - each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
-- add column to status file for just the plate number
 - finish duplicates links
 - dont show positive controls
 - clean up the google analytics 
 - add color when stripping
 - figure out light chain
+- make status page harder to access
+- debug=FALSE
 
 ### NEEED TO DISCUSS:
 - we will need a staff login and recaptcha 
@@ -112,4 +113,5 @@ rm mydatabase
 python manage.py migrate
 ./manage.py shell < run_update.py
 ./manage.py shell < run_status_update.py
+./manage.py shell < run_metadata_update.py
 ```

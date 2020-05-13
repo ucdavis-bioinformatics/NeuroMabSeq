@@ -20,8 +20,11 @@ def clear_status_data():
 ########################################################################################################################
 # ENTRY STUFF
 ########################################################################################################################
-def create_entries(chain_type, entry_list, row, duplicate):
+def create_entries(chain_type, entry_list, row, duplicate, sanger, fake_smart_index):
     for value in entry_list:
+        if sanger:
+            row['SMARTindex'] = fake_smart_index
+            row['ASVcount'] = 1
         if row['e-value'] != '-':
             create = eval("Trimmer" + chain_type).objects.create(entry=value,
                                                            SMARTindex=row['SMARTindex'],
@@ -56,12 +59,19 @@ def create_entries(chain_type, entry_list, row, duplicate):
         create.save()
 
 
+
+def get_fake_smart(num, sanger):
+    if sanger:
+        fake_smart_index = str(num) + '-SMARTindex'
+    else:
+        fake_smart_index = ''
+    return fake_smart_index
+
 # this is called in the run_update.py script
 def new_data_upload():
     dir = "/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/data/AnnotatedResults/"
     files = os.listdir(dir)
     files = [i for i in files if ".tsv" in i]
-    print(files)
     for file in files:
         file = dir+file
         result = pd.read_csv(file, delimiter='\t', index_col=False)
@@ -72,21 +82,27 @@ def new_data_upload():
         else:
             chain_type = "Light"
 
-        for row in result:
+        if "Sanger" in file:
+            sanger = True
+        else:
+            sanger = False
+
+
+        for row, num in zip(result, range(1,len(result)+1)):
             try:
-                entry = TrimmerEntry.objects.get(mabid=row['MabID'].replace('positivecontrol1_', '').replace('POSITIVECONTROL1_', ''))
+                entry = TrimmerEntry.objects.get(mabid=row['MabID'])
             except:
                 entry = None
             if not entry:
-                entry_create = TrimmerEntry.objects.create(mabid=row['MabID'].replace('positivecontrol1_', '').replace('POSITIVECONTROL1_', ''))
+                entry_create = TrimmerEntry.objects.create(mabid=row['MabID'])
                 entry_create.save()
                 entry = entry_create
-
+            fake_smart_index = get_fake_smart(num, sanger)
             entry_list = []
             entry_list.append(entry)
-            create_entries(chain_type, entry_list, row, False)
+            create_entries(chain_type, entry_list, row, False, sanger, fake_smart_index)
 
-        for row in result:
+        for row, num in zip(result, range(1,len(result)+1)):
             entry_list = []
             if isinstance(row['DuplicatedIn'], str):
                 for x in row['DuplicatedIn'].split(','):
@@ -94,7 +110,8 @@ def new_data_upload():
                         entry_list.append(TrimmerEntry.objects.get(mabid=x.replace(' ', '')))
                     except:
                         print("The Duplicate mabID does not exist: %s" % x.replace(' ', ''))
-            create_entries(chain_type, entry_list, row, True)
+            fake_smart_index = get_fake_smart(num, sanger)
+            create_entries(chain_type, entry_list, row, True, sanger, fake_smart_index)
 
 
 ########################################################################################################################
@@ -191,46 +208,64 @@ def status_not_present():
         for row in result:
             if str(row['trimmer_id']) != 'nan':
                 try:
-                    entry = TrimmerEntry.objects.get(mabid=row['trimmer_id'].replace('positivecontrol1_', '').replace('POSITIVECONTROL1_', ''))
+                    entry = TrimmerEntry.objects.get(mabid=row['trimmer_id'])
                 except:
-                    not_found_list.append(row['trimmer_id'].replace('positivecontrol1_', '').replace('POSITIVECONTROL1_', ''))
+                    not_found_list.append([row['trimmer_id'], row['sample_name']])
                     entry = None
 
     return not_found_list
 
 
 ########################################################################################################################
-# OLD DATA STUFF
+# METADATA STUFF
 ########################################################################################################################
-def old_data_upload():
-    result = pd.read_csv('/old_data_methods/output.csv', index_col=False)
+def get_map_dict():
+    file = '../static_data/plate_map.txt'
+    f = open(file)
+    mapping = {}
+    for line in f:
+        values = line.split('\t')
+        mapping[values[0].replace('"', '')] = values[1].replace('"', '').replace('\n', '')
+    return mapping
+
+def update_entry(entry, row):
+    if entry.mabid != row['trimmer_id']:
+        string = "The mabID %s has been updated to %s." %(entry.mabid, row['trimmer_id'])
+        message = Messages.objects.create(message=string)
+        message.save()
+    entry.category = row['Category'] if str(row['Category']) != 'nan' else None
+    entry.protein_target = row['ProteinTarget']
+    entry.show_on_web = False if row['ShowOnWeb'] == 'F' else True
+    entry.mabid = row['trimmer_id']
+    entry.save()
+
+
+# TODO fix the ranD samples
+def metadata_upload():
+    mapping = get_map_dict()
+    print(mapping)
+    file = '../static_data/metadata_1.tsv'
+    result = pd.read_csv(file, delimiter='\t', index_col=False)
     result = result.to_dict(orient='records')
     for row in result:
-        vl_seq_obj = VLSeq.objects.create(seq=row['VL sequence'])
-        vh_seq_obj = VHSeq.objects.create(seq=row['VH sequence'])
-        meta = Metadata.objects.create(
-                                      target_type=row['TargetType'],
-                                      target=row['Target'],
-                                      accession=row['AccessionNum'],
-                                      gene_name=row['HumanGeneName'],
-                                      file_name=row['DataSheetFileName'],
-                                      iso_type=row['IsoType'],
-                                      validation_t=row['ValidationT'],
-                                      validation_brib=row['ValidationBrIB'],
-                                      validation_brihc=row['ValidationBrIHC'],
-                                      validation_ko=row['ValidationKO'],
-                                      tcsupe=row['TCSupe RRID:AB_'],
-                                      pure=row['Pure RRID:AB_'],
-                                      )
+        if row['sample_name'] != 'None' and row['sample_name'] != 0:
+            if '_' in row['sample_name']:
+                well = row['sample_name'].split('_')[1]
+                plate = 'plate' + row['sample_name'].split('_')[0][1:]
+                light_entries = TrimmerLight.objects.filter(SMARTindex=mapping[well], plate=plate)
+                heavy_entries = TrimmerHeavy.objects.filter(SMARTindex=mapping[well], plate=plate)
+            else:
+                plate = row['PlateName']
+                light_entries = TrimmerLight.objects.filter(SMARTindex=row['sample_name'], plate=plate)
+                heavy_entries = TrimmerHeavy.objects.filter(SMARTindex=row['sample_name'], plate=plate)
 
-
-        entry = Entry.objects.create(
-                                     name=row['Clone'],
-                                     vlseq=vl_seq_obj,
-                                     vhseq=vh_seq_obj,
-                                     metadata=meta,
-                                    )
-        vl_seq_obj.save()
-        vh_seq_obj.save()
-        meta.save()
-        entry.save()
+            if len(light_entries):
+                entry = light_entries[0].entry
+                update_entry(entry, row)
+            elif len(heavy_entries):
+                entry = heavy_entries[0].entry
+                update_entry(entry, row)
+            else:
+                string = "Unable to update the metadata for this sample name: %s" % row['sample_name']
+                message = Messages.objects.create(message=string)
+                message.save()

@@ -190,7 +190,7 @@ function toggle_it(itemID){
                       <td>
                           <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}a');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Sequencing Info</a>
                           <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}b');toggle_it('{{forloop.counter}}c');toggle_it('{{forloop.counter}}d')"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Amino Acid Information</a>
-<!--                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}d');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>See Entries with Duplicates</a>-->
+                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}d');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>See Entries with Duplicates</a>
 
                                <table  id="{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">
 
@@ -205,7 +205,6 @@ function toggle_it(itemID){
                                </table>
                                <table  id="{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
-<!--                                        <th>Percent Support</th>-->
                                         <th>ASV Count</th>
                                         <th>Platform</th>
                                         <th>Plate</th>
@@ -214,7 +213,6 @@ function toggle_it(itemID){
 
                                       </tr>
                                       <tr>
-<!--                                          <td style="word-wrap: break-word">{{item.pct_support|floatformat:2 }}%</td>-->
                                           <td style="word-wrap: break-word">{{item.asv_support|floatformat:0}}</td>
                                           <td style="word-wrap: break-word">{{item.seq_platform}}</td>
                                           <td style="word-wrap: break-word">{{item.plate}}</td>
@@ -253,32 +251,32 @@ function toggle_it(itemID){
                                            <td bgcolor="{{value.color}}" style="width:20px"><strong>{{value.domain}}</strong></td>
                                        {% endfor %}
                                        </tr>
-<!--                                       <tr>-->
-<!--                                       {% for value in item.get_region %}-->
-<!--                                           <td colspan="{{value.range}}" style="width:20px"><strong>{{value.label}}</strong></td>-->
-<!--                                       {% endfor %}-->
-<!--                                       </tr>-->
+                                       <tr>
+                                       {% for value in item.get_region %}
+                                           <td colspan="{{value.range}}" style="width:20px"><strong>{{value.label}}</strong></td>
+                                       {% endfor %}
+                                       </tr>
                                    </table>
                                 </div>
-<!--                                <div  id="{{forloop.counter}}d" style="display:none">-->
-<!--                                   <table style="table-layout: fixed; width: 100%">-->
-<!--                                       <tr>-->
-<!--                                           <td>Length</td>-->
-<!--                                           <td>Region</td>-->
-<!--                                           <td>Splice</td>-->
-<!--                                           <td>Splice Length</td>-->
-<!--                                       </tr>-->
+                                <div  id="{{forloop.counter}}d" style="display:none">
+                                   <table style="table-layout: fixed; width: 100%">
+                                       <tr>
+                                           <td>Length</td>
+                                           <td>Region</td>
+                                           <td>Splice</td>
+                                           <td>Splice Length</td>
+                                       </tr>
 
-<!--                                       {% for value in item.get_table %}-->
-<!--                                       <tr>-->
-<!--                                                <td style="word-wrap: break-word">{{value.range}}</td>-->
-<!--                                                <td style="word-wrap: break-word">{{value.label}}</td>-->
-<!--                                                <td style="word-wrap: break-word">{{value.splice}}</td>-->
-<!--                                                <td style="word-wrap: break-word">{{value.len_splice}}</td>-->
-<!--                                       </tr>-->
-<!--                                       {% endfor %}-->
-<!--                                   </table>-->
-<!--                                </div>-->
+                                       {% for value in item.get_table %}
+                                       <tr>
+                                                <td style="word-wrap: break-word">{{value.range}}</td>
+                                                <td style="word-wrap: break-word">{{value.label}}</td>
+                                                <td style="word-wrap: break-word">{{value.splice}}</td>
+                                                <td style="word-wrap: break-word">{{value.len_splice}}</td>
+                                       </tr>
+                                       {% endfor %}
+                                   </table>
+                                </div>
 
 
                       </td>

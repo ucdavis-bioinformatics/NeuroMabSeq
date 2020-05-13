@@ -67,6 +67,14 @@ $(document).ready(function() {
             <strong>mAb ID choice:</strong> Use Shift/CTRL/CMD to select multiple at once.
           {% render_field filter.form.name_choice class="form-control" %}
         </div>
+        <div class="form-group col-sm-4 col-md-3">
+            <strong>Category choice:</strong> Use Shift/CTRL/CMD to select multiple at once.
+          {% render_field filter.form.category_choice class="form-control" %}
+        </div>
+        <div class="form-group col-sm-4 col-md-3">
+            <strong>Target choice:</strong> Use Shift/CTRL/CMD to select multiple at once.
+          {% render_field filter.form.target_choice class="form-control" %}
+        </div>
 
       </div>
         <button type="submit" class="btn btn-primary">
@@ -87,6 +95,8 @@ $(document).ready(function() {
                 <tr>
                     <th>ID</th>
                     <th>mAb ID</th>
+                    <th>Category</th>
+                    <th>Protein Target</th>
                     <th># Heavy Chain</th>
                     <th># Light Chain</th>
                     <th>Full Entry Info</th>
@@ -97,6 +107,8 @@ $(document).ready(function() {
               <tr>
                   <td>{{forloop.counter}}</td>
                   <td>{{item.mabid}}</td>
+                  <td>{{item.get_category}}</td>
+                  <td>{{item.get_protein_target}}</td>
                   <td>{{item.heavy_count}}</td>
                   <td>{{item.light_count}}</td>
                   <td>
