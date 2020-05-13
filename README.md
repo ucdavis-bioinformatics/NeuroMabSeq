@@ -83,6 +83,7 @@
 sudo pkill gunicorn   
 git fetch --all
 git reset --hard origin/website
+cd trimmer
 python manage.py migrate
 sudo systemctl restart gunicorn
 sudo systemctl restart nginx

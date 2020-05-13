@@ -190,19 +190,19 @@ function toggle_it(itemID){
                       <td>
                           <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}a');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Sequencing Info</a>
                           <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}b');toggle_it('{{forloop.counter}}c');toggle_it('{{forloop.counter}}d')"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Amino Acid Information</a>
-                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}d');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>See Entries with Duplicates</a>
+<!--                          <a href="#" id="toggle" onclick="toggle_it('{{forloop.counter}}d');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>See Entries with Duplicates</a>-->
 
-                               <table  id="{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">
+<!--                               <table  id="{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">-->
 
-                                      <tr>
-                                      {% for dup in item.entry.heavy_duplicates %}
-                                          <td><a href=/new_entry/{{dup.entry.pk}}>{{dup.entry.mabid}}</a></td>
-                                      {% empty %}
-                                          <td>No entries yet.</td>
-                                      {% endfor %}
-                                      </tr>
+<!--                                      <tr>-->
+<!--                                      {% for dup in item.entry.heavy_duplicates %}-->
+<!--                                          <td><a href=/new_entry/{{dup.entry.pk}}>{{dup.entry.mabid}}</a></td>-->
+<!--                                      {% empty %}-->
+<!--                                          <td>No entries yet.</td>-->
+<!--                                      {% endfor %}-->
+<!--                                      </tr>-->
 
-                               </table>
+<!--                               </table>-->
                                <table  id="{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
                                         <th>ASV Count</th>
