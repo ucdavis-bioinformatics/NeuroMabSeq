@@ -85,7 +85,9 @@ def run_anarci(aa, frame):
     return(result)
 
 
-for chain in ['HeavyChain', 'LightChain']:
+#for chain in ['HeavyChain', 'LightChain']:
+#    process_file(chain)
+for chain in ['Sequences']:
     process_file(chain)
 
 
