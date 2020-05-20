@@ -12,7 +12,7 @@ python 01-build_hts.py
 parallel < 01-trim-1_Short_CSP.sh
 
 module load R/3.6.1
-Rscript -e "rmarkdown::render('./01-PrimerTrimReport/report.RMD')"
+Rscript -e "plate='$plate';submission='$submissionID';rmarkdown::render('./01-PrimerTrimReport/report.RMD')"
 
 Rscript -e "plate='$plate';submission='$submissionID';rmarkdown::render('./02-Results/02-Hybridoma-DADA2-analysis.RMD')"
 

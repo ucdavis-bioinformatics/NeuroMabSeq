@@ -142,3 +142,9 @@ kable(t.p6RevLC) %>%
 
 ```
 
+```{r writecsv, echo=FALSE}
+df = data.frame(cbind(data.frame(plate=plate, Chain='H', SMARTindex=rownames(t.p10RevHc1), t.p10RevHc1), 
+                data.frame(plate=plate, Chain='L', SMARTindex=rownames(t.p6RevLC), t.p6RevLC)))
+write.table(file='demux_stats.tsv', row.names=F, col.names=T, sep='\t')
+
+```
