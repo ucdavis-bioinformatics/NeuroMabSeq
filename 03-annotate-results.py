@@ -1,9 +1,12 @@
 
 #!/usr/bin/env python3
 '''
-This program expects there to be two csv files:
-./02-Results/*_HeavyChain.tsv
-./02-Results/*_LightChain.tsv
+Update:
+This program expects there to be on plate_Sequences.tsv file.
+
+            This program expects there to be two csv files:
+            ./02-Results/*_HeavyChain.tsv
+            ./02-Results/*_LightChain.tsv
 
 It will load each of these files, calculate the three
 frames of translations, then push the sequences through
@@ -34,7 +37,7 @@ def process_file(chain):
     outfDW.writeheader()
 
     for record in infDR:
-        seq = Seq(record[chain])
+        seq = Seq(record['ASV'])
         # Build translations of each frame until one has a predicted domain:
         for i in range(3):
             aa = (seq[i:] + ("N" * (3 - len(seq[i:]) %3))).translate()
