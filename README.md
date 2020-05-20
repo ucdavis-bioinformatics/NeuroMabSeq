@@ -11,6 +11,8 @@
 - figure out light chain
 - make status page harder to access
 - debug=FALSE
+- justify left for tables
+- color regions not aa's (two colors, one for cdr and one for hfr)
 
 ### NEEED TO DISCUSS:
 - we will need a staff login and recaptcha 

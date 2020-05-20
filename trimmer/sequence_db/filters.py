@@ -5,8 +5,8 @@ def get_mab_ids():
     return lambda: sorted([(entry.mabid, entry.mabid) for entry in TrimmerEntry.objects.filter(show_on_web=True)])
 
 def get_targets():
-    return lambda: sorted([(entry.protein_target, entry.protein_target) for entry in TrimmerEntry.objects.filter(show_on_web=True)
-                           if entry.protein_target != 'nan' and entry.protein_target])
+    return lambda: sorted(list(set([(entry.protein_target, entry.protein_target) for entry in TrimmerEntry.objects.filter(show_on_web=True)
+                           if entry.protein_target != 'nan' and entry.protein_target])))
 
 def get_categories():
     return [(i, categories[i]) for i in categories.keys()]

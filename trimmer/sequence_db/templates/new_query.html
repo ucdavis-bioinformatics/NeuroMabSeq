@@ -20,6 +20,8 @@ td {
 td.wrapok {
     white-space:normal
 }
+
+
 </style>
 
 <!-- Datatables stuff -->
@@ -105,13 +107,13 @@ $(document).ready(function() {
           <tbody>
           {% for item in queryset %}
               <tr>
-                  <td>{{forloop.counter}}</td>
-                  <td>{{item.mabid}}</td>
-                  <td>{{item.get_category}}</td>
-                  <td>{{item.get_protein_target}}</td>
-                  <td>{{item.heavy_count}}</td>
-                  <td>{{item.light_count}}</td>
-                  <td>
+                  <td align="left">{{forloop.counter}}</td>
+                  <td align="left">{{item.mabid}}</td>
+                  <td align="left">{{item.get_category}}</td>
+                  <td align="left">{{item.get_protein_target}}</td>
+                  <td align="left">{{item.heavy_count}}</td>
+                  <td align="left">{{item.light_count}}</td>
+                  <td align="left">
                     <a href="/new_entry/{{item.pk}}/">
                       <button  label="Entry Details" name="so_link" class="btn btn-info">See Full Entry</button>
                     </a>
