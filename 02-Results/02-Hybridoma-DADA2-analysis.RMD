@@ -15,6 +15,8 @@ library(stringr)
 library(msaR)
 library(DECIPHER)
 options(stringsAsFactors=F)
+
+minReadSupport = .2  # only ASVs with at least this percentage of reads will be output
 ```
 
 ### Setup File and Sample Names
@@ -25,10 +27,18 @@ outp = './'
 #sampleIDs = read.table("../samplesheet.tsv", header=T, as.is=T, sep='\t')
 
 #submission = 'b51b81e9ee80'
-#plate = "plate2"
+#plate = "TRIMMER0005_P5"
 
+## Load sample data from submission system:
 sampleData = read.table(paste("https://submissions.dnatech.ucdavis.edu/server/api/submissions/", 
                               submission, "/download/?format=tsv&data=samples", sep=''), sep='\t', header=T, as.is=T)
+
+# Load SMARTindex --> Well ID conversion:
+wellIDX = read.table("SMARTindex_well.tsv", head=T, as.is=T)
+rownames(wellIDX) = wellIDX$index_name
+P = strsplit(plate, '_')[[1]][2]
+wellIDX$sample_name = paste(P, wellIDX$well, sep='_')
+
 
 #path = "../01-PrimerTrim-keep-aberrant-LC/"
 path = "../01-PrimerTrim/"
@@ -137,10 +147,11 @@ options(stringsAsFactors = F)
 HC.out = data.frame()
 for(s in rownames(seqtabHC.f2)){
   r = seqtabHC.f2[s, ]
-  MabID = sampleData$trimmer_id[match(s, sampleData$inline_index_name)]
-  sample_name = sampleData$sample_name[match(s, sampleData$inline_index_name)]
-  for(asv in names(which(r/sum(seqtabHC[s,]) > .2))){ 
-    # Only keep ASVs with at least 30% read support:
+  sample_name = wellIDX[s, 'sample_name']
+  MabID = sampleData$trimmer_id[match(sample_name, sampleData$sample_name)]
+  #sample_name = sampleData$sample_name[match(s, sampleData$inline_index_name)]
+  for(asv in names(which(r/sum(seqtabHC[s,]) > minReadSupport))){ 
+    # Only keep ASVs with at least 20% read support:
     HC.out = rbind(HC.out, c(sample_name, plate, s, MabID, "HC", r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), sum(seqtabHC[s,]), "Illumina", asv))
   }
 }
@@ -172,10 +183,11 @@ write.table(data.frame(ASV=colnames(seqtabLC.f2), t(seqtabLC.f2)), file='01-filt
 options(stringsAsFactors = F)
 LC.out = data.frame()
 for(s in rownames(seqtabLC.f2)){
-  r = seqtabLC.f2[s, ]  
-  MabID = sampleData$trimmer_id[match(s, sampleData$inline_index_name)]
-  sample_name = sampleData$sample_name[match(s, sampleData$inline_index_name)]
-  for(asv in names(which(r/sum(seqtabLC[s,]) > .2))){
+  r = seqtabLC.f2[s, ]
+  sample_name = wellIDX[s, 'sample_name']
+  MabID = sampleData$trimmer_id[match(sample_name, sampleData$sample_name)]
+  #sample_name = sampleData$sample_name[match(s, sampleData$inline_index_name)]
+  for(asv in names(which(r/sum(seqtabLC[s,]) > minReadSupport))){
     LC.out = rbind(LC.out, c(sample_name, plate, s, MabID, "LC", r[asv], signif(100*r[asv]/sum(seqtabLC[s,]), 3), sum(seqtabLC[s,]), "Illumina", asv))
   }
 }

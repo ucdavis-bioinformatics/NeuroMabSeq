@@ -29,7 +29,10 @@ os.system('mkdir -p ' + outpath)
 
 def process_file(chain):
     """Process ASV records through ANARCI software tool and write new table to outpath."""
-    inf = glob('./02-Results/*_' + chain + '.tsv')[0]
+    tsvs = glob('./02-Results/*_' + chain + '.tsv')
+    assert (len(tsvs) > 0), "NO TSV file found, check that R scripts ran."
+    assert (len(tsvs) == 1), "More than one TSV file was found for " + './02-Results/*_' + chain + '.tsv'
+    inf = tsvs[0]
     infDR = csv.DictReader(open(inf, 'r'), delimiter='\t')
     outf = open(os.path.join(outpath,os.path.basename(inf)), 'w')
     outfDW = csv.DictWriter(outf, delimiter='\t', restval='-', fieldnames = infDR.fieldnames + 
