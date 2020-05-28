@@ -5,25 +5,20 @@
 ### TODO:
 - each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
 - finish duplicates links
-- dont show positive controls
 - clean up the google analytics 
 - add color when stripping
 - figure out light chain
 - make status page harder to access
 - debug=FALSE
-- justify left for tables
-- color regions not aa's (two colors, one for cdr and one for hfr)
-
-### NEEED TO DISCUSS:
-- we will need a staff login and recaptcha 
-- add just one admin user login.
-
+- give them metadata names for sanger stuff
+- new category or protein target (default values at least)
 
 ### LONG TERM:
 - finish instance setup documentation
 - automate index to see what files need to be added still
 - csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
 - no loading libraries from internet have static files
+- some views https with login.. no cert long term
 
 ### TESTING DUPLICATES:
 - N1/55.1    N3/22.1

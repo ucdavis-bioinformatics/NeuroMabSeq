@@ -1,2 +1,2 @@
 from sequence_db.methods import *
-status_upload()
+new_status_upload()

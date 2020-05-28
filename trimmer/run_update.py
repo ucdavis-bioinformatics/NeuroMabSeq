@@ -1,2 +1,2 @@
 from sequence_db.methods import *
-new_data_upload()
+new_new_data_upload()

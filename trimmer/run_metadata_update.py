@@ -1,2 +1,2 @@
 from sequence_db.methods import *
-metadata_upload()
+new_metadata_upload()

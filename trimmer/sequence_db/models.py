@@ -38,16 +38,88 @@ categories = {
     5: "Other Parents",
               }
 
+heavy_increment = [
+    {'range': '1-26', 'label': 'HFR1', 'splice': [0,26]},
+    {'range': '27-38', 'label': 'CDR-H1', 'splice': [26,38]},
+    {'range': '39-55', 'label': 'HFR2', 'splice': [38,55]},
+    {'range': '56-65', 'label': 'CDR-H2', 'splice': [55,65]},
+    {'range': '66-104', 'label': 'HFR3', 'splice': [65,104]},
+    {'range': '105-117', 'label': 'CDR-H3', 'splice': [104,117]},
+    {'range': '118-128', 'label': 'HFR4', 'splice': [117,128]},
+                   ]
+
+light_increment = [
+    {'range': '1-26', 'label': 'LFR1', 'splice': [0,26]},
+    {'range': '27-38', 'label': 'CDR-L1', 'splice': [26,38]},
+    {'range': '39-55', 'label': 'LFR2', 'splice': [38,55]},
+    {'range': '56-65', 'label': 'CDR-L2', 'splice': [55,65]},
+    {'range': '66-104', 'label': 'LFR3', 'splice': [65,104]},
+    {'range': '105-117', 'label': 'CDR-L3', 'splice': [104,117]},
+    {'range': '118-128', 'label': 'LFR4', 'splice': [117,128]},
+                   ]
+
+def general_regions_function(object, type):
+    if type == 'Heavy':
+        increment = heavy_increment
+    else:
+        increment = light_increment
+    regions_info = []
+    for region in increment:
+        new_dict = {}
+        length = 0
+        for number in object.numbering.split(','):
+
+            if int(number) in [i for i in range(region['splice'][0] + 1, region['splice'][1] + 1)]:
+                length += 1
+        new_dict['length'] = length
+        if 'CDR' in region['label']:
+            new_dict['color'] = region_dict['CDR']
+        else:
+            new_dict['color'] = region_dict['HF']
+        new_dict['label'] = region['label']
+        regions_info.append(new_dict)
+    return regions_info
+
+def general_table(object, type):
+    if type == 'Heavy':
+        increment = heavy_increment
+    else:
+        increment = light_increment
+    table_dict = []
+    for region in increment:
+        new_dict = {}
+        length = 0
+        new_splice = ''
+        for number, aa in zip(object.numbering.split(','), object.domain.split(',')):
+            if int(number) in [i for i in range(region['splice'][0] + 1, region['splice'][1] + 1)]:
+                new_splice += aa
+                length += 1
+        if 'CDR' in region['label']:
+            new_dict['color'] = region_dict['CDR']
+        else:
+            new_dict['color'] = region_dict['HF']
+        new_dict['splice'] = new_splice.replace('-','')
+        new_dict['len_splice'] = length
+        new_dict['range'] = region['range']
+        new_dict['label'] = region['label']
+
+
+        table_dict.append(new_dict)
+
+    return table_dict
+
+
+# TODO delete
 class VLSeq(models.Model):
     id = models.AutoField(primary_key=True)
     seq = models.CharField(max_length=1500, default='')
 
-
+# TODO delete
 class VHSeq(models.Model):
     id = models.AutoField(primary_key=True)
     seq = models.CharField(max_length=1500, default='')
 
-
+# TODO delete
 class Metadata(models.Model):
     id = models.AutoField(primary_key=True)
     target_type = models.CharField(max_length=25, default='', blank=True)
@@ -63,7 +135,7 @@ class Metadata(models.Model):
     tcsupe = models.CharField(max_length=25, default='', blank=True)
     pure = models.CharField(max_length=25, default='', blank=True)
 
-
+# TODO delete
 class Entry(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, default='')
@@ -106,6 +178,7 @@ class TrimmerEntry(models.Model):
         return len(TrimmerLight.objects.filter(entry__pk=self.pk,  duplicate=False))
 
 
+
 class TrimmerHeavy(models.Model):
     id = models.AutoField(primary_key=True)
     SMARTindex = models.CharField(max_length=20)
@@ -126,67 +199,49 @@ class TrimmerHeavy(models.Model):
     domain = models.CharField(max_length=1000, blank=True, null=True)
     duplicate = models.BooleanField(default=False)
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
+    sample_name = models.CharField(max_length=20, default='')
+
 
     @property
     def strip_domain(self):
         try:
-            return TrimmerHeavy.objects.get(id=self.id).domain.replace(',', '')
+            return self.domain.replace(',', '')
         except:
             return ''
 
     @property
     def strip_aa(self):
         try:
-            return TrimmerHeavy.objects.get(id=self.id).aa.replace('`', '')
+            return self.aa.replace('`', '')
         except:
             return ''
 
     @property
     def get_layout(self):
         try:
-            return [{'numbering': x, 'domain': y, 'color': color_dict[y]} for x, y in zip(TrimmerHeavy.objects.get(id=self.id).numbering.split(','),
-                                                                  TrimmerHeavy.objects.get(id=self.id).domain.replace(
-                                                                      ',', ''))]
+            this = [{'numbering': x, 'domain': y, } for x, y in zip(self.numbering.split(','),
+                                                                    self.domain.replace(',', ''))]
+            return this
         except:
             return ''
 
     @property
     def get_region(self):
         try:
-            return [{'range': 26, 'label': 'HFR1', 'color': region_dict['HF'],},
-                    {'range': 12, 'label': 'CDR-H1', 'color': region_dict['CDR'],},
-                    {'range': 17, 'label': 'HFR2', 'color': region_dict['HF'],},
-                    {'range': 10, 'label': 'CDR-H2', 'color': region_dict['CDR'],},
-                    {'range': 39, 'label': 'HFR3', 'color': region_dict['HF'],},
-                    {'range': 13, 'label': 'CDR-H3', 'color': region_dict['CDR'],},
-                    {'range': 11, 'label': 'HFR4', 'color': region_dict['HF'],}]
+            return general_regions_function(self, 'Heavy')
         except:
-            return ''
+            return ['error']
 
     @property
     def get_table(self):
         try:
-            return [{'range': '1-26', 'label': 'HFR1', 'splice': self.strip_domain[:26].replace('-', ''),  'color': region_dict['HF'],
-                     'len_splice': len(self.strip_domain[:26].replace('-', ''))},
-                    {'range': '27-38', 'label': 'CDR-H1', 'splice': self.strip_domain[26:38].replace('-', ''), 'color': region_dict['CDR'],
-                     'len_splice': len(self.strip_domain[26:38].replace('-', ''))},
-                    {'range': '39-55', 'label': 'HFR2', 'splice': self.strip_domain[38:55].replace('-', ''), 'color': region_dict['HF'],
-                     'len_splice': len(self.strip_domain[38:55].replace('-', ''))},
-                    {'range': '56-65', 'label': 'CDR-H2', 'splice': self.strip_domain[55:65].replace('-', ''), 'color': region_dict['CDR'],
-                     'len_splice': len(self.strip_domain[55:65].replace('-', ''))},
-                    {'range': '66-104', 'label': 'HFR3', 'splice': self.strip_domain[65:104].replace('-', ''), 'color': region_dict['HF'],
-                     'len_splice': len(self.strip_domain[65:104].replace('-', ''))},
-                    {'range': '105-117', 'label': 'CDR-H3', 'splice': self.strip_domain[104:117].replace('-', ''), 'color': region_dict['CDR'],
-                     'len_splice': len(self.strip_domain[104:117].replace('-', ''))},
-                    {'range': '118-128', 'label': 'HFR4', 'splice': self.strip_domain[117:128].replace('-', ''), 'color': region_dict['HF'],
-                     'len_splice': len(self.strip_domain[117:128].replace('-', ''))}]
+            return general_table(self, 'Heavy')
         except:
-            return ''
+            return ['error']
 
 
 class TrimmerLight(models.Model):
     id = models.AutoField(primary_key=True)
-
     SMARTindex = models.CharField(max_length=20)
     pct_support = models.DecimalField(max_digits=10, decimal_places=5)
     asv_support = models.DecimalField(max_digits=10, decimal_places=5)
@@ -205,50 +260,46 @@ class TrimmerLight(models.Model):
     domain = models.CharField(max_length=1000, blank=True, null=True)
     duplicate = models.BooleanField(default=False)
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
+    sample_name = models.CharField(max_length=20, default='')
+
 
     @property
     def strip_domain(self):
         try:
-            return TrimmerLight.objects.get(id=self.id).domain.replace(',', '')
+            return self.domain.replace(',', '')
         except:
             return ''
 
     @property
     def strip_aa(self):
         try:
-            return TrimmerLight.objects.get(id=self.id).aa.replace('`', '')
+            return self.aa.replace('`', '')
         except:
             return ''
 
     @property
     def get_layout(self):
         try:
-            return [{'numbering': x, 'domain': y, 'color': color_dict[y]} for x,y in zip(TrimmerLight.objects.get(id=self.id).numbering.split(','),
-                                                                 TrimmerLight.objects.get(id=self.id).domain.replace(',', ''))]
+            this = [{'numbering': x, 'domain': y, } for x,y in zip(self.numbering.split(','),
+                                                                   self.domain.replace(',', ''))]
+            return this
         except:
             return ''
 
     @property
     def get_region(self):
         try:
-            return [{'range': 26, 'label': 'HFR1'}, {'range': 12, 'label': 'CDR-H1'},
-                    {'range': 17, 'label': 'HFR2'}, {'range': 10, 'label': 'CDR-H2'}, {'range': 39, 'label': 'HFR3'},
-                    {'range': 13, 'label': 'CDR-H3'}, {'range': 11, 'label': 'HFR4'}]
+            return general_regions_function(self, 'Light')
         except:
-            return ''
+            return ['error']
 
     @property
     def get_table(self):
         try:
-            return [{'range': '1-26', 'label': 'HFR1', 'splice': self.strip_domain[:26].replace('-', ''), 'len_splice': len(self.strip_domain[:26].replace('-', ''))},
-                    {'range': '27-38', 'label': 'CDR-H1', 'splice': self.strip_domain[26:38].replace('-', ''), 'len_splice': len(self.strip_domain[26:38].replace('-', ''))},
-                    {'range': '39-55', 'label': 'HFR2', 'splice': self.strip_domain[38:55].replace('-', ''), 'len_splice': len(self.strip_domain[38:55].replace('-', ''))},
-                    {'range': '56-65', 'label': 'CDR-H2', 'splice': self.strip_domain[55:65].replace('-', ''), 'len_splice': len(self.strip_domain[55:65].replace('-', ''))},
-                    {'range': '66-104', 'label': 'HFR3', 'splice': self.strip_domain[65:104].replace('-', ''), 'len_splice': len(self.strip_domain[65:104].replace('-', ''))},
-                    {'range': '105-117', 'label': 'CDR-H3', 'splice': self.strip_domain[104:117].replace('-', ''), 'len_splice': len(self.strip_domain[104:117].replace('-', ''))},
-                    {'range': '118-128', 'label': 'HFR4', 'splice': self.strip_domain[117:128].replace('-', ''), 'len_splice': len(self.strip_domain[117:128].replace('-', ''))}]
+            return general_table(self, 'Light')
         except:
-            return ''
+            return ['error']
+
 
 
 class TrimmerEntryStatus(models.Model):
