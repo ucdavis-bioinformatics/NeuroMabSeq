@@ -6,12 +6,16 @@
 - each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
 - finish duplicates links
 - clean up the google analytics 
-- add color when stripping
 - figure out light chain
 - make status page harder to access
 - debug=FALSE
 - give them metadata names for sanger stuff
-- new category or protein target (default values at least)
+
+
+- sort showing the NeuroMab IM subclones
+- status 
+- add the .1.2.3
+ 
 
 ### LONG TERM:
 - finish instance setup documentation

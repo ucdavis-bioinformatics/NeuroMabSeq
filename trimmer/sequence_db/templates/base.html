@@ -53,20 +53,28 @@ p {
         <a href="https://github.com/ucdavis-bioinformatics/NeuroMabSeq/tree/website" class="w3-bar-item w3-button">GITHUB</a>
       </div>
     </div>
-    <a href="/" class="w3-button-small w3-right" style="color:white"><img style="padding:5px" src="{% static "neuromablogo.png" %}" alt="My image" style="width:100%">
+<!--    <div align="center" sytle="position:absolute"><a href="/"  class="w3-button-small w3-center" style="color:white"><img style="padding:2px;width:25%" src="{% static "neuromablogo2.png" %}" alt="My image" style="width:50%"></a>-->
+
+      <a href="/" class="w3-padding-large w3-button w3-right" style="color:white">NeuroMabSeq Home</a>
+
+    </div>
 </a>
 
   </div>
 </div>
 
 <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
-<div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">
+<div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px;color:white">
   <a href="/new_query/" class="w3-bar-item w3-button w3-padding-large">QUERY</a>
   <a href="/analytics/" class="w3-bar-item w3-button w3-padding-large">ANALYTICS</a>
-  <a href="/" class="w3-bar-item w3-button w3-padding-large">NEUROMAB</a>
-  <a href="/" class="w3-bar-item w3-button w3-padding-large">GITHUB</a>
+  <a href="http://neuromab.ucdavis.edu/" class="w3-bar-item w3-button w3-padding-large">NEUROMAB</a>
+  <a href="https://github.com/ucdavis-bioinformatics/NeuroMabSeq/tree/website" class="w3-bar-item w3-button w3-padding-large">GITHUB</a>
 </div>
 
+
+<div align="center" style="max-width:10000px;margin-top:42px;margin-bottom:2px;background-color:white" id="about_me">
+        <img style="padding:2px;width:300px" src="{% static "neuromablogo3.png" %}" alt="My image">
+</div>
 {% block content %}
 
 {% endblock %}

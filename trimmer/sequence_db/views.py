@@ -230,7 +230,9 @@ class TrimmerEntryDetailView(DetailView):
 
 def TrimmerEntryListView(request):
     context = {}
-    all_entries = TrimmerEntry.objects.filter(show_on_web=True)
+    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = all_entries.exclude(mabid__contains='positive')
+    all_entries = all_entries.exclude(mabid__contains='negative')
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs.order_by('mabid')
     return render(request, 'new_query.html', context)

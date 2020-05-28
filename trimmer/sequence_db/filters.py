@@ -2,10 +2,16 @@ from .models import *
 import django_filters
 
 def get_mab_ids():
-    return lambda: sorted([(entry.mabid, entry.mabid) for entry in TrimmerEntry.objects.filter(show_on_web=True)])
+    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = all_entries.exclude(mabid__contains='positive')
+    all_entries = all_entries.exclude(mabid__contains='negative')
+    return lambda: sorted([(entry.mabid, entry.mabid) for entry in all_entries])
 
 def get_targets():
-    return lambda: sorted(list(set([(entry.protein_target, entry.protein_target) for entry in TrimmerEntry.objects.filter(show_on_web=True)
+    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = all_entries.exclude(mabid__contains='positive')
+    all_entries = all_entries.exclude(mabid__contains='negative')
+    return lambda: sorted(list(set([(entry.protein_target, entry.protein_target) for entry in all_entries
                            if entry.protein_target != 'nan' and entry.protein_target])))
 
 def get_categories():
