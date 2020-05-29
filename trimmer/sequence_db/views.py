@@ -13,10 +13,15 @@ import numpy as np
 from .methods import *
 
 
+
+# TODO fix this so to filter pos and neg from Light and Heavy
 def main_page(request):
     html = 'home.html'
     context = {}
-    context['number_entries'] = len(TrimmerEntry.objects.filter(show_on_web=True))
+    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = all_entries.exclude(mabid__contains='positive')
+    all_entries = all_entries.exclude(mabid__contains='negative')
+    context['number_entries'] = len(all_entries)
     context['number_light'] = len(TrimmerLight.objects.filter(duplicate=False, entry__show_on_web=True))
     context['number_heavy'] = len(TrimmerHeavy.objects.filter(duplicate=False, entry__show_on_web=True))
     template = loader.get_template(html)
