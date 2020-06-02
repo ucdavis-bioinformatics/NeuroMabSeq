@@ -308,15 +308,15 @@ class TrimmerEntryStatus(models.Model):
 
     sample_name = models.CharField(max_length=20)
     plate_location = models.CharField(max_length=5)
-    volume = models.IntegerField()
-    concentration = models.IntegerField()
+    volume = models.IntegerField(default=0)
+    concentration = models.IntegerField(default=0)
     comments = models.CharField(max_length=50)
-    amplicon_concentration = models.DecimalField(max_digits=10, decimal_places=2)
+    amplicon_concentration = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     failure = models.CharField(max_length=30)
     inline_index_name = models.CharField(max_length=30)
     inline_index = models.CharField(max_length=30)
-    LCs_reported = models.IntegerField()
-    HCs_reported = models.IntegerField()
+    LCs_reported = models.IntegerField(default=0)
+    HCs_reported = models.IntegerField(default=0)
 
     @property
     def plate_name(self):

@@ -416,14 +416,14 @@ def new_create_status(row, partial):
                                                                 sample_name = row['sample_name'],
                                                                 plate_location = row['plate_location'],
                                                                 volume = row['volume'],
-                                                                concentration = row['concentration'],
+                                                                # concentration = row['concentration'],
                                                                 comments = row['comments'],
-                                                                amplicon_concentration = row['amplicon_concentration'],
+                                                                # amplicon_concentration = row['amplicon_concentration'],
                                                                 failure = row['failure'],
                                                                 inline_index_name = row['inline_index_name'],
                                                                 inline_index = row['inline_index'],
-                                                                LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
-                                                                HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
+                                                                # LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
+                                                                # HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
                                                                 )
 
         else:
@@ -431,14 +431,14 @@ def new_create_status(row, partial):
                                                         sample_name = '' if math.isnan(row['sample_name']) else row['sample_name'],
                                                         plate_location = '' if math.isnan(row['plate_location']) else row['plate_location'],
                                                         volume = 0 if math.isnan(row['volume']) else row['volume'],
-                                                        concentration = 0 if math.isnan(row['concentration']) else row['concentration'],
+                                                        # concentration = 0 if math.isnan(row['concentration']) else row['concentration'],
                                                         comments = '' if math.isnan(row['comments']) else row['comments'],
-                                                        amplicon_concentration = 0 if math.isnan(row['amplicon_concentration']) else row['amplicon_concentration'],
+                                                        # amplicon_concentration = 0 if math.isnan(row['amplicon_concentration']) else row['amplicon_concentration'],
                                                         failure = '' if math.isnan(row['failure']) else row['failure'],
                                                         inline_index_name = '' if type(row['inline_index_name']) != str else row['inline_index_name'],
                                                         inline_index = '' if math.isnan(row['inline_index']) else row['inline_index'],
-                                                        LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
-                                                        HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
+                                                        # LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
+                                                        # HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
                                                         )
 
         status_create.save()

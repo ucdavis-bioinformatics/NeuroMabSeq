@@ -246,11 +246,30 @@ def TrimmerEntryListView(request):
 def TrimmerStatusListView(request):
     context = {}
     context['all_entries'] = TrimmerEntryStatus.objects.all()
+
     context['status_entries'] = [i.entry.mabid for i in TrimmerEntryStatus.objects.all()]
+    # print(len(TrimmerEntryStatus.objects.all()))
+    # for i in range(0, len(TrimmerEntryStatus.objects.all())):
+    #     try:
+    #         context['status_entries'].append(TrimmerEntryStatus.objects.all()[i].entry.mabid)
+    #     except:
+    #         print(i.entry.mabid)
+
+    context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
+    # for i in TrimmerEntry.objects.all():
+    #     try:
+    #         context['entries'].append(TrimmerEntryStatus.objects.all()[i].mabid)
+    #     except:
+    #         print(i.mabid)
+
     context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
     context['status_not_in_entries'] = status_not_present()
     context['entries_not_in_status'] = sorted(list(set(context['entries']) - set(context['status_entries'])))
     context['messages'] = Messages.objects.all()
+    context['messages'] = [i.message.split(':')[1].replace(' ', '') for i in context['messages'] if 'metadata' in i.message]
+    context['metadata_minus_status'] = sorted(list(set(context['messages']) - set(context['status_entries'])))
+    context['status_minus_metadata'] = sorted(list(set(context['status_entries']) - set(context['messages'])))
+
     # TODO plate stats for this view
     context['plate_stats'] = ''
     return render(request, 'status_list.html', context)
