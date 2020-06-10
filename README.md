@@ -10,7 +10,7 @@
 - make status page harder to access
 - debug=FALSE
 - give them metadata names for sanger stuff
-
+- No Smart index for sanger sequences..
 
 - sort showing the NeuroMab IM subclones
 - status 

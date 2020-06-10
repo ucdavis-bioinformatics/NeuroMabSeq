@@ -11,6 +11,7 @@ import plotly.graph_objs as go
 import plotly.figure_factory as ff
 import numpy as np
 from .methods import *
+from django.db.models import F
 
 
 
@@ -239,7 +240,7 @@ def TrimmerEntryListView(request):
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
-    context['queryset'] = context['filter'].qs.order_by('mabid')
+    context['queryset'] = context['filter'].qs.order_by(F('category').asc(nulls_last=True))
     return render(request, 'new_query.html', context)
 
 

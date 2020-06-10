@@ -149,7 +149,11 @@ function toggle_it(itemID){
                                           <td style="word-wrap: break-word">{{item.seq_platform}}</td>
                                           <td style="word-wrap: break-word">{{item.plate}}</td>
                                           <td style="word-wrap: break-word">{{item.total_reads}}</td>
-                                          <td style="word-wrap: break-word">{{item.SMARTindex}}</td>
+                                          {% if item.is_sanger %}
+                                            <td style="word-wrap: break-word">N/A</td>
+                                          {% else %}
+                                            <td style="word-wrap: break-word">{{item.SMARTindex}}</td>
+                                          {% endif %}
                                       </tr>
 
                                </table>
@@ -265,8 +269,11 @@ function toggle_it(itemID){
                                           <td style="word-wrap: break-word">{{item.seq_platform}}</td>
                                           <td style="word-wrap: break-word">{{item.plate}}</td>
                                           <td style="word-wrap: break-word">{{item.total_reads}}</td>
-                                          <td style="word-wrap: break-word">{{item.SMARTindex}}</td>
-                                      </tr>
+                                          {% if item.is_sanger %}
+                                            <td style="word-wrap: break-word">N/A</td>
+                                          {% else %}
+                                            <td style="word-wrap: break-word">{{item.SMARTindex}}</td>
+                                          {% endif %}                                      </tr>
 
                                </table>
                                <br>

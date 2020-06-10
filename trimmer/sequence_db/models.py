@@ -31,11 +31,12 @@ region_dict = {'HF': '#00FFFF', 'CDR': '#CCFF99'}
 
 
 categories = {
-    1: "NeuroMab IM subclones",
+    1: "NeuroMab IM Subclones",
     2: "Non-NeuroMab High Priority Subclones",
     3: "NeuroMab Alternative Subclones",
     4: "High Priority Parents",
     5: "Other Parents",
+    6: "Sanger Subclones"
               }
 
 heavy_increment = [
@@ -239,6 +240,10 @@ class TrimmerHeavy(models.Model):
         except:
             return ['error']
 
+    @property
+    def is_sanger(self):
+        return self.seq_platform == 'Sanger'
+
 
 class TrimmerLight(models.Model):
     id = models.AutoField(primary_key=True)
@@ -300,6 +305,9 @@ class TrimmerLight(models.Model):
         except:
             return ['error']
 
+    @property
+    def is_sanger(self):
+        return self.seq_platform == 'Sanger'
 
 
 class TrimmerEntryStatus(models.Model):
