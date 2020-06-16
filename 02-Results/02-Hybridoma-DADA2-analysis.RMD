@@ -16,7 +16,8 @@ library(msaR)
 library(DECIPHER)
 options(stringsAsFactors=F)
 
-minReadSupport = .2  # only ASVs with at least this percentage of reads will be output
+minReadSupport = .2  # only ASVs with at least this fraction of reads will be output
+minReadCount = 10  # only samples with at least this many reads will be processed
 ```
 
 ### Setup File and Sample Names
@@ -36,7 +37,7 @@ sampleData = read.table(paste("https://submissions.dnatech.ucdavis.edu/server/ap
 # Load SMARTindex --> Well ID conversion:
 wellIDX = read.table("SMARTindex_well.tsv", head=T, as.is=T)
 rownames(wellIDX) = wellIDX$index_name
-P = strsplit(plate, '_')[[1]][2]
+P = strsplit(plate, '_|-')[[1]][2]
 wellIDX$sample_name = paste(P, wellIDX$well, sep='_')
 
 
@@ -128,8 +129,8 @@ write.table(seqtabLC.tab, file='00-no-filter-seqtab_LC.tsv', sep='\t', row.names
 ```{r Process HC}
 ############ Filter ASVs and samples ######## 
 # Rows are ASVs, cols are samples:
-tmp = seqtabHC
-colnames(tmp) = paste0('H', 1:ncol(tmp))
+tmpHC = seqtabHC
+colnames(tmpHC) = paste0('H', 1:ncol(tmpHC))
 
 # Filters HC:
 failedidxHC = rowSums(seqtabHC >= 10) > 0 # throw out samples that have no ASV with at least 10 reads of support 
@@ -170,10 +171,13 @@ readr::write_tsv(HC.out, paste0(outp, plate, "_", "HeavyChain.tsv"))
 ```{r, Process LC }
 
 # Filters LC:
+tmpLC = seqtabLC
+colnames(tmpLC) = paste0('L', 1:ncol(tmpLC))
+
 failedidxLC = rowSums(seqtabLC >= 10) > 0
 commonidxLC = colSums(seqtabLC > 5)/nrow(seqtabLC) < .5  # throw out ASVs that show up in >50% samples with at least 5 reads
 seqtabLC.f = seqtabLC[failedidxLC, commonidxLC]
-seqtabLC.f.pct = 100*seqtabLC.f/rowSums(seqtabLC.f)
+seqtabLC.f.pct = 100*seqtabLC.f/(rowSums(seqtabLC.f)+1)
 lowcountidxLC = colSums(seqtabLC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
 seqtabLC.f2 = seqtabLC.f[,lowcountidxLC]
 dim(seqtabLC.f2)
