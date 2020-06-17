@@ -36,7 +36,8 @@ categories = {
     3: "NeuroMab Alternative Subclones",
     4: "High Priority Parents",
     5: "Other Parents",
-    6: "Sanger Subclones"
+    6: "Sanger Subclones",
+    7: "Name in progress"
               }
 
 heavy_increment = [

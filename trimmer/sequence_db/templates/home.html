@@ -17,6 +17,15 @@ table, th, td {
   padding: 10px;
 }
 
+.logo {
+
+  background-size: cover;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  border-style: none;
+}
+
 </style>
 
 
@@ -35,15 +44,15 @@ table, th, td {
 
 <!-- The Experience Section -->
   <div class="w3-white" id="experience">
-    <div class="w3-container w3-content w3-padding-16" style="max-width:800px">
+    <div class="w3-container w3-content w3-padding-16" style="max-width:900px">
       <h3 class="w3-wide w3-center">Project Information</h3>
-            <div style="font-size:17px">
+            <div style="font-size:21px">
                 We have undertaken the Neuroscience Monoclonal Antibody Sequencing Initiative (NeuroMabSeq),
                 a concerted effort to determine and make publicly available the sequences of monoclonal antibodies
                 valuable to neuroscience research.
             </div>
             <br>
-            <div style="font-size:17px">
+            <div style="font-size:21px">
                 We previously created a valuable collection of mouse monoclonal antibodies (mAbs) validated for
                 neuroscience research. As part of a BRAIN Initiative project (NIH U24 NS109113) to enhance dissemination and utility
                 of this valuable resource, we are applying high-throughput DNA sequencing technologies to determine
@@ -51,7 +60,7 @@ table, th, td {
                 hybridoma cells that are the source of these mAbs.
             </div>
             <br>
-            <div style="font-size:17px">
+            <div style="font-size:21px">
                 These efforts will allow for permanent archiving of this valuable collection as DNA sequence.
                 The availability of these sequences will also allow researchers to generate plasmids for expression
                 of molecularly defined mAbs, leading to enhanced research transparency and reproducibility.
@@ -59,7 +68,7 @@ table, th, td {
                 chain variable fragments or ScFvs.
             </div>
             <br>
-            <div style="font-size:17px">
+            <div style="font-size:21px">
                 This website serves as the public DNA sequence repository for the sequences of these mouse mAb heavy and
                 light chain variable domains and serves as an open resource for enhancing dissemination of this
                 valuable collection of validated mAbs.
@@ -67,7 +76,7 @@ table, th, td {
             </div>
 
             <br>
-              <table style="table-layout: fixed; width: 100%; font-size:17px">
+              <table style="table-layout: fixed; width: 100%; font-size:21px">
                   <tr>
                     <th>Total Mouse mAb Sequence Entries in Database:</th>
                     <th>Total Mouse Heavy Chain Sequences:</th>
@@ -140,36 +149,44 @@ table, th, td {
 
     <div class="w3-row w3-padding-32">
       <div class="w3-third" >
-        <p>
             <a href="http://neuromab.ucdavis.edu/">
-                                        <button  label="NeuroMab Website" name="so_link" class="btn btn-primary">NeuroMab Website</button>
+                <img src="{% static "neuromab_logo.jpg" %}" alt="My image" style="width:35%;padding:5px">
             </a>
-        </p>
-        <img src="{% static "neuromab_logo.jpg" %}" alt="My image" style="width:35%">
       </div>
 
 
       <div class="w3-third" >
-        <p>
             <a href="https://trimmer.faculty.ucdavis.edu/">
-                                        <button  label="Trimmer Lab Website" name="so_link" class="btn btn-primary">Trimmer Lab Website</button>
+                <img src="http://trimmer.faculty.ucdavis.edu/wp-content/uploads/sites/530/2018/10/TrimmerLablogo_GS2.png" alt="Random Name" style="width:80%;padding:15px">
             </a>
-        </p>
-        <img src="http://trimmer.faculty.ucdavis.edu/wp-content/uploads/sites/530/2018/10/TrimmerLablogo_GS2.png" alt="Random Name" style="width:90%">
       </div>
 
 
       <div class="w3-third" >
-        <p>
             <a href="https://braininitiative.nih.gov/">
-                                        <button  label="Trimmer Lab Website" name="so_link" class="btn btn-primary">Brain Initiative</button>
+                <img src="{% static "brain_logo.jpg" %}" alt="My image" style="width:60%;padding:5px">
             </a>
-        </p>
-        <img src="{% static "brain_logo.jpg" %}" alt="My image" style="width:80%">
       </div>
 
 
     </div>
+    <div class="w3-row w3-padding-32">
+      <div class="w3-half" >
+            <a href="http://neuromab.ucdavis.edu/">
+                <img align="right" src="{% static "dnatech_final.svg" %}" alt="My image" style="width:45%;padding:5px;padding-right:65px">
+            </a>
+      </div>
+
+
+      <div class="w3-half" >
+       <a href="https://braininitiative.nih.gov/">
+                <img src="{% static "biocore_banner.png" %}" alt="My image" style="width:75%;padding:5px;">
+       </a>
+      </div>
+
+
+    </div>
+
   </div>
 
 </div>

@@ -513,9 +513,12 @@ def new_update_entry(entry, row):
 def new_metadata_upload():
     mapping = new_get_map_dict()
     # print(mapping)
-    files = ['../static_data/NMSeq_alldata.tsv', '../static_data/metadata_1.tsv']
+    dir = "../static_data/"
+    files = os.listdir(dir)
+    files = [i for i in files if ".tsv" in i]
 
     for file in files:
+        file = dir+file
         result = pd.read_csv(file, delimiter='\t', index_col=False)
         result = result.to_dict(orient='records')
         for row in result:
