@@ -525,6 +525,8 @@ def new_metadata_upload():
         result = pd.read_csv(file, delimiter='\t', index_col=False)
         result = result.to_dict(orient='records')
         for row in result:
+            light_entries = []
+            heavy_entries = []
             if row['sample_name'] != 'None' and row['sample_name'] != 0 and '_' in row['sample_name']:
                 # well = row['sample_name'].split('_')[1]
                 # plate = 'plate' + row['sample_name'].split('_')[0][1:]
