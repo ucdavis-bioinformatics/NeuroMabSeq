@@ -506,7 +506,10 @@ def new_update_entry(entry, row):
     entry.protein_target = row['ProteinTarget']
     entry.show_on_web = False if row['ShowOnWeb'] == 'F' else True
     entry.mabid = row['trimmer_id']
-    entry.save()
+    try:
+        entry.save()
+    except:
+        print(entry.__dict__)
 
 
 # TODO fix the ranD samples
@@ -529,18 +532,18 @@ def new_metadata_upload():
                 heavy_entries = TrimmerHeavy.objects.filter(sample_name=row['sample_name'])
 
             # handle the R and D samples
-            elif 'RandD' in row['PlateName']:
-                plate = row['PlateName']
-                if 'SMART' in row['sample_name']:
-                    light_entries = TrimmerLight.objects.filter(plate__icontains='PRandD', SMARTindex=row['sample_name'])
-                    heavy_entries = TrimmerHeavy.objects.filter(plate__icontains='PRandD', SMARTindex=row['sample_name'])
-                else:
-                    light_entries = TrimmerLight.objects.filter(plate__icontains='PRandD', entry__mabid=row['sample_name'])
-                    heavy_entries = TrimmerHeavy.objects.filter(plate__icontains='PRandD', entry__mabid=row['sample_name'])
-            # handle the sanger metadata entries
-            elif row['sample_name'] == 'None':
-                light_entries = TrimmerLight.objects.filter(entry__mabid=row['trimmer_id'])
-                heavy_entries = TrimmerHeavy.objects.filter(entry__mabid=row['trimmer_id'])
+            # elif 'RandD' in row['PlateName']:
+            #     plate = row['PlateName']
+            #     if 'SMART' in row['sample_name']:
+            #         light_entries = TrimmerLight.objects.filter(plate__icontains='PRandD', SMARTindex=row['sample_name'])
+            #         heavy_entries = TrimmerHeavy.objects.filter(plate__icontains='PRandD', SMARTindex=row['sample_name'])
+            #     else:
+            #         light_entries = TrimmerLight.objects.filter(plate__icontains='PRandD', entry__mabid=row['sample_name'])
+            #         heavy_entries = TrimmerHeavy.objects.filter(plate__icontains='PRandD', entry__mabid=row['sample_name'])
+            # # handle the sanger metadata entries
+            # elif row['sample_name'] == 'None':
+            #     light_entries = TrimmerLight.objects.filter(entry__mabid=row['trimmer_id'])
+            #     heavy_entries = TrimmerHeavy.objects.filter(entry__mabid=row['trimmer_id'])
 
             if len(light_entries):
                 entry = light_entries[0].entry

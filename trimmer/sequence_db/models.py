@@ -149,7 +149,7 @@ class Entry(models.Model):
 
 class TrimmerEntry(models.Model):
     id = models.AutoField(primary_key=True)
-    mabid = models.CharField(max_length=50, default='')
+    mabid = models.CharField(max_length=50, default='', unique=True)
     show_on_web = models.BooleanField(default=True)
     category = models.IntegerField(blank=True, null=True)
     protein_target = models.CharField(max_length=100, blank=True, null=True)
