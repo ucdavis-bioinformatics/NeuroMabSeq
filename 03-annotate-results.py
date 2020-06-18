@@ -40,7 +40,7 @@ def process_file(chain):
     outfDW.writeheader()
 
     for record in infDR:
-        seq = Seq(record['ASV'])
+        seq = Seq(record['ASV'].strip())
         # Build translations of each frame until one has a predicted domain:
         for i in range(3):
             aa = (seq[i:] + ("N" * (3 - len(seq[i:]) %3))).translate()
