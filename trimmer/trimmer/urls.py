@@ -17,8 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from .settings import *
+from sequence_db import views
+from rest_framework import routers
+from django.conf.urls import url, include
+
 
 urlpatterns = [
-    path(r'', include('sequence_db.urls')),
-    path('admin/', admin.site.urls),
+      path(r'', include('sequence_db.urls')),
+      path('admin/', admin.site.urls),
 ] + static(STATIC_URL, document_root=STATIC_ROOT)

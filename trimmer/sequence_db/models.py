@@ -31,13 +31,13 @@ region_dict = {'HF': '#00FFFF', 'CDR': '#CCFF99'}
 
 
 categories = {
-    1: "NeuroMab IM Subclones",
-    2: "Non-NeuroMab High Priority Subclones",
+    1: "NeuroMab mAbs",
+    2: "Non-NeuroMab mAbs",
     3: "NeuroMab Alternative Subclones",
-    4: "High Priority Parents",
-    5: "Other Parents",
-    6: "Sanger Subclones",
-    7: "Name in progress"
+    4: "Lead oligoclonal Abs",
+    5: "Other oligoclonal Abs",
+    6: "Recombinant mAbs",
+    7: "NeuroMab mAbs: commercially sequenced"
               }
 
 heavy_increment = [
@@ -149,7 +149,7 @@ class Entry(models.Model):
 
 class TrimmerEntry(models.Model):
     id = models.AutoField(primary_key=True)
-    mabid = models.CharField(max_length=50, default='', unique=True)
+    mabid = models.CharField(max_length=50, default='')
     show_on_web = models.BooleanField(default=True)
     category = models.IntegerField(blank=True, null=True)
     protein_target = models.CharField(max_length=100, blank=True, null=True)
@@ -338,3 +338,4 @@ class TrimmerEntryStatus(models.Model):
 class Messages(models.Model):
     id = models.AutoField(primary_key=True)
     message = models.CharField(max_length=400)
+

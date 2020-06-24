@@ -14,6 +14,17 @@ from .methods import *
 from django.db.models import F
 
 
+# API STUFF
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+from .serializers import *
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
+from rest_framework import viewsets
+
+
+
 
 # TODO fix this so to filter pos and neg from Light and Heavy
 def main_page(request):
@@ -241,6 +252,8 @@ def TrimmerEntryListView(request):
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs.order_by(F('category').asc(nulls_last=True))
+    # context['total_length'] = len(context['queryset'])
+    # context['queryset'] = context['queryset'][:500]
     return render(request, 'new_query.html', context)
 
 
@@ -281,6 +294,24 @@ def EntryListView(request):
     all_entries = Entry.objects.all()
     context['filter'] = EntryFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs.order_by('-name')
+
     return render(request, 'query.html', context)
 
 
+
+# @csrf_exempt
+# def TrimmerAPIList(request):
+#
+#     """
+#     List all code snippets, or create a new snippet.
+#     """
+#     if request.method == 'GET':
+#         entries = TrimmerEntry.objects.all()
+#         serializer = TrimmerEntrySerializer(entries, many=True)
+#         return JsonResponse(serializer.data, safe=False)
+
+class APIEntryListView(generics.ListAPIView):
+    queryset = TrimmerEntry.objects.all()
+    serializer_class = TrimmerEntrySerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['mabid', 'category']
