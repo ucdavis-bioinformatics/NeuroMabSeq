@@ -47,6 +47,7 @@ td.wrapok {
     var cat = url.searchParams.get("category_choice");
     var target = url.searchParams.get("target_choice");
     var ordering = url.searchParams.get("ordering");
+    var search = url.searchParams.get("search_field");
     if (mabid==null){
         var mabid = ''
     }
@@ -64,6 +65,10 @@ td.wrapok {
         var ordering = ''
     }
 
+    if (search==null){
+        var search = ''
+    }
+
 
       $(document).ready(function() {
           $('#albums').DataTable({
@@ -71,7 +76,7 @@ td.wrapok {
               "sortable": false,
               "scrollX": true,
               'serverSide': true,
-              'ajax': '/api/entry_list/?format=datatables' + '&mabid=' + mabid + '&category=' + cat + '&protein_target=' + target + '&ordering=' + ordering,
+              'ajax': '/api/entry_list/?format=datatables' + '&mabid=' + mabid + '&category=' + cat + '&protein_target=' + target + '&ordering=' + ordering + '&search=' + search,
               'columns': [
                   {'data': 'mabid', 'sortable': false},
                   {'data': 'get_category', 'sortable': false},
@@ -95,23 +100,31 @@ td.wrapok {
 
       <h3 style="margin-top: 0">Entry Filter</h3>
       <div class="row"  >
-
-        <div class="form-group col-sm-4 col-md-3">
+          <div class="form-group col-sm-4 col-sm-3">
+            <strong>Search mAb ID OR Protein Target:</strong>
+          {% render_field filter.form.search class="form-control" %}
+        </div>
+        <div class="form-group col-sm-5 col-sm-3">
             <strong>mAb ID choice:</strong>
           {% render_field filter.form.name_choice class="form-control" %}
         </div>
-        <div class="form-group col-sm-4 col-md-3">
-            <strong>Category choice:</strong>
-          {% render_field filter.form.category_choice class="form-control" %}
-        </div>
-        <div class="form-group col-sm-4 col-md-3">
+        <div class="form-group col-sm-5 col-sm-3">
             <strong>Target choice:</strong>
           {% render_field filter.form.target_choice class="form-control" %}
         </div>
-        <div class="form-group col-sm-4 col-md-3">
+        <div class="form-group col-sm-5 col-sm-3">
+            <strong>Category choice:</strong>
+          {% render_field filter.form.category_choice class="form-control" %}
+        </div>
+        <div class="form-group col-sm-5 col-sm-3">
             <strong>Ordering:</strong>
           {% render_field filter.form.ordering class="form-control" %}
         </div>
+<!--          <div class="form-group col-sm-4 col-md-3">-->
+<!--            <strong>Search mAb ID:</strong>-->
+<!--          {% render_field filter.form.search_mabid class="form-control" %}-->
+<!--        </div>-->
+
       </div>
 
         <button type="submit" class="btn btn-primary">
@@ -136,7 +149,7 @@ td.wrapok {
         <table align="left" id="albums" class="table table-striped table-bordered" style="width:100%" data-server-side="true">
           <thead>
             <tr align="left">
-              <th align="left" >MabID</th>
+              <th align="left" >mAb ID</th>
               <th align="left" >Category</th>
               <th align="left" >Protein Target</th>
               <th align="left" >Light Count</th>

@@ -1,41 +1,42 @@
-# NeuroMabSeq
+# NeuroMabSeq Website
 
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
 
 ### TODO:
 - each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
-- finish duplicates links
-- clean up the google analytics 
-- make status page harder to access
 - debug=FALSE
-- get the + ones in the database
+- 101.1 101.2 etc if repeats..
 
  
-
 ### LONG TERM:
-- finish instance setup documentation
+- status page improvements
+- finish duplicates links
 - automate index to see what files need to be added still
 - csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
 - no loading libraries from internet have static files
 - some views https with login.. no cert long term
 
-### TESTING DUPLICATES:
-- N1/55.1    N3/22.1
-
-
 1. Check out the Django Project Tutorial in this directory.
-- This will cover:
-    - setting up a local development version
-        - conda, mysqldb, etc. 
-2. Setting Up the AWS instance (Ubuntu 18.04)
+    - This will cover: (Look at files on the instance AMI for reference specifically NGINX.conf and Gunicorn.conf files)       
+    - `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04`
+
+2. Setting Up the AWS instance and Mysql (Ubuntu 18.04)
     - ssh onto the instance (see private instructions) for the key and doing this in AWS
-    -Setup of Mysql:
-     ```
-     sudo apt update
-     sudo apt install mysql-server
-     sudo mysql
-     mysql> create database trimmer_lab;
-     ```
+    -Setup of Mysql (no longer needed.. uses sqllite): 
+         ```
+         sudo apt update
+         sudo apt install mysql-server
+         sudo mysql
+         mysql> create database trimmer_lab;
+         ```
+    - `sudo apt-get install mysql-devel` (No longer needed, uses sqllite)
+   
+    - Django will want to connect using root user with no password to a local db.
+        ```
+        use mysql;
+        update user set authentication_string=password(''), plugin='mysql_native_password' where user='root';
+        ```
+3. Conda setup
     - Setup of the conda:
         ```
         cd /tmp
@@ -44,38 +45,24 @@
         ```
       Yes ,yes ,yes enter etc. 
         `source ~/.bashrc`
-   
+   - Setup of the conda env:
+        ```
+        conda env create --name trimmer_lab --file environment.yml
+        source activate trimmer_lab
+        ```
+4. Repo setup 
     - Setup the Repo
         ```
         git clone --single-branch --branch website https://github.com/ucdavis-bioinformatics/NeuroMabSeq.git
-   
         ```
     - `sudo apt-get install gcc`
-    - `sudo apt-get install mysql-devel`
-   
-    - Setup of the conda env:
-        ```
-        conda env create --name trimmer_lab --file environment_linux.yml
-        source activate trimmer_lab
-        ```
-    - Django will want to connect using root user with no password to a local db.
-        ```
-        use mysql;
-        update user set authentication_string=password(''), plugin='mysql_native_password' where user='root';
-        ```
-   - Run `python manage.py runserver` and see if it works
-   
-       `python manage.py migrate`
-       
-       `python manage shell`
-       
-       `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04`
-   
 
+   - Run `python manage.py runserver` and see if it works along with `python manage.py migrate`, and `python manage shell`
+       
 
   
 #### This will fix 99% of problems unless someone pushes something funny to the repo!!!!
-```  # from the dirctory with the manage.py script
+```  # from the Neuromabseq directory
 sudo pkill gunicorn   
 git fetch --all
 git reset --hard origin/website
@@ -85,15 +72,6 @@ sudo systemctl restart gunicorn
 sudo systemctl restart nginx
 psudo python manage.py collectstatic
 ```
-- Had to add the following line to ~/.bashrc in order to get the psudo to work. 
-`psudo() { sudo env PATH="$PATH" "$@"; } `
-
-
-#### If not chaning static files but doing the above then:
-```
-cd 
-./restart.sh
-```
 
 #### This will fix 99% of problems but will not update the repo
 ```
@@ -102,7 +80,7 @@ sudo systemctl restart gunicorn
 sudo systemctl restart nginx
 ```
 
-#### Resetting the database: (see methods.py) need to make this stable for a login though
+#### Resetting the database: (see methods.py) need to make this stable for a login though (see `./reset_db.sh`)
 ```
 ./manage.py shell < wipe_db.py
 ./manage.py shell < wipe_status_data.py

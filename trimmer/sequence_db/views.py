@@ -257,7 +257,7 @@ def TrimmerEntryListView(request):
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
-    context['queryset'] = context['filter'].qs.order_by(F('category').asc(nulls_last=True))
+    # context['queryset'] = context['filter'].qs.order_by(F('category').asc(nulls_last=True))
     return render(request, 'new_query.html', context)
 
 
@@ -317,8 +317,9 @@ class APIEntryListView(generics.ListAPIView):
     queryset = queryset.exclude(mabid__contains='positive')
     queryset = queryset.exclude(mabid__contains='negative')
     serializer_class = TrimmerEntrySerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['mabid', 'category', 'protein_target']
+    search_fields = ['mabid', 'protein_target']
     ordering_fields = '__all__'
 
 

@@ -49,6 +49,8 @@ class TrimmerEntryFilter(django_filters.FilterSet):
                                                       ('light_count', 'Light Count Ascending'), ('-light_count', 'Light Count Descending'),
                                                       ('heavy_count', 'Heavy Count Ascending'), ('-heavy_count', 'Heavy Count Descending')
                                                       ))
+    search = django_filters.CharFilter()
+    # search_target = django_filters.CharFilter()
     class Meta:
         model = TrimmerEntry
         fields = []
