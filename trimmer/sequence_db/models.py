@@ -153,6 +153,8 @@ class TrimmerEntry(models.Model):
     show_on_web = models.BooleanField(default=True)
     category = models.IntegerField(blank=True, null=True)
     protein_target = models.CharField(max_length=100, blank=True, null=True)
+    light_count = models.IntegerField(blank=True, null=True)
+    heavy_count = models.IntegerField(blank=True, null=True)
 
     @property
     def get_category(self):
@@ -172,13 +174,8 @@ class TrimmerEntry(models.Model):
         return TrimmerLight.objects.filter(entry__pk=self.pk, duplicate=True)
 
     @property
-    def heavy_count(self):
-        return len(TrimmerHeavy.objects.filter(entry__pk=self.pk,  duplicate=False))
-
-    @property
-    def light_count(self):
-        return len(TrimmerLight.objects.filter(entry__pk=self.pk,  duplicate=False))
-
+    def get_url(self):
+        return 'new_entry/' + str(self.pk)
 
 
 class TrimmerHeavy(models.Model):

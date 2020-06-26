@@ -12,6 +12,7 @@ import plotly.figure_factory as ff
 import numpy as np
 from .methods import *
 from django.db.models import F
+from django.shortcuts import render, redirect
 
 
 # API STUFF
@@ -22,6 +23,7 @@ from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework import filters
 
 
 
@@ -247,13 +249,15 @@ class TrimmerEntryDetailView(DetailView):
 
 def TrimmerEntryListView(request):
     context = {}
+
+    context['protein_targets'] = [i[0] for i in simple_get_targets()]
+    context['mabids'] = [i[0] for i in simple_get_mab_ids()]
+    context['categories'] = [i[0] for i in simple_get_mab_ids()]
     all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs.order_by(F('category').asc(nulls_last=True))
-    # context['total_length'] = len(context['queryset'])
-    # context['queryset'] = context['queryset'][:500]
     return render(request, 'new_query.html', context)
 
 
@@ -262,20 +266,7 @@ def TrimmerStatusListView(request):
     context['all_entries'] = TrimmerEntryStatus.objects.all()
 
     context['status_entries'] = [i.entry.mabid for i in TrimmerEntryStatus.objects.all()]
-    # print(len(TrimmerEntryStatus.objects.all()))
-    # for i in range(0, len(TrimmerEntryStatus.objects.all())):
-    #     try:
-    #         context['status_entries'].append(TrimmerEntryStatus.objects.all()[i].entry.mabid)
-    #     except:
-    #         print(i.entry.mabid)
-
     context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
-    # for i in TrimmerEntry.objects.all():
-    #     try:
-    #         context['entries'].append(TrimmerEntryStatus.objects.all()[i].mabid)
-    #     except:
-    #         print(i.mabid)
-
     context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
     context['status_not_in_entries'] = status_not_present()
     context['entries_not_in_status'] = sorted(list(set(context['entries']) - set(context['status_entries'])))
@@ -289,29 +280,45 @@ def TrimmerStatusListView(request):
     return render(request, 'status_list.html', context)
 
 
-def EntryListView(request):
-    context = {}
-    all_entries = Entry.objects.all()
-    context['filter'] = EntryFilter(request.GET, queryset=all_entries)
-    context['queryset'] = context['filter'].qs.order_by('-name')
-
-    return render(request, 'query.html', context)
+def reset(request):
+    print(request.GET)
+    return redirect('/blah/')
 
 
+def blah(request):
+    print(request.GET)
+    return redirect('/new_query/')
+# def EntryListView(request):
+#     context = {}
+#     all_entries = Entry.objects.all()
+#     context['filter'] = EntryFilter(request.GET, queryset=all_entries)
+#     context['queryset'] = context['filter'].qs.order_by('-name')
+#     return render(request, 'query.html', context)
 
-# @csrf_exempt
-# def TrimmerAPIList(request):
+
+# class EntryViewSet(viewsets.ModelViewSet):
+#     serializer_class = TrimmerEntrySerializer
 #
-#     """
-#     List all code snippets, or create a new snippet.
-#     """
-#     if request.method == 'GET':
-#         entries = TrimmerEntry.objects.all()
-#         serializer = TrimmerEntrySerializer(entries, many=True)
-#         return JsonResponse(serializer.data, safe=False)
+#     def get_queryset(self):
+#         context = super(EntryViewSet, self).get_serializer_context()
+#         all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+#         all_entries = all_entries.exclude(mabid__contains='positive')
+#         all_entries = all_entries.exclude(mabid__contains='negative')
+#         return all_entries
+#
+#     def get_serializer_context(self):
+#         context = super(EntryViewSet, self).get_serializer_context()
+#         context.update({"request": self.request})
+#         return context
+
 
 class APIEntryListView(generics.ListAPIView):
-    queryset = TrimmerEntry.objects.all()
+    queryset = TrimmerEntry.objects.filter(show_on_web=True, )
+    queryset = queryset.exclude(mabid__contains='positive')
+    queryset = queryset.exclude(mabid__contains='negative')
     serializer_class = TrimmerEntrySerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['mabid', 'category']
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['mabid', 'category', 'protein_target']
+    ordering_fields = '__all__'
+
+

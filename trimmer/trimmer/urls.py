@@ -22,6 +22,11 @@ from rest_framework import routers
 from django.conf.urls import url, include
 
 
+#
+# router = routers.DefaultRouter()
+# router.register(r'albums', views.AlbumViewSet)
+
+
 urlpatterns = [
       path(r'', include('sequence_db.urls')),
       path('admin/', admin.site.urls),

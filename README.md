@@ -8,6 +8,7 @@
 - clean up the google analytics 
 - make status page harder to access
 - debug=FALSE
+- get the + ones in the database
 
  
 
