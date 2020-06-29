@@ -25,6 +25,7 @@ from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import filters
 
+import plotly.express as px
 
 
 
@@ -51,8 +52,9 @@ def GetAsvGraph():
     values = [[float(i) for i in df_l['asv_support'] if i is not None], [float(i) for i in df_h['asv_support'] if i is not None]]
     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
 
-    figure = ff.create_distplot(values, group_labels, bin_size=200)
-    figure.update_layout(title_text='Distribution of ASV Counts for Heavy Chain vs Light Chain')
+    figure = px.box()
+    figure.add_trace(go.Box(y=values[0], quartilemethod="inclusive", name="Light Chain ASV Count"))
+    figure.add_trace(go.Box(y=values[1], quartilemethod="inclusive", name="Heavy Chain ASV Count"))
     div = opy.plot(figure, auto_open=False, output_type='div')
 
     return div
@@ -67,139 +69,140 @@ def GetPctGraph():
     values = [[float(i) for i in df_l['pct_support'] if i is not None], [float(i) for i in df_h['pct_support'] if i is not None]]
     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
 
-    figure = ff.create_distplot(values, group_labels, bin_size=1)
-    figure.update_layout(title_text='Distribution of Percent Support for Heavy Chain vs Light Chain')
+    figure = px.box()
+    figure.add_trace(go.Box(y=values[0], quartilemethod="inclusive", name="Light Chain Percent Support"))
+    figure.add_trace(go.Box(y=values[1], quartilemethod="inclusive", name="Heavy Chain Percent Support"))
     div = opy.plot(figure, auto_open=False, output_type='div')
 
     return div
 
-
-def GetScoreGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-    values = [[float(i) for i in df_l['score'] if i is not None], [float(i) for i in df_h['score'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
-
-    figure = ff.create_distplot(values, group_labels, bin_size=1)
-    figure.update_layout(title_text='Distribution of Score for Heavy Chain vs Light Chain')
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
-
-
-def GetSeqGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-    values = [[len(i) for i in df_l['seq'] if i is not None], [len(i) for i in df_h['seq'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
-
-    figure = ff.create_distplot(values, group_labels, bin_size=1)
-    figure.update_layout(title_text='Distribution of Sequence Length for Heavy Chain vs Light Chain')
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
-
-
-def GetAAGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-    values = [[len(i) for i in df_l['aa'] if i is not None], [len(i) for i in df_h['aa'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
-
-    figure = ff.create_distplot(values, group_labels, bin_size=1)
-    figure.update_layout(title_text='Distribution of Amino Acid Length for Heavy Chain vs Light Chain')
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
-
-
-def GetDomainGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-    values = [[len(i) for i in df_l['aa'] if i is not None], [len(i) for i in df_h['domain'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
-
-    figure = ff.create_distplot(values, group_labels, bin_size=1)
-    figure.update_layout(title_text='Distribution of Coding Domain Length for Heavy Chain vs Light Chain')
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
-
-
-def GetSeqStopGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-
-    df_l = df_l.replace([np.inf, -np.inf], np.nan).dropna(how="all")
-    df_h = df_h.replace([np.inf, -np.inf], np.nan).dropna(how="all")
-
-    values = [[i for i in df_l['seq_stop_index'] if i is not None], [i for i in df_h['seq_start_index'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
-
-    figure = ff.create_distplot(values, group_labels, bin_size=1)
-    figure.update_layout(title_text='Distribution of Sequence Stop Index for Heavy Chain vs Light Chain')
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
-
-
-def GetSeqStartGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-
-    df_l = df_l.replace([np.inf, -np.inf], np.nan).dropna(how="all")
-    df_h = df_h.replace([np.inf, -np.inf], np.nan).dropna(how="all")
-
-    values = [[i for i in df_l['seq_start_index'] if i is not None], [i for i in df_h['seq_start_index'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
-
-    figure = ff.create_distplot(values, group_labels, bin_size=1)
-    figure.update_layout(title_text='Distribution of Sequence Start Index for Heavy Chain vs Light Chain')
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
-
-
-def ScoreGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-    values = [[len(i) for i in df_l['score_index'] if i is not None], [len(i) for i in df_h['score_index'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
-
-    figure = ff.create_distplot(values, group_labels, bin_size=1)
-    figure.update_layout(title_text='Distribution of Sequence Length for Heavy Chain vs Light Chain')
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
+#
+# def GetScoreGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#     values = [[float(i) for i in df_l['score'] if i is not None], [float(i) for i in df_h['score'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = ff.create_distplot(values, group_labels, bin_size=1, show_hist=False)
+#     figure.update_layout(title_text='Distribution of Score for Heavy Chain vs Light Chain')
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
+#
+#
+# def GetSeqGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#     values = [[len(i) for i in df_l['seq'] if i is not None], [len(i) for i in df_h['seq'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = ff.create_distplot(values, group_labels, bin_size=1, show_hist=False)
+#     figure.update_layout(title_text='Distribution of Sequence Length for Heavy Chain vs Light Chain')
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
+#
+#
+# def GetAAGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#     values = [[len(i) for i in df_l['aa'] if i is not None], [len(i) for i in df_h['aa'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = ff.create_distplot(values, group_labels, bin_size=1, show_hist=False)
+#     figure.update_layout(title_text='Distribution of Amino Acid Length for Heavy Chain vs Light Chain')
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
+#
+#
+# def GetDomainGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#     values = [[len(i) for i in df_l['aa'] if i is not None], [len(i) for i in df_h['domain'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = ff.create_distplot(values, group_labels, bin_size=1, show_hist=False)
+#     figure.update_layout(title_text='Distribution of Coding Domain Length for Heavy Chain vs Light Chain')
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
+#
+#
+# def GetSeqStopGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#
+#     df_l = df_l.replace([np.inf, -np.inf], np.nan).dropna(how="all")
+#     df_h = df_h.replace([np.inf, -np.inf], np.nan).dropna(how="all")
+#
+#     values = [[i for i in df_l['seq_stop_index'] if i is not None], [i for i in df_h['seq_start_index'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = ff.create_distplot(values, group_labels, bin_size=1, show_hist=False)
+#     figure.update_layout(title_text='Distribution of Sequence Stop Index for Heavy Chain vs Light Chain')
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
+#
+#
+# def GetSeqStartGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#
+#     df_l = df_l.replace([np.inf, -np.inf], np.nan).dropna(how="all")
+#     df_h = df_h.replace([np.inf, -np.inf], np.nan).dropna(how="all")
+#
+#     values = [[i for i in df_l['seq_start_index'] if i is not None], [i for i in df_h['seq_start_index'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = ff.create_distplot(values, group_labels, bin_size=1, show_hist=False)
+#     figure.update_layout(title_text='Distribution of Sequence Start Index for Heavy Chain vs Light Chain')
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
+#
+#
+# def ScoreGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#     values = [[len(i) for i in df_l['score_index'] if i is not None], [len(i) for i in df_h['score_index'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = ff.create_distplot(values, group_labels, bin_size=1, show_hist=False)
+#     figure.update_layout(title_text='Distribution of Sequence Length for Heavy Chain vs Light Chain')
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
 
 
 def analytics_view(request):
     context = {}
     context['graph'] = GetAsvGraph()
     context['graph_pct'] = GetPctGraph()
-    context['graph_seq'] = GetSeqGraph()
+    # context['graph_seq'] = GetSeqGraph()
     #context['graph_aa'] = GetAAGraph()
     #context['graph_domain'] = GetDomainGraph()
     #context['graph_seq_start'] = GetSeqStartGraph()
@@ -280,14 +283,6 @@ def TrimmerStatusListView(request):
     return render(request, 'status_list.html', context)
 
 
-def reset(request):
-    print(request.GET)
-    return redirect('/blah/')
-
-
-def blah(request):
-    print(request.GET)
-    return redirect('/new_query/')
 # def EntryListView(request):
 #     context = {}
 #     all_entries = Entry.objects.all()
