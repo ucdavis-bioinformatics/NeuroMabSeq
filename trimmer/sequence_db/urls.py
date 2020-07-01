@@ -10,6 +10,6 @@ urlpatterns = [
     url(regex=r'^new_query/$', view=views.TrimmerEntryListView, name='sequence_query'),
     path('status/', views.TrimmerStatusListView, name='status'),
     path('new_entry/<int:pk>/', views.TrimmerEntryDetailView.as_view(), name='sequence_entry'),
-    path('analytics/', views.analytics_view, name='analytics'),
+    # path('analytics/', views.analytics_view, name='analytics'),
     path('api/entry_list/', views.APIEntryListView.as_view()),
 ]
