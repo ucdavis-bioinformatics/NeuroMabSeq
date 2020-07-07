@@ -87,6 +87,8 @@ def new_new_data_upload():
     dir = "/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/data2/AnnotatedResults/"
     files = os.listdir(dir)
     files = [i for i in files if ".tsv" in i]
+    files = [i for i in files if " " not in i]
+
     for file in files:
         file = dir+file
         result = pd.read_csv(file, delimiter='\t', index_col=False)
@@ -149,6 +151,29 @@ def get_light_and_heavy_per_entry():
 ########################################################################################################################
 # NEW NEW STATUS STUFF
 ########################################################################################################################
+
+def status_not_present():
+    dir = "../data2/StatusReports/"
+    files = os.listdir(dir)
+    files = [i for i in files if ".tsv" in i]
+    files = [i for i in files if " " not in i]
+    not_found_list = []
+    for file in files:
+        file = dir + file
+        result = pd.read_csv(file, delimiter='\t', index_col=False)
+        result = result.to_dict(orient='records')
+        # check if a light file and do same processing for Trimmer Light entry
+        for row in result:
+            if str(row['trimmer_id']) != 'nan':
+                try:
+                    entry = TrimmerEntry.objects.get(mabid=row['trimmer_id'])
+                except:
+                    not_found_list.append([row['trimmer_id'], row['sample_name']])
+                    entry = None
+
+    return not_found_list
+
+
 # TODO this and function below are a bit reducnd
 def new_create_status(row, partial):
     not_found_list = []
@@ -201,6 +226,8 @@ def new_status_upload():
     dir = "../data2/StatusReports/"
     files = os.listdir(dir)
     files = [i for i in files if ".tsv" in i]
+    files = [i for i in files if " " not in i]
+
     not_found_list = []
     for file in files:
         file = dir+file
@@ -220,6 +247,8 @@ def new_status_not_present():
     dir = "../data2/StatusReports/"
     files = os.listdir(dir)
     files = [i for i in files if ".tsv" in i]
+    files = [i for i in files if " " not in i]
+
     not_found_list = []
     for file in files:
         file = dir + file
