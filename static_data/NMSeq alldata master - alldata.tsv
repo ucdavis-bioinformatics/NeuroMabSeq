@@ -1,4 +1,13 @@
 sample_name	trimmer_id	PlateName	Category	ShowOnWeb	ProteinTarget	ChangeDate	ChangeReason
+Psanger_140077	N328B/37R	Sanger_samples	6	T	ZNF423	20200706	
+Psanger_149451	N279B/27R	Sanger_samples	6	T	GluK5/Grik5/KA2 kainate receptor	20200706	
+Psanger_149452	N320/48R	Sanger_samples	6	T	Kirrel3	20200706	
+Psanger_149453	L28/4R	Sanger_samples	6	T	Kv4.2 K+ channel	20200706	New Addgene ID given to existing R-mAb so added new entry and removed old entry from view
+Psanger_149454	L18A/3R	Sanger_samples	6	T	BKbeta4 K+ channel	20200706	
+Psanger_149455	L51/82R	Sanger_samples	6	T	MMP9	20200706	
+Psanger_149456	N415/24R	Sanger_samples	6	T	GABA(A)R, Alpha5	20200706	
+Psanger_149458	N8B/1R	Sanger_samples	6	T	Cavbeta2 Ca2+ channel	20200706	
+Psanger_128631	L28/4R	Sanger_samples	6	F	Kv4.2 K+ channel	20200706	Added Psanger to Addgene ID # for "sample_name", missing entry => no longer active so removed from view
 P39_A6	K99/3.1	plate39	2	T	Complex spinal cord protein sample	20200702	
 P39_B10	L7/2.1	plate39	2	T	Complex spinal cord protein sample	20200702	
 P39_B11	L7/3.2	plate39	2	T	Complex spinal cord protein sample	20200702	
@@ -2520,7 +2529,6 @@ Psanger_128627	K75/41R	Sanger_samples	6	T	Kv4.3 K+ channel	20200617	Added Psange
 Psanger_128628	K89/34R	Sanger_samples	6	T	Kv2.1 K+ channel	20200617	Added Psanger to Addgene ID # for "sample_name"
 Psanger_128629	K91/36R	Sanger_samples	6	T	WAVE1/SCAR	20200617	Added Psanger to Addgene ID # for "sample_name"
 Psanger_128630	L20/8R	Sanger_samples	6	T	PICK1	20200617	Added Psanger to Addgene ID # for "sample_name"
-Psanger_128631	L28/4R	Sanger_samples	6	T	Kv4.2 K+ channel	20200617	Added Psanger to Addgene ID # for "sample_name", missing entry
 Psanger_128632	L42/17R	Sanger_samples	6	T	SynDIG1/Tmem90b	20200617	Added Psanger to Addgene ID # for "sample_name"
 Psanger_128633	L43/40R	Sanger_samples	6	T	DLX1	20200617	Added Psanger to Addgene ID # for "sample_name"
 Psanger_128634	L6/23R	Sanger_samples	6	T	Slo1/BKAlpha maxi-K+ channel	20200617	Added Psanger to Addgene ID # for "sample_name"

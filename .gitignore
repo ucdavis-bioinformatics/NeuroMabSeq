@@ -4,7 +4,6 @@
 */*/*.pyc
 */*/*/*/*.pyc
 */*/*/*/*/*.pyc
-data2/*
 .idea/*
 */.DS_Store
 */*/.DS_Store
