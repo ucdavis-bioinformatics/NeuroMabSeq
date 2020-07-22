@@ -336,3 +336,12 @@ class Messages(models.Model):
     id = models.AutoField(primary_key=True)
     message = models.CharField(max_length=400)
 
+class FilesProcessed(models.Model):
+    id = models.AutoField(primary_key=True)
+    filename = models.CharField(max_length=400)
+
+
+class FAQ(models.Model):
+    id = models.AutoField(primary_key=True)
+    question = models.CharField(max_length=4000)
+    message = models.CharField(max_length=4000)

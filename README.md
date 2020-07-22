@@ -6,8 +6,39 @@
 - each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
 - debug=FALSE
 - 101.1 101.2 etc if repeats..
+- L order based on ASV count, L86/33.
+- turn of debug, any other steps to check for proper deployment settings
+- nginx prefix edit 
+- blast search?
+- auto detect query
+- work with the addgene metadata 
+- how to backup sql lite database
+- moving into parents.. flexibility trial period another 4000 sequences 
+- abberant.. screws things up (oligoclonal, monoclonal,subclones)
+- mass spec to test things.. antibody have some characteristics 
+- fancy machine for liquid transfer needs more work done on it 
+- endpoint analysis. rtPCR. mass genotyping of crops is same technology for covid testing
 
+- admin login and admin logout
+- Rsync with ssh credentials for sam
+- play with blat
+- https://genome.ucsc.edu/goldenpath/help/blatSpec.html
+- 
+
+- check with cutoff from sam, p5
+- create some stats for the subclone groupings? API with sequence->phylogeneitc tree?
+- 5 subclones of the same parent should be identical?
+- see what is feasible for rules for ^^ highlight things that are similar and see if they are similar
+- upload the whole plate? Pull duplicates first?
+- definitions from a file
+- worth quantifying RNA, amplicons or new RNA for failures...
+- if RNA there then try different protocol > cDNA from everything
+![](.README_images/eaa2df05.png)
  
+ 
+- no targeted split-seq protocol, basically scrna seq since all poly a amplified 
+
+
 ### LONG TERM:
 - status page improvements
 - finish duplicates links

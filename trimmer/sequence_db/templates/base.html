@@ -50,9 +50,29 @@ p {
       <button class="w3-padding-large w3-button" style="color:white" title="More">PROJECT INFO <i class="fa fa-caret-down"></i></button>
       <div class="w3-dropdown-content w3-bar-block w3-card-4">
         <a href="http://neuromab.ucdavis.edu/" class="w3-bar-item w3-button">NEUROMAB WEBSITE</a>
+        <a href="/faq_list" class="w3-bar-item w3-button">FAQ LIST</a>
         <a href="https://github.com/ucdavis-bioinformatics/NeuroMabSeq/tree/website" class="w3-bar-item w3-button">GITHUB</a>
       </div>
     </div>
+
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-padding-large w3-button" style="color:white" title="More">MY ACCOUNT<i class="fa fa-caret-down"></i></button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+          <a href="/logout" class="w3-bar-item w3-button">LOGOUT</a>
+          <a href="/login" class="w3-bar-item w3-button">LOGIN</a>
+        </div>
+      </div>
+
+      {% if user.username %}
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-padding-large w3-button" style="color:white" title="More">UPDATE DATABASE<i class="fa fa-caret-down"></i></button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+          <a href="/edit_metadata/" class="w3-bar-item w3-button">ADD METADATA</a>
+          <a href="/add_addgene/" class="w3-bar-item w3-button">ADD ADDGENE</a>
+          <a href="/add_faq/" class="w3-bar-item w3-button">ADD FAQ</a>
+        </div>
+      </div>
+      {% endif %}
 <!--    <div align="center" sytle="position:absolute"><a href="/"  class="w3-button-small w3-center" style="color:white"><img style="padding:2px;width:25%" src="{% static "neuromablogo2.png" %}" alt="My image" style="width:50%"></a>-->
 
       <a href="/" class="w3-padding-large w3-button w3-right" style="color:white">NeuroMabSeq Home</a>
@@ -72,9 +92,28 @@ p {
 </div>
 
 
+
 <div class="w3-container w3-content w3-center w3-padding-20" align="center" style="align:center;max-width:550px;margin-top:42px;margin-bottom:2px;background-color:white" id="about_me">
         <img align="center" style="padding:5px;max-width:100%" src="{% static "neuromablogo4.png" %}" alt="My image">
 </div>
+{% if user.username %}
+    <div class="w3-container w3-content w3-center w3-padding-20" align="right" style="align:center;max-width:550px;margin-top:42px;margin-bottom:2px;background-color:white" id="about_me">
+
+            <h4 style="display:flex;background-color:white;margin:10">
+                {% if user.username %}
+                    {% if user.is_superuser %}
+                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Superuser    </b></div>
+                    {% elif is_lab_admin %}
+                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Lab Admin    </b></div>
+                    {% elif user.is_staff %}
+                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Staff    </b></div>
+                    {% elif user.is_active %}
+                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Client   </b></div>
+                    {% endif %}
+                {% endif %}
+            </h4>
+        </div>
+{% endif %}
 {% block content %}
 
 {% endblock %}

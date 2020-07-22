@@ -2,8 +2,11 @@ from django.shortcuts import render
 
 from django.http import HttpResponse
 from django.template import loader
+from django.forms import ModelForm
 from .models import *
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
+from django.views.generic.edit import UpdateView, CreateView, FormMixin
+
 from .filters import *
 import pandas as pd
 import plotly.offline as opy
@@ -13,6 +16,9 @@ import numpy as np
 from .methods import *
 from django.db.models import F
 from django.shortcuts import render, redirect
+from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 # API STUFF
@@ -24,8 +30,55 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import filters
-
+from django.contrib.auth import login, authenticate, logout
 import plotly.express as px
+import urllib
+import json
+from .forms import *
+from django.utils.decorators import method_decorator
+
+
+class MyLoginView(auth_views.LoginView):
+    # ratelimit_key = 'ip'
+    # ratelimit_rate = '10/h'
+    # ratelimit_block = True
+
+    def form_valid(self, form):
+        request_body = self.request.POST
+        if not request_body:
+            return None
+
+        ''' Begin reCAPTCHA validation '''
+        recaptcha_response = self.request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req = urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
+        ''' End reCAPTCHA validation '''
+
+        user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+        if result['success'] and user is not None:
+            return super().form_valid(form)
+        else:
+            return redirect('login')
+
+@method_decorator(staff_member_required, name='dispatch')
+class FAQListView(ListView):
+    model = FAQ
+    template_name = 'faq_list.html'
+
+
+def MyLogout(request):
+    logout(request)
+    html = 'home.html'
+    context = None
+    template = loader.get_template(html)
+    return HttpResponse(template.render(context, request))
 
 
 
@@ -41,6 +94,66 @@ def main_page(request):
     context['number_heavy'] = len(TrimmerHeavy.objects.filter(duplicate=False, entry__show_on_web=True))
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
+
+
+@staff_member_required
+def edit_metadata(request):
+    context = {}
+    if request.method == 'POST':
+        if 'general_file_form' in request.POST:
+            form = GeneralFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                file_path = form.cleaned_data['general_file'].file.name
+                metadata_file_process(context, file_path)
+            else:
+                context['errors'] = form.errors
+
+    context['form'] = GeneralFileForm()
+    return render(request, 'edit_metadata.html', context)
+
+
+class FAQListView(ListView):
+    model = FAQ
+    template_name = 'faq_list.html'
+
+
+@staff_member_required
+def add_faq(request):
+    if request.method == 'POST':
+        form = AddFAQ(request.POST)
+        if form.is_valid():
+            message = form.cleaned_data['message']
+            question = form.cleaned_data['question']
+
+            new_faq = FAQ.objects.create(message=message,
+                                         question=question,
+                                             )
+            new_faq.save()
+            return redirect('/faq_list/')
+    else:
+        form = AddFAQ()
+    return render(request, 'add_faq.html', {'form': form})
+
+
+# @method_decorator(staff_member_required, name='dispatch')
+@staff_member_required
+def edit_faq(request, pk):
+    if request.method == 'POST':
+        form = AddFAQ(request.POST)
+        if form.is_valid():
+            message = form.cleaned_data['message']
+            question = form.cleaned_data['question']
+
+            update_faq = FAQ.objects.get(pk=pk)
+            update_faq.message = message
+            update_faq.question = question
+            update_faq.save()
+
+            return redirect('/faq_list/')
+    else:
+        faq = FAQ.objects.get(pk=pk)
+        form = AddFAQ(initial={'message': faq.message, 'question': faq.question})
+    return render(request, 'add_faq.html', {'form': form})
 
 
 def GetAsvGraph():

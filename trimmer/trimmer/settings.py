@@ -25,7 +25,7 @@ SECRET_KEY = '=r!thy7q6ln0dfqov@-3ap8ue6u$%m=cz-t$gk1j8h)qmh^@&^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['neuromabseq.ucdavis.edu', '127.0.0.1']
+ALLOWED_HOSTS = ['neuromabseq.ucdavis.edu', '127.0.0.1', 'ec2-18-144-83-187.us-west-1.compute.amazonaws.com']
 
 
 # Application definition
@@ -42,7 +42,15 @@ INSTALLED_APPS = [
     'bootstrap4',
     'rest_framework',
     'django_filters',
+    'crispy_forms',
     'rest_framework_datatables'
+]
+
+GOOGLE_RECAPTCHA_SECRET_KEY = '6LfwjbEZAAAAAJZeewrMFd8NEvzkSuk-kp1BfpKu'
+
+
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 ]
 
 REST_FRAMEWORK = {
