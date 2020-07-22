@@ -238,9 +238,9 @@ class TrimmerEntryDetailView(DetailView):
         # make sure that the invoices are not too many for the view but are still graphed
         context = super().get_context_data(**kwargs)
         context['entry'] = TrimmerEntry.objects.get(pk=self.kwargs['pk'])
-        context['light'] = TrimmerLight.objects.filter(entry=context['entry'], duplicate=False)
+        context['light'] = TrimmerLight.objects.filter(entry=context['entry'], duplicate=False).order_by('-asv_support')
         # context['light_duplicates'] = TrimmerLight.objects.filter(entry=context['entry'], duplicate=True)
-        context['heavy'] = TrimmerHeavy.objects.filter(entry=context['entry'], duplicate=False)
+        context['heavy'] = TrimmerHeavy.objects.filter(entry=context['entry'], duplicate=False).order_by('-asv_support')
         # context['heavy_duplicates'] = TrimmerHeavy.objects.filter(entry=context['entry'], duplicate=True)
         #context['graph'] = GetAsvGraph()
         #context['graph_pct'] = GetPctGraph()

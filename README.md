@@ -3,18 +3,44 @@
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
 
 ### TODO:
-- each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
-- debug=FALSE
 - 101.1 101.2 etc if repeats..
 
- 
-### LONG TERM:
+### 2.0 
+- how to backup sql lite database
+- definitions from a file
+- Rsync with ssh credentials for sam
+- play with blat
+    - https://genome.ucsc.edu/goldenpath/help/blatSpec.html
+- nginx prefix edit 
+- admin login and admin logout
+- debug=FALSE, turn of debug, any other steps to check for proper deployment settings
 - status page improvements
-- finish duplicates links
+- finish duplicates links (not wanted?)
 - automate index to see what files need to be added still
 - csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
 - no loading libraries from internet have static files
 - some views https with login.. no cert long term
+- each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
+
+
+### Meeting notes
+- check with cutoff from sam, p5
+- create some stats for the subclone groupings? API with sequence->phylogeneitc tree?
+- 5 subclones of the same parent should be identical?
+- see what is feasible for rules for ^^ highlight things that are similar and see if they are similar
+- upload the whole plate? Pull duplicates first?
+- worth quantifying RNA, amplicons or new RNA for failures...
+- if RNA there then try different protocol > cDNA from everything
+- auto detect query
+- work with the addgene metadata 
+- moving into parents.. flexibility trial period another 4000 sequences 
+- abberant.. screws things up (oligoclonal, monoclonal,subclones)
+- mass spec to test things.. antibody have some characteristics 
+- fancy machine for liquid transfer needs more work done on it 
+- endpoint analysis. rtPCR. mass genotyping of crops is same technology for covid testing
+
+ 
+
 
 1. Check out the Django Project Tutorial in this directory.
     - This will cover: (Look at files on the instance AMI for reference specifically NGINX.conf and Gunicorn.conf files)       
