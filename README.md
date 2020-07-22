@@ -121,3 +121,14 @@ python manage.py migrate
 ./manage.py shell < run_status_update.py
 ./manage.py shell < run_metadata_update.py
 ```
+sudo pkill gunicorn   
+git fetch --all
+git reset --hard origin/website_2.0
+cd trimmer
+python manage.py migrate
+sudo systemctl restart gunicorn
+sudo systemctl restart nginx
+psudo python manage.py collectstatic
+
+
+sa
