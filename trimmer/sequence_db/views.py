@@ -197,6 +197,10 @@ def GetPctGraph():
 #
 #     return div
 
+def faq_view(request):
+    context = {}
+    return render(request, 'faq.html', context)
+
 
 def analytics_view(request):
     context = {}
