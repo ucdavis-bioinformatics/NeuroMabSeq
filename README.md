@@ -35,7 +35,7 @@
 - if RNA there then try different protocol > cDNA from everything
 ![](.README_images/eaa2df05.png)
  
- 
+
 - no targeted split-seq protocol, basically scrna seq since all poly a amplified 
 
 
