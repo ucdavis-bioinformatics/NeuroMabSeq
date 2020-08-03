@@ -145,7 +145,7 @@ def blat(request):
 
             # print (call.split(' '))
             #"source activate ~/.bash_profile;" +
-            process = subprocess.Popen(['/bin/bash', '-c', "echo $USER; source ~/.bash_profile; source ~/.bashrc; source activate trimmer_lab;".replace("\n",' ') + call], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(['/bin/bash', '-c', "source ~/.bash_profile; source ~/.bashrc; eval echo ~$USER; source activate trimmer_lab;".replace("\n",' ') + call], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = process.communicate()
             context['err'] = err
             context['out'] = out
