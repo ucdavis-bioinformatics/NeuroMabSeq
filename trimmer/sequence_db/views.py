@@ -169,7 +169,7 @@ def blat(request):
                     temp_dict = dict(**i._items[0].__dict__, **i._items[0]._items[0].__dict__)
                     parse_id = temp_dict['_hit_id'].replace(':'," ").split('_')
                     temp_dict['mabid'] = parse_id[1]
-                    temp_dict['pk'] = parse_id[0]
+                    temp_dict['pk'] = parse_id[2]
                     temp_dict['chain'] = parse_id[-2]
                     all_results.append(temp_dict)
 
