@@ -140,15 +140,17 @@ def blat(request):
 
             # Run BLAT
             call = "blat %s/static_data/%s.fa %s -t=%s -q=%s %s" % (prefix, type, file_name, type, type, psl)
-            print(call)
+            # print(call)
                 # os.popen(call).read()
 
-            print (call.split(' '))
+            # print (call.split(' '))
             #"source activate ~/.bash_profile;" +
             process = subprocess.Popen(['/bin/bash', '-c', "source ~/.bash_profile; source ~/.bashrc; source activate trimmer_lab;" + call], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = process.communicate()
             context['err'] = err
             context['out'] = out
+            # print(err)
+            # print(out)
             process.wait()
 
             # Core BLAT result processing
