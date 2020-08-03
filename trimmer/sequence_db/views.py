@@ -146,7 +146,7 @@ def blat(request):
             # print (call.split(' '))
             #"source activate ~/.bash_profile;" +
             if 'ubuntu' in prefix:
-                process = subprocess.Popen(['/bin/bash', '-c', "source ~/.bashrc; export PATH=`/home/ubuntu/anaconda3/bin:$PATH'; eval echo ~$USER; source activate trimmer_lab;".replace("\n",' ') + call], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen(['/bin/bash', '-c', "source ~/.bashrc; export PATH='/home/ubuntu/anaconda3/bin:$PATH'; eval echo ~$USER; source activate trimmer_lab;".replace("\n",' ') + call], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             else:
                 process = subprocess.Popen(['/bin/bash', '-c', call], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
