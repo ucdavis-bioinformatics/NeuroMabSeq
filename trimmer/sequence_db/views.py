@@ -128,7 +128,7 @@ def blat(request):
 
             # getwd so it works on cluster too because i think subprocess needs absolute
             cwd = os.getcwd()
-            prefix = '/' + '/'.join(cwd.split('/')[:-1])
+            prefix = '/'.join(cwd.split('/')[:-1])
 
             # Create  some temp files (query file .fa and psl) for running BLAT
             rand_string = get_random_string(10)
