@@ -58,8 +58,18 @@ $(document).ready(function() {
 <div class="w3-container w3-content w3-padding-16">
     <div class="well" style="background-color:EAEAEA;padding:10;border-radius:8px;">
 
-              {% if errors %}
-                    {% for error in errors %}
+              {% if err %}
+                    {% for error in err %}
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                <strong> Entry {{forloop.counter}}: {{ error|escape }}</strong>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+              {% endif %}
+
+              {% if out %}
+                    {% for error in out %}
                         {% if error %}
                             <div class="alert alert-danger">
                                 <strong> Entry {{forloop.counter}}: {{ error|escape }}</strong>
