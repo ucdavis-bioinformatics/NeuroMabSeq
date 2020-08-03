@@ -136,13 +136,19 @@ def blat(request):
             with open(file_name, 'w') as temp_file:
                 temp_file.write('>%s' % rand_string + '\n')
                 temp_file.write(sequence)
-            psl = '../static_data/%s.psl' % rand_string
+            psl = '%s/static_data/%s.psl' % (prefix, rand_string)
 
             # Run BLAT
-            call = 'blat %s/static_data/%s.fa %s -t=%s -q=%s %s' % (prefix, type, file_name, type, type, psl)
+            call = "blat %s/static_data/%s.fa %s -t=%s -q=%s %s" % (prefix, type, file_name, type, type, psl)
+            print(call)
                 # os.popen(call).read()
-            process = subprocess.Popen(call.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            print (call.split(' '))
+            #"source activate ~/.bash_profile;" +
+            process = subprocess.Popen(['/bin/bash', '-c', "source ~/.bash_profile; source ~/.bashrc; source activate trimmer_lab;" + call], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = process.communicate()
+            # print(err)
+            # print(out)
             process.wait()
 
             # Core BLAT result processing
