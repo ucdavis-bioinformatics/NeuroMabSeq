@@ -151,9 +151,9 @@ def blat(request):
                 process = subprocess.Popen(['/bin/bash', '-c', call], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             out, err = process.communicate()
-            context['err'] = err
-            context['out'] = out
-            context['prefix'] = prefix
+            #context['err'] = err
+            #context['out'] = out
+            #context['prefix'] = prefix
             # print(err)
             # print(out)
             process.wait()
@@ -180,6 +180,11 @@ def blat(request):
             out, err = process.communicate()
             process.wait()
             return render(request, 'blat.html', context)
+        else:
+            context['errors'] = form.errors
+            context['form'] = Blat()
+            return render(request, 'blat.html', context)
+
     else:
         context['form'] = Blat()
     return render(request, 'blat.html', context)

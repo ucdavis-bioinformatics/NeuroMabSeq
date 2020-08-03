@@ -8,6 +8,6 @@ from django.db.models.fields import PositiveIntegerField
 
 
 class Blat(forms.Form):
-    sequence = forms.CharField(max_length=4000, required=True, widget=forms.Textarea(attrs={"rows": 10, "cols": 100}))
+    sequence = forms.CharField(max_length=1000, required=True, widget=forms.Textarea(attrs={"rows": 10, "cols": 100}))
     type = forms.ChoiceField(required=True, choices=(("dna", "DNA"), ("protein","Protein")), initial='DNA')
 
