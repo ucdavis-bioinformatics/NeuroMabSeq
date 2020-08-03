@@ -65,8 +65,13 @@ $(document).ready(function() {
               {% endif %}
 
               {% if out %}
-                            <div class="alert">
+                            <div>
                                 <strong> Entry {{forloop.counter}}: {{ out|escape }}</strong>
+                            </div>
+              {% endif %}
+              {% if prefix %}
+                            <div class="alert">
+                                <strong> Entry {{forloop.counter}}: {{ prefix|escape }}</strong>
                             </div>
               {% endif %}
     <h2>BLAT Search</h2>
