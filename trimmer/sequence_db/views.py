@@ -126,17 +126,24 @@ def blat(request):
             if not result['success']:
                 return render(request, 'blat.html', context)
 
+            # getwd so it works on cluster too because i think subprocess needs absolute
+            cwd = os.getcwd()
+            prefix = '/' + '/'.join(cwd.split('/')[:-1])
+
             # Create  some temp files (query file .fa and psl) for running BLAT
             rand_string = get_random_string(10)
-            file_name = '../static_data/%s.fa' % rand_string
+            file_name = '%s/static_data/%s.fa' % (prefix, rand_string)
             with open(file_name, 'w') as temp_file:
                 temp_file.write('>%s' % rand_string + '\n')
                 temp_file.write(sequence)
             psl = '../static_data/%s.psl' % rand_string
 
             # Run BLAT
-            call = 'blat ../static_data/%s.fa %s -t=%s -q=%s %s' % (type, file_name, type, type, psl)
-            os.popen(call).read()
+            call = 'blat %s/static_data/%s.fa %s -t=%s -q=%s %s' % (prefix, type, file_name, type, type, psl)
+                # os.popen(call).read()
+            process = subprocess.Popen(call.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = process.communicate()
+            process.wait()
 
             # Core BLAT result processing
             try:
@@ -155,7 +162,10 @@ def blat(request):
 
 
             context['queryset'] = list(sorted(all_results, key=lambda d: (d['score'], d['ident_pct']), reverse=True))
-            # os.system('rm %s %s' % (file_name, psl))
+            call = 'rm %s %s' % (file_name, psl)
+            process = subprocess.Popen(call.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = process.communicate()
+            process.wait()
             return render(request, 'blat.html', context)
     else:
         context['form'] = Blat()
