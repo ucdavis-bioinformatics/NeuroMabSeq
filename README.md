@@ -6,6 +6,8 @@
 - 101.1 101.2 etc if repeats..
 - index based on sample_ID not filename
 - help with sams example (aberrant chain 6-7 in one?)
+- auto create settings with hidden recaptcha as part of ./restart.sh
+- fix html table for blat
 
 ### Questions
 - what is the deal with this mabid
