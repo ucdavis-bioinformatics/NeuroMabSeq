@@ -110,7 +110,6 @@
   
 #### This will fix 99% of problems unless someone pushes something funny to the repo!!!!
 ```  # from the Neuromabseq directory
-cp -r References/* /share/biocore/workshops/2020_mRNAseq_July/References/
 
 sudo pkill gunicorn   
 git fetch --all

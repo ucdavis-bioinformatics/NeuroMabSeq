@@ -17,6 +17,7 @@ import csv
 from Bio import SearchIO
 import random
 import string
+import subprocess
 
 # API STUFF
 from django.http import HttpResponse, JsonResponse
@@ -154,7 +155,7 @@ def blat(request):
 
 
             context['queryset'] = list(sorted(all_results, key=lambda d: (d['score'], d['ident_pct']), reverse=True))
-            os.system('rm %s %s' % (file_name, psl))
+            # os.system('rm %s %s' % (file_name, psl))
             return render(request, 'blat.html', context)
     else:
         context['form'] = Blat()
