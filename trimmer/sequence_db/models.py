@@ -177,6 +177,8 @@ class TrimmerEntry(models.Model):
     def get_url(self):
         return 'new_entry/' + str(self.pk)
 
+    def __str__(self):
+        return '%s' % (self.mabid)
 
 class TrimmerHeavy(models.Model):
     id = models.AutoField(primary_key=True)
@@ -330,6 +332,8 @@ class TrimmerEntryStatus(models.Model):
             return TrimmerEntryStatus.objects.get(id=self.id).sample_name.split('_')[0]
         except:
             return ''
+
+
 
 
 class Messages(models.Model):

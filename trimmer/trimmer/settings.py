@@ -26,6 +26,7 @@ SECRET_KEY = '=r!thy7q6ln0dfqov@-3ap8ue6u$%m=cz-t$gk1j8h)qmh^@&^'
 DEBUG = True
 
 ALLOWED_HOSTS = ['neuromabseq.ucdavis.edu', '127.0.0.1']
+GOOGLE_RECAPTCHA_SECRET_KEY = '6LfwjbEZAAAAAJZeewrMFd8NEvzkSuk-kp1BfpKu'
 
 
 # Application definition
@@ -42,7 +43,9 @@ INSTALLED_APPS = [
     'bootstrap4',
     'rest_framework',
     'django_filters',
-    'rest_framework_datatables'
+    'rest_framework_datatables',
+    'crispy_forms',
+
 ]
 
 REST_FRAMEWORK = {
@@ -50,13 +53,14 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework_datatables.renderers.DatatablesRenderer',
+        'rest_framework_csv.renderers.CSVRenderer',
+
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework_datatables.filters.DatatablesFilterBackend',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
-    'PAGE_SIZE': 50,
 }
 
 

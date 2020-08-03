@@ -4,23 +4,44 @@
 
 ### TODO:
 - 101.1 101.2 etc if repeats..
+- index based on sample_ID not filename
+- help with sams example (aberrant chain 6-7 in one?)
+
+### Questions
+- what is the deal with this mabid
+- what is going on here: Omitting the empty string in them for now.
+    ```
+    Invalid fasta format: sequence size == 0 for element 2878_N293/60.1_1254_Histone:H3-dimethyl-Arg8_Non-NeuroMab:mAbs_Heavy_2505
+    Invalid fasta format: sequence size == 0 for element 2891_N295A/9.1_1267_Arl13b_Non-NeuroMab:mAbs_Heavy_2524
+    Invalid fasta format: sequence size == 0 for element 2958_N295A/9.1_1267_Arl13b_Non-NeuroMab:mAbs_Heavy_2525
+    Invalid fasta format: sequence size == 0 for element 2910_N295A/38.1_1286_Arl13b_Non-NeuroMab:mAbs_Heavy_2546
+    Invalid fasta format: sequence size == 0 for element 2954_N295A/38.1_1286_Arl13b_Non-NeuroMab:mAbs_Heavy_2547
+    Invalid fasta format: sequence size == 0 for element 2959_N295A/38.1_1286_Arl13b_Non-NeuroMab:mAbs_Heavy_2548
+    Invalid fasta format: sequence size == 0 for element 3731_L122/143_1793_Calretinin_Lead:oligoclonal:Abs_Heavy_3377
+    Invalid fasta format: sequence size == 0 for element 3879_L122/143_1793_Calretinin_Lead:oligoclonal:Abs_Heavy_3378
+    Invalid fasta format: sequence size == 0 for element 3748_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3400
+    Invalid fasta format: sequence size == 0 for element 3853_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3401
+    Invalid fasta format: sequence size == 0 for element 3854_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3402
+    Invalid fasta format: sequence size == 0 for element 3880_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3403
+    Invalid fasta format: sequence size == 0 for element 3881_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3404
+    Invalid fasta format: sequence size == 0 for element 4203_N108/27.1_1934_SNAT2_Non-NeuroMab:mAbs_Heavy_3703
+    ```
+
 
 ### 2.0 
 - how to backup sql lite database
-- definitions from a file
-- Rsync with ssh credentials for sam
-- play with blat
-    - https://genome.ucsc.edu/goldenpath/help/blatSpec.html
+- recaptcha fix
 - nginx prefix edit 
 - admin login and admin logout
 - debug=FALSE, turn of debug, any other steps to check for proper deployment settings
-- status page improvements
-- finish duplicates links (not wanted?)
-- automate index to see what files need to be added still
-- csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
 - no loading libraries from internet have static files
 - some views https with login.. no cert long term
 - each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
+- login for sam, Rsync with ssh credentials for sam
+- way to automatically only process new files... or index on sample names??
+
+### Left over notes and not needed
+- finish duplicates links (not wanted?)
 
 
 ### Meeting notes
@@ -89,6 +110,8 @@
   
 #### This will fix 99% of problems unless someone pushes something funny to the repo!!!!
 ```  # from the Neuromabseq directory
+cp -r References/* /share/biocore/workshops/2020_mRNAseq_July/References/
+
 sudo pkill gunicorn   
 git fetch --all
 git reset --hard origin/website

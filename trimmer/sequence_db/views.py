@@ -1,19 +1,22 @@
-from django.shortcuts import render
-
-from django.http import HttpResponse
 from django.template import loader
 from .models import *
 from django.views.generic import DetailView
 from .filters import *
+from .forms import *
 import pandas as pd
 import plotly.offline as opy
 import plotly.graph_objs as go
-import plotly.figure_factory as ff
-import numpy as np
 from .methods import *
-from django.db.models import F
 from django.shortcuts import render, redirect
-
+from django.conf import settings
+import urllib
+import json
+import plotly.express as px
+from django.views.generic import View
+import csv
+from Bio import SearchIO
+import random
+import string
 
 # API STUFF
 from django.http import HttpResponse, JsonResponse
@@ -25,8 +28,12 @@ from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import filters
 
-import plotly.express as px
 
+
+def get_random_string(length):
+    letters = string.ascii_lowercase
+    result_str = ''.join(random.choice(letters) for i in range(length))
+    return result_str
 
 
 # TODO fix this so to filter pos and neg from Light and Heavy
@@ -75,6 +82,83 @@ def GetPctGraph():
     div = opy.plot(figure, auto_open=False, output_type='div')
 
     return div
+
+
+
+def multikeysort(items, columns):
+    from operator import itemgetter
+    comparers = [((itemgetter(col[1:].strip()), -1) if col.startswith('-') else
+                  (itemgetter(col.strip()), 1)) for col in columns]
+    def comparer(left, right):
+        for fn, mult in comparers:
+            result = cmp(fn(left), fn(right))
+            if result:
+                return mult * result
+        else:
+            return 0
+    return sorted(items, cmp=comparer)
+
+def blat(request):
+    context = {}
+    context['queryset'] = None
+    if request.method == 'POST':
+        form = Blat(request.POST)
+        if form.is_valid():
+            # Get the From Data
+
+            ''' Begin reCAPTCHA validation '''
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            url = 'https://www.google.com/recaptcha/api/siteverify'
+            values = {
+                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            data = urllib.parse.urlencode(values).encode()
+            req = urllib.request.Request(url, data=data)
+            response = urllib.request.urlopen(req)
+            result = json.loads(response.read().decode())
+            ''' End reCAPTCHA validation '''
+
+            sequence = form.cleaned_data['sequence']
+            type = form.cleaned_data['type']
+            context['form'] = Blat(initial={"sequence": sequence, "type":type})
+            if not result['success']:
+                return render(request, 'blat.html', context)
+
+            # Create  some temp files (query file .fa and psl) for running BLAT
+            rand_string = get_random_string(10)
+            file_name = '../static_data/%s.fa' % rand_string
+            with open(file_name, 'w') as temp_file:
+                temp_file.write('>%s' % rand_string + '\n')
+                temp_file.write(sequence)
+            psl = '../static_data/%s.psl' % rand_string
+
+            # Run BLAT
+            call = 'blat ../static_data/%s.fa %s -t=%s -q=%s %s' % (type, file_name, type, type, psl)
+            os.popen(call).read()
+
+            # Core BLAT result processing
+            try:
+                qresult = SearchIO.read(psl, 'blat-psl')
+            except:
+                qresult = None
+            all_results = []
+            if qresult:
+                for i in qresult:
+                    temp_dict = dict(**i._items[0].__dict__, **i._items[0]._items[0].__dict__)
+                    parse_id = temp_dict['_hit_id'].replace(':'," ").split('_')
+                    temp_dict['mabid'] = parse_id[1]
+                    temp_dict['pk'] = parse_id[0]
+                    temp_dict['chain'] = parse_id[-2]
+                    all_results.append(temp_dict)
+
+
+            context['queryset'] = list(sorted(all_results, key=lambda d: (d['score'], d['ident_pct']), reverse=True))
+            os.system('rm %s %s' % (file_name, psl))
+            return render(request, 'blat.html', context)
+    else:
+        context['form'] = Blat()
+    return render(request, 'blat.html', context)
 
 #
 # def GetScoreGraph():
@@ -268,19 +352,32 @@ def TrimmerEntryListView(request):
     return render(request, 'new_query.html', context)
 
 
+
+
+
 def TrimmerStatusListView(request):
     context = {}
-    context['all_entries'] = TrimmerEntryStatus.objects.all()
 
-    context['status_entries'] = [i.entry.mabid for i in TrimmerEntryStatus.objects.all()]
-    context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
-    context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
-    context['status_not_in_entries'] = status_not_present()
-    context['entries_not_in_status'] = sorted(list(set(context['entries']) - set(context['status_entries'])))
-    context['messages'] = Messages.objects.all()
-    context['messages'] = [i.message.split(':')[1].replace(' ', '') for i in context['messages'] if 'metadata' in i.message]
-    context['metadata_minus_status'] = sorted(list(set(context['messages']) - set(context['status_entries'])))
-    context['status_minus_metadata'] = sorted(list(set(context['status_entries']) - set(context['messages'])))
+    #context['all_entries'] = TrimmerEntryStatus.objects.all()
+    #context['status_entries'] = [i.entry.mabid for i in TrimmerEntryStatus.objects.all()]
+
+    #context['entries'] = [i.mabid for i in TrimmerEntry.objects.all()]
+
+    #context['status_not_in_entries'] = status_not_present()
+    #context['entries_not_in_status'] = sorted(list(set(context['entries']) - set(context['status_entries'])))
+
+    #context['messages'] = Messages.objects.all()
+    #context['messages'] = [i.message.split(':')[1].replace(' ', '') for i in context['messages'] if 'metadata' in i.message]
+    #
+
+    #context['metadata_minus_status'] = sorted(list(set(context['messages']) - set(context['status_entries'])))
+    #context['status_minus_metadata'] = sorted(list(set(context['status_entries']) - set(context['messages'])))
+    context['protein_targets'] = [i[0] for i in simple_get_targets()]
+    context['mabids'] = [i[0] for i in simple_get_mab_ids()]
+    context['categories'] = [i[0] for i in simple_get_mab_ids()]
+    all_entries = TrimmerEntryStatus.objects.filter(entry__show_on_web=True, )
+
+    context['filter'] = TrimmerStatusFilter(request.GET, queryset=all_entries)
 
     # TODO plate stats for this view
     context['plate_stats'] = ''
@@ -322,3 +419,52 @@ class APIEntryListView(generics.ListAPIView):
     ordering_fields = '__all__'
 
 
+# class LargeResultsSetPagination(PageNumberPagination):
+#     page_size = 1000
+#     page_size_query_param = 'page_size'
+#     max_page_size = 50000
+
+class APIStatusListView(generics.ListAPIView):
+    queryset = TrimmerEntryStatus.objects.filter(entry__show_on_web=True, )
+    # queryset = queryset.exclude(mabid__contains='positive')
+    # queryset = queryset.exclude(mabid__contains='negative')
+    serializer_class = TrimmerStatusSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    # pagination_class = LargeResultsSetPagination
+    # max_page_size = 50000
+    page_size = 50000
+    paginate_by = 10000
+    paginate_by_param ='page_size' # Allow client to override, using `?page_size=xxx`.
+
+    filterset_fields = ['entry__mabid', 'sample_name', 'plate_location', 'volume', 'concentration', 'comments',
+                        'failure', 'inline_index_name', 'inline_index', 'LCs_reported', 'HCs_reported']
+    search_fields = ['entry__mabid', 'sample_name', 'plate_location', 'volume', 'concentration', 'comments',
+                        'failure', 'inline_index_name', 'inline_index', 'LCs_reported', 'HCs_reported']
+    ordering_fields = '__all__'
+
+
+class StatusCSVExportView(View):
+    serializer_class = TrimmerStatusSerializer
+
+    def get_serializer(self, queryset, many=True):
+        return self.serializer_class(
+            queryset,
+            many=many,
+        )
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="export.csv"'
+
+        serializer = self.get_serializer(
+            TrimmerEntryStatus.objects.all(),
+            many=True
+        )
+        header = TrimmerStatusSerializer.Meta.fields
+
+        writer = csv.DictWriter(response, fieldnames=header)
+        writer.writeheader()
+        for row in serializer.data:
+            writer.writerow(row)
+
+        return response

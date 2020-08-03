@@ -14,6 +14,18 @@ def get_targets():
     return lambda: sorted(list(set([(entry.protein_target, entry.protein_target) for entry in all_entries
                            if entry.protein_target != 'nan' and entry.protein_target])))
 
+def get_failures():
+    all_entries = TrimmerEntryStatus.objects.filter()
+    return lambda: sorted(list(set([(entry.failure, entry.failure) for entry in all_entries])))
+
+def get_volume():
+    all_entries = TrimmerEntryStatus.objects.filter()
+    return lambda: sorted(list(set([(entry.volume, entry.volume) for entry in all_entries])))
+
+def get_concentration():
+    all_entries = TrimmerEntryStatus.objects.filter()
+    return lambda: sorted(list(set([(entry.concentration, entry.concentration) for entry in all_entries])))
+
 def simple_get_targets():
     all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
     all_entries = all_entries.exclude(mabid__contains='positive')
@@ -53,4 +65,30 @@ class TrimmerEntryFilter(django_filters.FilterSet):
     # search_target = django_filters.CharFilter()
     class Meta:
         model = TrimmerEntry
+        fields = []
+
+
+
+class TrimmerStatusFilter(django_filters.FilterSet):
+    # name = django_filters.CharFilter(field_name='mabid', lookup_expr='icontains')
+    # name_choice = django_filters.ChoiceFilter(field_name='mabid', choices=get_mab_ids())
+    sample_name = django_filters.CharFilter(field_name='plate_name', lookup_expr='icontains')
+    plate_location = django_filters.CharFilter(field_name='plate_location', lookup_expr='icontains')
+    failure = django_filters.ChoiceFilter(field_name='failure', choices=get_failures())
+    concentration = django_filters.ChoiceFilter(field_name='concentration', choices=get_concentration())
+    volume = django_filters.ChoiceFilter(field_name='volume', choices=get_volume())
+    # sample_name = django_filters.CharFilter(field_name='plate_name', lookup_expr='icontains')
+    # sample_name = django_filters.CharFilter(field_name='plate_name', lookup_expr='icontains')
+    ordering = django_filters.OrderingFilter(choices=(('entry', 'Entry Ascending'), ('-entry', 'MabID Descending'),
+                                                      ('sample_name', 'Sample Name Ascending'), ('-sample_name', 'Sample Name Descending'),
+                                                      ('plate_location', 'Plate Location Ascending'), ('-sample_name', 'Plate Location Descending'),
+                                                      ('volume', 'Volume Ascending'), ('-volume', 'Volume Descending'),
+                                                      ('concentration', 'Concentration Ascending'), ('-concentration', 'Concentration Descending'),
+                                                      ('LCs_reported', 'Light Count Ascending'), ('-LCs_reported', 'Light Count Descending'),
+                                                      ('HCs_repoted', 'Heavy Count Ascending'), ('-HCs_reported', 'Heavy Count Descending')
+                                                      ))
+
+    search = django_filters.CharFilter()
+    class Meta:
+        model = TrimmerEntryStatus
         fields = []
