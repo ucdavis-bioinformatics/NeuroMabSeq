@@ -100,7 +100,7 @@ $(document).ready(function() {
 
   <div class="w3-container w3-content w3-center w3-padding-5" style="max-width:10000px">
   <h2>Query Results</h2>
-        <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="left">
+        <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="center">
               <thead>
                 <tr>
                     <th>Percent Identity</th>
@@ -117,12 +117,20 @@ $(document).ready(function() {
                   <td>{{item.ident_pct}}</td>
                   <td>{{item.score}}</td>
                   <td>{{item.mabid}}</td>
-                  <td>{{item.chain}}</td>
+                  {% if item.chain %}
+                    <td>{{item.chain}}</td>
+                  {% else %}
+                    <td></td>
+                  {% endif %}
+                  {% if item.pk %}
                   <td>
                     <a href="/new_entry/{{item.pk}}/">
                       <button  label="Entry Details" name="so_link" class="btn btn-info">See Full Entry</button>
                     </a>
                   </td>
+                   {% else %}
+                    <td</td>
+                  {% endif %}
               </tr>
           {% empty %}
            <div>No invoices yet.</div>
