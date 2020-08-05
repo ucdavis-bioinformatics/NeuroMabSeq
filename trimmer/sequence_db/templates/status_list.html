@@ -33,76 +33,148 @@ td.wrapok {
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css">
+
+
+
 <script>
 
+    var url_string = window.location.href
+    var url = new URL(url_string);
+    var failure = url.searchParams.get("failure");
+    var sample_name = url.searchParams.get("sample_name");
+    var search = url.searchParams.get("search");
+    var volume = url.searchParams.get("volume");
+    var concentration = url.searchParams.get("concentration");
+
+    if (failure==null){
+        var failure = ''
+    }
+    if (sample_name==null){
+        var sample_name = ''
+    }
+    if (search==null){
+        var search = ''
+    }
+    if (concentration==null){
+        var concentration = ''
+    }
+    if (volume==null){
+        var volume = ''
+    }
 
 
 
-$(document).ready(function(){ $('#myTable').DataTable(); });
+      $(document).ready(function() {
+          $('#albums').DataTable({
+              "searching": false,
+              "sortable": false,
+              "scrollX": true,
+              'serverSide': true,
+              'ajax': '/api/status_list/?format=datatables' + '&failure=' + failure + '&sample_name=' + sample_name  + '&search=' + search + '&concentration=' + concentration + '&volume=' + volume,
+              'columns': [
+                  {'data': 'entry', 'sortable': false},
+                  {'data': 'sample_name', 'sortable': false},
+                  {'data': 'plate_location', 'sortable': false},
+                  {'data': 'volume', 'sortable': false},
+                  {'data': 'concentration', 'sortable': false},
+                  {'data': 'comments', 'sortable': false},
+                  {'data': 'failure', 'sortable': false},
+                  {'data': 'inline_index_name', 'sortable': false},
+                  {'data': 'inline_index', 'sortable': false},
+                  {'data': 'LCs_reported', 'sortable': false},
+                  {'data': 'HCs_reported', 'sortable': false},
+              ]
 
-$(document).ready( function () {
-  var table = $('#example').DataTable({
-  });
-} );
-
-$(document).ready(function() {
-    $('#example1').DataTable({"pageLength": 50, searching: false, paging: false, info: false, ordering: false});
-} );
-
-
+          });
+      });
 </script>
-
 
   <div class="w3-container w3-content w3-center w3-padding-64" style=" max-width:10000px">
   </div>
 
+  <div class="w3-container w3-content w3-center w3-padding-32" style="max-width:10000px">
+    <div class="well" style="background-color:EAEAEA;padding:10;border-radius:8px;">
+      <form method="get">
+
+      <h3 style="margin-top: 0">Entry Filter</h3>
+      <div class="row"  >
+          <div class="form-group col-sm-4 col-sm-3">
+            <strong>Sample Name:</strong>
+          {% render_field filter.form.sample_name class="form-control" %}
+        </div>
+          <div class="form-group col-sm-4 col-sm-3">
+            <strong>Ordering:</strong>
+          {% render_field filter.form.ordering class="form-control" %}
+        </div>
+          <div class="form-group col-sm-4 col-sm-3">
+            <strong>Failure:</strong>
+          {% render_field filter.form.failure class="form-control" %}
+        </div>
+          <div class="form-group col-sm-4 col-sm-3">
+            <strong>Search:</strong>
+          {% render_field filter.form.search class="form-control" %}
+        </div>
+
+      </div>
+
+      <div class="row"  >
+          <div class="form-group col-sm-4 col-sm-3">
+            <strong>Concentration:</strong>
+          {% render_field filter.form.concentration class="form-control" %}
+        </div>
+          <div class="form-group col-sm-4 col-sm-3">
+            <strong>Volume:</strong>
+          {% render_field filter.form.volume class="form-control" %}
+          </div>
+
+      </div>
+
+
+        <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-search"></span> Search
+        </button>
+
+
+      </form>
+         <div>
+         <div align="center" style="padding:5px"
+          <a href="/status">
+               <button  label="Sequence Database" name="so_link"  class="btn btn-warning">Reset Filter</button>
+          </a>
+         </div>
+         <div align="right">
+          <a href="/csv/status_list">
+               <button label="FAQ" name="so_link"  class="btn btn-info">Download as CSV</button>
+          </a>
+         </div>
+       </div>
+      </div>
+
+
+
+</div>
+
+
+
 <div class="w3-container w3-content w3-center w3-padding-5" style="max-width:10000px">
+
   <h2>Entry Results</h2>
-        <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="left">
-              <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Mab ID</th>
-                    <th>Plate Name</th>
-                    <th>Plate Location</th>
-                    <th>Volume</th>
-                    <th>Concentration</th>
-                    <th>Comments</th>
-                    <th>Amplicon</th>
-                    <th>Failure</th>
-                    <th>Inline Index Name</th>
-                    <th>Inline Index</th>
-                    <th>LCs Reported</th>
-                    <th>HCs Reported</th>
-                    <th>Full Entry Info</th>
-                </tr>
-              </thead>
-          <tbody>
-          {% for item in all_entries %}
-              <tr>
-                  <td>{{forloop.counter}}</td>
-                  <td>{{item.entry.mabid}}</td>
-                  <td>{{item.plate_name}}</td>
-                  <td>{{item.plate_location}}</td>
-                  <td>{{item.volume}}</td>
-                  <td>{{item.concentration}}</td>
-                  <td>{{item.comments}}</td>
-                  <td>{{item.amplicon}}</td>
-                  <td>{{item.failure}}</td>
-                  <td>{{item.inline_index_name}}</td>
-                  <td>{{item.inline_index}}</td>
-                  <td>{{item.LCs_reported}}</td>
-                  <td>{{item.HCs_reported}}</td>
-                  <td>
-                    <a href="/new_entry/{{item.entry.pk}}/">
-                      <button  label="Entry Details" name="so_link" class="btn btn-info">See Full Entry</button>
-                    </a>
-                  </td>
-              </tr>
-          {% empty %}
-           <div>No entries yet.</div>
-          {% endfor %}
-           </tbody>
+        <table align="left" id="albums" class="table table-striped table-bordered" style="width:100%" data-server-side="true">
+          <thead>
+            <tr align="left">
+              <th align="left" >mabid</th>
+              <th align="left" >Sample Name</th>
+              <th align="left" >Plate Location</th>
+              <th align="left" >Volume</th>
+              <th align="left" >Concentration</th>
+              <th align="left" >Comments</th>
+              <th align="left" >Failure</th>
+              <th align="left" >Incline Index Name</th>
+              <th align="left" >Inline Index</th>
+              <th align="left" >LCs Reported</th>
+              <th align="left" >HCs Reported</th>
+            </tr>
+          </thead>
         </table>
 </div>
 <div class="w3-container w3-content w3-center w3-padding-5" style="max-width:10000px">

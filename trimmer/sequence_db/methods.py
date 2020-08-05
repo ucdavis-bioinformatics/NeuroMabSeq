@@ -28,6 +28,45 @@ def check_file_entries(filename):
         return False
 
 ########################################################################################################################
+# BLAT
+########################################################################################################################
+def get_header(chain, type, num):
+    return '>' + '_'.join([str(chain.id), chain.entry.mabid.replace(' ',':'), str(chain.entry.id), chain.entry.protein_target.replace(' ',':'), categories[chain.entry.category].replace(' ',':'), type, str(num)]) + '\n'
+
+def get_list(heavy_chains, light_chains, type):
+    seq_list = []
+    num = 1
+    for item in heavy_chains:
+        if getattr(item, type):
+            seq_list.append(get_header(item, 'Heavy', num))
+            seq_list.append(getattr(item, type) + '\n')
+            num += 1
+    num = 1
+    for item in light_chains:
+        if getattr(item, type):
+            seq_list.append(get_header(item, 'Light', num))
+            seq_list.append(getattr(item, type) + '\n')
+            num += 1
+    return seq_list
+
+def generate_seq_fa():
+    all_heavy_chains = TrimmerHeavy.objects.filter(entry__show_on_web=True)
+    all_light_chains = TrimmerLight.objects.filter(entry__show_on_web=True)
+    seq_list = get_list(all_heavy_chains, all_light_chains, 'seq')
+    with open('../static_data/dna.fa','w') as dna_fa_out:
+        for item in seq_list:
+            dna_fa_out.write(item)
+
+def generate_aa_fa():
+    all_heavy_chains = TrimmerHeavy.objects.filter(entry__show_on_web=True)
+    all_light_chains = TrimmerLight.objects.filter(entry__show_on_web=True)
+    aa_list = get_list(all_heavy_chains, all_light_chains, 'strip_aa')
+    with open('../static_data/protein.fa','w') as dna_fa_out:
+        for item in aa_list:
+            dna_fa_out.write(item)
+
+
+########################################################################################################################
 # NEW NEW ENTRY STUFF
 ########################################################################################################################
 def new_create_entries(entry_list, row, duplicate, sanger, fake_smart_index):
@@ -193,44 +232,48 @@ def new_create_status(row, partial):
     light_entry = TrimmerLight.objects.filter(sample_name=row['sample_name'])
     heavy_entry = TrimmerHeavy.objects.filter(sample_name=row['sample_name'])
 
-    if not len(light_entry) and not len(heavy_entry):
-        pass
+    if len(light_entry):
+        entry = light_entry[0].entry
+    elif len(heavy_entry):
+        entry = heavy_entry[0].entry
     else:
-        if not len(light_entry):
-            entry = heavy_entry[0].entry
-        else:
-            entry = light_entry[0].entry
-        if not partial:
-            status_create = TrimmerEntryStatus.objects.create(entry=entry,
-                                                                sample_name = row['sample_name'],
-                                                                plate_location = row['plate_location'],
-                                                                volume = row['volume'],
-                                                                # concentration = row['concentration'],
-                                                                comments = row['comments'],
-                                                                # amplicon_concentration = row['amplicon_concentration'],
-                                                                failure = row['failure'],
-                                                                inline_index_name = row['inline_index_name'],
-                                                                inline_index = row['inline_index'],
-                                                                # LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
-                                                                # HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
-                                                                )
+        try:
+            entry = TrimmerEntry.objects.get(sample_name=row['sample_name'])
+        except:
+            not_found_list.append(row['sample_name'])
+            entry = None
+    if entry:
+        status_create = TrimmerEntryStatus.objects.create(entry=entry,
+                                                            sample_name = row['sample_name'],
+                                                            plate_location = row['plate_location'],
+                                                            volume = row['volume'],
+                                                            concentration = row['concentration'],
+                                                            comments = row['comments'],
+                                                            amplicon_concentration = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
+                                                            failure = row['failure'],
+                                                            inline_index_name = row['inline_index_name'],
+                                                            inline_index = row['inline_index'],
+                                                            LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
+                                                            HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
+                                                            )
 
-        else:
-            status_create = TrimmerEntryStatus.objects.create(entry=entry,
-                                                        sample_name = '' if math.isnan(row['sample_name']) else row['sample_name'],
-                                                        plate_location = '' if math.isnan(row['plate_location']) else row['plate_location'],
-                                                        volume = 0 if math.isnan(row['volume']) else row['volume'],
-                                                        # concentration = 0 if math.isnan(row['concentration']) else row['concentration'],
-                                                        comments = '' if math.isnan(row['comments']) else row['comments'],
-                                                        # amplicon_concentration = 0 if math.isnan(row['amplicon_concentration']) else row['amplicon_concentration'],
-                                                        failure = '' if math.isnan(row['failure']) else row['failure'],
-                                                        inline_index_name = '' if type(row['inline_index_name']) != str else row['inline_index_name'],
-                                                        inline_index = '' if math.isnan(row['inline_index']) else row['inline_index'],
-                                                        # LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
-                                                        # HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
-                                                        )
+    # else:
+    #     status_create = TrimmerEntryStatus.objects.create(entry=entry,
+    #                                                 sample_name = '' if math.isnan(row['sample_name']) else row['sample_name'],
+    #                                                 plate_location = '' if math.isnan(row['plate_location']) else row['plate_location'],
+    #                                                 volume = 0 if math.isnan(row['volume']) else row['volume'],
+    #                                                 concentration = 0 if math.isnan(row['concentration']) else row['concentration'],
+    #                                                 comments = '' if math.isnan(row['comments']) else row['comments'],
+    #                                                 amplicon_concentration = 0 if math.isnan(row['amplicon_concentration']) else row['amplicon_concentration'],
+    #                                                 failure = '' if math.isnan(row['failure']) else row['failure'],
+    #                                                 inline_index_name = '' if type(row['inline_index_name']) != str else row['inline_index_name'],
+    #                                                 inline_index = '' if math.isnan(row['inline_index']) else row['inline_index'],
+    #                                                 LCs_reported = 0 if math.isnan(row['LCs.Reported']) else row['LCs.Reported'],
+    #                                                 HCs_reported = 0 if math.isnan(row['HCs.Reported']) else row['HCs.Reported']
+    #                                                 )
 
         status_create.save()
+
     return not_found_list
 
 
@@ -249,11 +292,10 @@ def new_status_upload():
         # check if a light file and do same processing for Trimmer Light entry
         for row in result:
             if type(row['sample_name']) is str:
-                if type(row['sample_name']) is str:
-                    partial = False
-                else:
-                    partial = True
-                not_found_list += new_create_status(row, partial)
+                partial = False
+            else:
+                partial = True
+            not_found_list += new_create_status(row, partial)
 
 
 def new_status_not_present():

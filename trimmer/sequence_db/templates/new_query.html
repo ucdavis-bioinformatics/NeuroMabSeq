@@ -113,7 +113,9 @@ td.wrapok {
           {% render_field filter.form.target_choice class="form-control" %}
         </div>
         <div class="form-group col-sm-5 col-sm-3">
-            <strong>Category choice:</strong>
+            <strong>Category choice:
+            </strong>
+            For info on categories click<a href="/faq"> HERE</a>
           {% render_field filter.form.category_choice class="form-control" %}
         </div>
         <div class="form-group col-sm-5 col-sm-3">
@@ -133,9 +135,18 @@ td.wrapok {
 
 
       </form>
+         <div>
+         <div align="center" style="padding:5px"
           <a href="/new_query">
-               <button  label="Sequence Database" name="so_link"  class="btn btn-secondary">Reset Filter</button>
+               <button  label="Sequence Database" name="so_link"  class="btn btn-warning">Reset Filter</button>
           </a>
+         </div>
+         <div align="right">
+          <a href="/faq">
+               <button label="FAQ" name="so_link"  class="btn btn-info">Frequently Asked Questions</button>
+          </a>
+         </div>
+       </div>
       </div>
 
 </div>

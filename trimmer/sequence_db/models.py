@@ -167,16 +167,18 @@ class TrimmerEntry(models.Model):
 
     @property
     def heavy_duplicates(self):
-        return TrimmerHeavy.objects.filter(entry__pk=self.pk, duplicate=True)
+        return TrimmerHeavy.objects.filter(entry__pk=self.pk, duplicate=True).order_by('asv_support')
 
     @property
     def light_duplicates(self):
-        return TrimmerLight.objects.filter(entry__pk=self.pk, duplicate=True)
+        return TrimmerLight.objects.filter(entry__pk=self.pk, duplicate=True).order_by('asv_support')
 
     @property
     def get_url(self):
         return 'new_entry/' + str(self.pk)
 
+    def __str__(self):
+        return '%s' % (self.mabid)
 
 class TrimmerHeavy(models.Model):
     id = models.AutoField(primary_key=True)
@@ -330,6 +332,8 @@ class TrimmerEntryStatus(models.Model):
             return TrimmerEntryStatus.objects.get(id=self.id).sample_name.split('_')[0]
         except:
             return ''
+
+
 
 
 class Messages(models.Model):
