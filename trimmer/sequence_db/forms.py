@@ -19,7 +19,8 @@ class GeneralFileForm(forms.Form):
 
 
 class AddFAQ(forms.Form):
-    question = forms.CharField(max_length=4000, required=True, widget=forms.Textarea(attrs={"rows":5, "cols":100}))
+    question = forms.CharField(max_length=4000, required=True, widget=forms.Textarea(attrs={"rows":5, "cols":100, "width": "100%"}))
+
     message = forms.CharField(max_length=4000, required=True, widget=forms.Textarea(attrs={"rows":5, "cols":100}))
     is_definition = forms.BooleanField(required=False, initial=False)
 

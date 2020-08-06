@@ -44,7 +44,7 @@ $(document).ready(function() {
         <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="center" bgcolor="white" >
           <thead>
             <tr>
-              <th>Question</th>
+              <th style="width: 35%;">Question</th>
               <th>Message</th>
               {% if user.is_staff %}
                 <th>Edit Message</th>
@@ -77,11 +77,11 @@ $(document).ready(function() {
 <div class="w3-container w3-content w3-padding-16">
 
   <h2 align="center">Definition List</h2>
-        <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="center" bgcolor="white" >
+        <table id="example" cellspacing="0" width="100%" align="center" bgcolor="white" >
           <thead>
             <tr>
-              <th>Question</th>
-              <th>Message</th>
+              <th style="width: 30%;">Term</th>
+              <th>Definition</th>
               {% if user.is_staff %}
                 <th>Edit Message</th>
               {% endif %}

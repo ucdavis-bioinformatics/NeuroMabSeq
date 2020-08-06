@@ -10,6 +10,7 @@ urlpatterns = [
     path('edit_metadata/', views.edit_metadata, name='Edit Metadata'),
     path('add_faq/', views.add_faq, name='Add FAQ'),
     path('edit_faq/<int:pk>/', views.edit_faq, name='Edit FAQ'),
+    path('delete_faq/<int:pk>/', views.delete_faq, name='Edit FAQ'),
     path('faq_list/', views.FAQListView, name='Add FAQ'),
     path('', views.main_page, name='main page'),
     url(regex=r'^new_query/$', view=views.TrimmerEntryListView, name='sequence_query'),

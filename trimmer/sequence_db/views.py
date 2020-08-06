@@ -77,7 +77,6 @@ class MyLoginView(auth_views.LoginView):
         else:
             return redirect('login')
 
-@staff_member_required
 def FAQListView(request):
 
     context= {}
@@ -150,6 +149,7 @@ def add_faq(request):
 # @method_decorator(staff_member_required, name='dispatch')
 @staff_member_required
 def edit_faq(request, pk):
+    context = {}
     if request.method == 'POST':
         form = AddFAQ(request.POST)
         if form.is_valid():
@@ -165,9 +165,20 @@ def edit_faq(request, pk):
 
             return redirect('/faq_list/')
     else:
-        faq = FAQ.objects.get(pk=pk)
-        form = AddFAQ(initial={'message': faq.message, 'question': faq.question, 'is_definition': faq.is_definition})
-    return render(request, 'faq_form.html', {'form': form})
+        context['faq'] = FAQ.objects.get(pk=pk)
+        context['form'] = AddFAQ(initial={'message': context['faq'].message, 'question': context['faq'].question,
+                                          'is_definition': context['faq'].is_definition})
+    return render(request, 'faq_form.html', context)
+
+
+@staff_member_required
+def delete_faq(request, pk):
+    faq = FAQ.objects.get(pk=pk)
+    faq.delete()
+        # context['form'] = AddFAQ(initial={'message': faq.message, 'question': faq.question, 'is_definition': faq.is_definition})
+    return redirect('/faq_list/')
+
+
 
 
 def GetAsvGraph():

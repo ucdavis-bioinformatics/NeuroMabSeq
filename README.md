@@ -188,5 +188,3 @@ sudo systemctl restart gunicorn
 sudo systemctl restart nginx
 psudo python manage.py collectstatic
 
-
-sa
