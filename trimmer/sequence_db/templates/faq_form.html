@@ -12,6 +12,28 @@
             {{ form|crispy }}
             <button type="submit" class="btn btn-success">Submit</button>
       </form>
+
+    {% if user.is_staff %}
+    <h4 align="right">Click Delete to Remove the User</h4>
+      <p align="right">
+              <h4 align="right"><strong>Are you sure you want to delete this user? This will delete all info and associations they may have.</strong></h4>
+                  <button onclick="myFunction()" style="height:40px;width:120px;font-size:15px" label="No" name="so_link" class="btn btn-primary">No</button>
+                  <a href="/delete_faq/{{form.pk}}/">
+                      <button style="height:40px;width:120px;font-size:15px" label="Delete User" name="so_link" class="btn btn-danger">Delete FAQ</button>
+                  </a>
+      </p>
+  {% endif %}
 </div>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("myDIV");
+  if (x.style.display === "block") {
+    x.style.display = "none";
+  } else {
+    x.style.display = "block";
+  }
+}
+</script>
 
 {% endblock %}

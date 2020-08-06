@@ -349,3 +349,4 @@ class FAQ(models.Model):
     id = models.AutoField(primary_key=True)
     question = models.CharField(max_length=4000)
     message = models.CharField(max_length=4000)
+    is_definition = models.BooleanField(default=False)

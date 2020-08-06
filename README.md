@@ -3,11 +3,13 @@
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
 
 ### TODO:
+- fasta file download (limit at some amount)
+- csv limit as well ?
 - 101.1 101.2 etc if repeats..
 - index based on sample_ID not filename
 - help with sams example (aberrant chain 6-7 in one?)
 - auto create settings with hidden recaptcha as part of ./restart.sh
-- fix html table for blat
+- fix html table for blat and duplicate entries
 - L order based on ASV count, L86/33.
 - turn of debug, any other steps to check for proper deployment settings
 - nginx prefix edit 

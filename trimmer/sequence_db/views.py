@@ -77,10 +77,14 @@ class MyLoginView(auth_views.LoginView):
         else:
             return redirect('login')
 
-@method_decorator(staff_member_required, name='dispatch')
-class FAQListView(ListView):
-    model = FAQ
-    template_name = 'faq_list.html'
+@staff_member_required
+def FAQListView(request):
+
+    context= {}
+    context['questions'] = FAQ.objects.filter(is_definition=False)
+    context['definitions'] = FAQ.objects.filter(is_definition=True)
+
+    return render(request, 'faq_list.html', context)
 
 
 def MyLogout(request):
@@ -122,10 +126,6 @@ def edit_metadata(request):
     return render(request, 'edit_metadata.html', context)
 
 
-class FAQListView(ListView):
-    model = FAQ
-    template_name = 'faq_list.html'
-
 
 @staff_member_required
 def add_faq(request):
@@ -134,9 +134,11 @@ def add_faq(request):
         if form.is_valid():
             message = form.cleaned_data['message']
             question = form.cleaned_data['question']
+            is_definition = form.cleaned_data['is_definition']
 
             new_faq = FAQ.objects.create(message=message,
                                          question=question,
+                                         is_definition=is_definition
                                              )
             new_faq.save()
             return redirect('/faq_list/')
@@ -153,17 +155,19 @@ def edit_faq(request, pk):
         if form.is_valid():
             message = form.cleaned_data['message']
             question = form.cleaned_data['question']
+            is_definition = form.cleaned_data['is_definition']
 
             update_faq = FAQ.objects.get(pk=pk)
             update_faq.message = message
             update_faq.question = question
+            update_faq.is_definition = is_definition
             update_faq.save()
 
             return redirect('/faq_list/')
     else:
         faq = FAQ.objects.get(pk=pk)
-        form = AddFAQ(initial={'message': faq.message, 'question': faq.question})
-    return render(request, 'add_faq.html', {'form': form})
+        form = AddFAQ(initial={'message': faq.message, 'question': faq.question, 'is_definition': faq.is_definition})
+    return render(request, 'faq_form.html', {'form': form})
 
 
 def GetAsvGraph():
