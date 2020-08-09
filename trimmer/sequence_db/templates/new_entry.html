@@ -3,18 +3,18 @@
 
 
 {% block content %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 
 <!-- Datatables stuff -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.17/css/jquery.dataTables.css">
-<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.css" %}">
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}">
+<link rel="stylesheet" href="{% static "css/responsive.dataTables.min.css" %}">
+<script src="{% static "js/jquery-1.9.1.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "js/dataTables.responsive.min.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
 
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
-
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css">
 
 <style>
 
@@ -73,6 +73,7 @@ function toggle_it(itemID){
             event.preventDefault()
       }
   }
+
 </script>
 
 <!-- Page content -->
@@ -95,7 +96,9 @@ function toggle_it(itemID){
             <button  label="Sequence Database" name="so_link" style="padding: 15px 32px; align:right;" class="btn btn-info btn-md">Return to Sequence Database</button>
         </a>
        </div>
-      <h2 class="w3-wide" align="left">Entry {{entry.mabid}}</h2>
+      <h2 class="w3-wide" align="left"><strong>Entry:</strong> {{entry.mabid}}</h2>
+      <h3 class="w3-wide" align="left"><strong>Protein Target:</strong> {{entry.protein_target}}</h3>
+      <h3 class="w3-wide" align="left"><strong>Category:</strong> {{entry.get_category}}</h3>
       <div>
         <h3>Mouse Light Chain Results</h3>
               <table style="table-layout: fixed; width: 100%">
@@ -105,8 +108,11 @@ function toggle_it(itemID){
                   </tr>
                   {% for item in light %}
                   <tr>
+                      {% if item.pk == pk2 %}
+                      <td bgcolor="#98FB98" class="td-seq">{{item.seq}}</td>
+                      {% else %}
                       <td class="td-seq">{{item.seq}}</td>
-
+                      {% endif %}
                   </tr>
                   <tr>
                       <td>
@@ -233,7 +239,11 @@ function toggle_it(itemID){
                   </tr>
                   {% for item in heavy %}
                   <tr>
+                      {% if item.pk == pk2 %}
+                      <td bgcolor="#98FB98" class="td-seq">{{item.seq}}</td>
+                      {% else %}
                       <td class="td-seq">{{item.seq}}</td>
+                      {% endif %}
                   </tr>
                   <tr>
                       <td>

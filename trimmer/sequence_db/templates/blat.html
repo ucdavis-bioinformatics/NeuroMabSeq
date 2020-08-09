@@ -32,16 +32,30 @@ tr:nth-child(even) {
 </style>
 
 <!-- Datatables stuff -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.17/css/jquery.dataTables.css">
-<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.js"></script>
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.17/css/jquery.dataTables.css">-->
+<!--<script src="https://code.jquery.com/jquery-1.9.1.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.js"></script>-->
 
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
+<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>-->
 
 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css">
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">-->
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css">-->
+
+
+{% load static %}
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.css" %}">
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}">
+<link rel="stylesheet" href="{% static "css/responsive.dataTables.min.css" %}">
+<script src="{% static "js/jquery-1.9.1.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "js/dataTables.responsive.min.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+
+
+
 <script>
 
 
@@ -95,7 +109,7 @@ $(document).ready(function() {
             {% csrf_token %}
             {{ form|crispy }}
                 <script src='https://www.google.com/recaptcha/api.js'></script>
-                <div style="padding:20px" class="g-recaptcha" data-sitekey="6LfwjbEZAAAAAHMfs22TYLtJw5YWx-EsglR1LsQo"></div>
+                <div style="padding:20px" class="g-recaptcha" data-sitekey="6LfBvbwZAAAAAJDEQQ5bFnb-KwzhiGmr8sHDeHRp"></div>
           <div style="padding-top:20px">
 
             <button type="submit" class="btn btn-success" >Submit</button>
@@ -131,7 +145,7 @@ $(document).ready(function() {
                   {% endif %}
                   {% if item.pk %}
                   <td>
-                    <a href="/new_entry/{{item.pk}}/">
+                    <a href="/new_entry/{{item.entry_pk}}/{{item.pk}}">
                       <button  label="Entry Details" name="so_link" class="btn btn-info">See Full Entry</button>
                     </a>
                   </td>

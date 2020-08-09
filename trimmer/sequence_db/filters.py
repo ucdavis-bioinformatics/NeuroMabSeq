@@ -42,12 +42,35 @@ def simple_get_mab_ids():
 def get_categories():
     return [(i, categories[i]) for i in categories.keys()]
 
-class EntryFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
-    target = django_filters.CharFilter(field_name='metadata__target', lookup_expr='icontains')
+# class EntryFilter(django_filters.FilterSet):
+#     name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
+#     target = django_filters.CharFilter(field_name='metadata__target', lookup_expr='icontains')
+#     class Meta:
+#         model = Entry
+#         fields = []
+
+
+class TrimmerSequenceFilter(django_filters.FilterSet):
+    mabid_search = django_filters.CharFilter(field_name='entry__mabid', lookup_expr='icontains')
+    mabid = django_filters.ChoiceFilter(field_name='entry__mabid', choices=get_mab_ids())
+    category = django_filters.ChoiceFilter(field_name='entry__category', choices=get_categories())
+    target = django_filters.ChoiceFilter(field_name='entry__protein_target', choices=get_targets())
+    chain = django_filters.ChoiceFilter(field_name='chain', choices=(("Light", "Light"),("Heavy", "Heavy")))
+    ordering = django_filters.OrderingFilter(choices=(('entry__mabid', 'MabID Ascending'), ('-entry__mabid', 'MabID Descending'),
+                                                      ('entry__protein_target', 'Target Ascending'), ('-entry__protein_target', 'Target Descending'),
+                                                      ('entry__category', 'Category Ascending'), ('-entry__category', 'Category Descending'),
+                                                      # ('light_count', 'Light Count Ascending'), ('-light_count', 'Light Count Descending'),
+                                                      # ('heavy_count', 'Heavy Count Ascending'), ('-heavy_count', 'Heavy Count Descending')
+                                                      ))
+    search = django_filters.CharFilter()
+    # search_target = django_filters.CharFilter()
     class Meta:
-        model = Entry
+        model = TrimmerEntry
         fields = []
+
+
+
+
 
 
 class TrimmerEntryFilter(django_filters.FilterSet):
@@ -66,6 +89,8 @@ class TrimmerEntryFilter(django_filters.FilterSet):
     class Meta:
         model = TrimmerEntry
         fields = []
+
+
 
 
 

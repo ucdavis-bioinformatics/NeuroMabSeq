@@ -7,6 +7,7 @@ from django.forms import ModelForm, Textarea
 from django.db.models.fields import PositiveIntegerField
 from .models import *
 from django import forms
+from .validators import validate_file_extension
 
 
 class Blat(forms.Form):
@@ -15,7 +16,7 @@ class Blat(forms.Form):
 
 
 class GeneralFileForm(forms.Form):
-    general_file = forms.FileField(required=True)
+    general_file = forms.FileField(required=True, validators=[validate_file_extension])
 
 
 class AddFAQ(forms.Form):

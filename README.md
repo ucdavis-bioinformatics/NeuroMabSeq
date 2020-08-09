@@ -3,27 +3,26 @@
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
 
 ### TODO:
-- fasta file download (limit at some amount)
 - csv limit as well ?
+- clean up the entry view..
 - 101.1 101.2 etc if repeats..
-- index based on sample_ID not filename
+- fix the duplicates in the blat search
+- aa file download
 - help with sams example (aberrant chain 6-7 in one?)
 - auto create settings with hidden recaptcha as part of ./restart.sh
 - fix html table for blat and duplicate entries
-- L order based on ASV count, L86/33.
 - turn of debug, any other steps to check for proper deployment settings
-- nginx prefix edit 
-- blast search?
 - auto detect query
 - work with the addgene metadata 
 - how to backup sql lite database
-- moving into parents.. flexibility trial period another 4000 sequences 
-- abberant.. screws things up (oligoclonal, monoclonal,subclones)
-- mass spec to test things.. antibody have some characteristics 
-- fancy machine for liquid transfer needs more work done on it 
-- endpoint analysis. rtPCR. mass genotyping of crops is same technology for covid testing
+- debug=FALSE, turn of debug, any other steps to check for proper deployment settings
+- upload the whole plate? Pull duplicates first?
+- worth quantifying RNA, amplicons or new RNA for failures...
+- if RNA there then try different protocol > cDNA from everything
+- finish duplicates links
 
-### Questions
+
+### Questions/Notes
 - what is the deal with this mabid
 - what is going on here: Omitting the empty string in them for now.
     ```
@@ -42,50 +41,11 @@
     Invalid fasta format: sequence size == 0 for element 3881_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3404
     Invalid fasta format: sequence size == 0 for element 4203_N108/27.1_1934_SNAT2_Non-NeuroMab:mAbs_Heavy_3703
     ```
-
-
-### 2.0 
-- how to backup sql lite database
-- recaptcha fix
-- nginx prefix edit 
-- admin login and admin logout
-- debug=FALSE, turn of debug, any other steps to check for proper deployment settings
-- admin login and admin logout
-- Rsync with ssh credentials for sam
-- play with blat
-- https://genome.ucsc.edu/goldenpath/help/blatSpec.html
-- 
-
-- check with cutoff from sam, p5
-- create some stats for the subclone groupings? API with sequence->phylogeneitc tree?
 - 5 subclones of the same parent should be identical?
+- create some stats for the subclone groupings? API with sequence->phylogeneitc tree?
+- check with cutoff from sam, p5
 - see what is feasible for rules for ^^ highlight things that are similar and see if they are similar
-- upload the whole plate? Pull duplicates first?
-- definitions from a file
-- worth quantifying RNA, amplicons or new RNA for failures...
-- if RNA there then try different protocol > cDNA from everything
-![](.README_images/eaa2df05.png)
- 
-
 - no targeted split-seq protocol, basically scrna seq since all poly a amplified 
-
-
-### LONG TERM:
-- status page improvements
-- finish duplicates links
-- automate index to see what files need to be added still
-- csv download option for a specific query.. allow users to do more with the data like get fasta files etc...
-- no loading libraries from internet have static files
-- some views https with login.. no cert long term
-- each time database is reloaded the id in url changes, make this static for them all somehow (still some work to do on this)
-- login for sam, Rsync with ssh credentials for sam
-- way to automatically only process new files... or index on sample names??
-
-### Left over notes and not needed
-- finish duplicates links (not wanted?)
-
-
-### Meeting notes
 - check with cutoff from sam, p5
 - create some stats for the subclone groupings? API with sequence->phylogeneitc tree?
 - 5 subclones of the same parent should be identical?
@@ -96,18 +56,19 @@
 - auto detect query
 - work with the addgene metadata 
 - moving into parents.. flexibility trial period another 4000 sequences 
-- abberant.. screws things up (oligoclonal, monoclonal,subclones)
 - mass spec to test things.. antibody have some characteristics 
 - fancy machine for liquid transfer needs more work done on it 
 - endpoint analysis. rtPCR. mass genotyping of crops is same technology for covid testing
 
- 
+
+![](.README_images/eaa2df05.png)
+
 
 
 1. Check out the Django Project Tutorial in this directory.
     - This will cover: (Look at files on the instance AMI for reference specifically NGINX.conf and Gunicorn.conf files)       
     - `https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04`
-
+    
 2. Setting Up the AWS instance and Mysql (Ubuntu 18.04)
     - ssh onto the instance (see private instructions) for the key and doing this in AWS
     -Setup of Mysql (no longer needed.. uses sqllite): 
@@ -148,7 +109,9 @@
    - Run `python manage.py runserver` and see if it works along with `python manage.py migrate`, and `python manage shell`
        
 
-  
+5. Cert setup: `https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx`
+6. Adding users: `https://aws.amazon.com/premiumsupport/knowledge-center/new-user-accounts-linux-instance/` (just steps)
+7. Custom fasta renderer: `https://www.django-rest-framework.org/api-guide/renderers/#custom-renderers`
 #### This will fix 99% of problems unless someone pushes something funny to the repo!!!!
 ```  # from the Neuromabseq directory
 

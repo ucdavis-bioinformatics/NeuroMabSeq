@@ -26,13 +26,14 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 
 # API STUFF
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
 from rest_framework import viewsets
+from .methods import *
 from rest_framework import filters
 
 from django.contrib.auth import login, authenticate, logout
@@ -42,11 +43,11 @@ import json
 from .forms import *
 from django.utils.decorators import method_decorator
 
-
 def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
+
 class MyLoginView(auth_views.LoginView):
     # ratelimit_key = 'ip'
     # ratelimit_rate = '10/h'
@@ -103,8 +104,8 @@ def main_page(request):
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['number_entries'] = len(all_entries)
-    context['number_light'] = len(TrimmerLight.objects.filter(duplicate=False, entry__show_on_web=True))
-    context['number_heavy'] = len(TrimmerHeavy.objects.filter(duplicate=False, entry__show_on_web=True))
+    context['number_light'] = len(TrimmerSequence.objects.filter(duplicate=False, entry__show_on_web=True, chain="Light"))
+    context['number_heavy'] = len(TrimmerSequence.objects.filter(duplicate=False, entry__show_on_web=True, chain="Heavy"))
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
 
@@ -180,39 +181,39 @@ def delete_faq(request, pk):
 
 
 
+#
+# def GetAsvGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#     values = [[float(i) for i in df_l['asv_support'] if i is not None], [float(i) for i in df_h['asv_support'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = px.box()
+#     figure.add_trace(go.Box(y=values[0], quartilemethod="inclusive", name="Light Chain ASV Count"))
+#     figure.add_trace(go.Box(y=values[1], quartilemethod="inclusive", name="Heavy Chain ASV Count"))
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
 
-def GetAsvGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-    values = [[float(i) for i in df_l['asv_support'] if i is not None], [float(i) for i in df_h['asv_support'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
 
-    figure = px.box()
-    figure.add_trace(go.Box(y=values[0], quartilemethod="inclusive", name="Light Chain ASV Count"))
-    figure.add_trace(go.Box(y=values[1], quartilemethod="inclusive", name="Heavy Chain ASV Count"))
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
-
-
-def GetPctGraph():
-    """
-        Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
-    """
-    df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
-    df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
-    values = [[float(i) for i in df_l['pct_support'] if i is not None], [float(i) for i in df_h['pct_support'] if i is not None]]
-    group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
-
-    figure = px.box()
-    figure.add_trace(go.Box(y=values[0], quartilemethod="inclusive", name="Light Chain Percent Support"))
-    figure.add_trace(go.Box(y=values[1], quartilemethod="inclusive", name="Heavy Chain Percent Support"))
-    div = opy.plot(figure, auto_open=False, output_type='div')
-
-    return div
+# def GetPctGraph():
+#     """
+#         Making the Pie Chart Summary for the General Views (either for an invoice or a dairy)
+#     """
+#     df_l = pd.DataFrame(list(TrimmerLight.objects.filter().values()))
+#     df_h = pd.DataFrame(list(TrimmerHeavy.objects.filter().values()))
+#     values = [[float(i) for i in df_l['pct_support'] if i is not None], [float(i) for i in df_h['pct_support'] if i is not None]]
+#     group_labels = ['Light Chain', 'Heavy Chain']  # name of the dataset
+#
+#     figure = px.box()
+#     figure.add_trace(go.Box(y=values[0], quartilemethod="inclusive", name="Light Chain Percent Support"))
+#     figure.add_trace(go.Box(y=values[1], quartilemethod="inclusive", name="Heavy Chain Percent Support"))
+#     div = opy.plot(figure, auto_open=False, output_type='div')
+#
+#     return div
 
 
 
@@ -299,7 +300,8 @@ def blat(request):
                     temp_dict = dict(**i._items[0].__dict__, **i._items[0]._items[0].__dict__)
                     parse_id = temp_dict['_hit_id'].replace(':'," ").split('_')
                     temp_dict['mabid'] = parse_id[1]
-                    temp_dict['pk'] = parse_id[2]
+                    temp_dict['entry_pk'] = parse_id[2]
+                    temp_dict['pk'] = parse_id[0]
                     temp_dict['chain'] = parse_id[-2]
                     all_results.append(temp_dict)
 
@@ -458,19 +460,19 @@ def analytics_view(request):
     return render(request, 'analytics.html', context)
 
 
-class EntryDetailView(DetailView):
-    model = Entry
-    template_name = 'entry.html'
-
-    def get_object(self, *args, **kwargs):
-        obj = super(EntryDetailView, self).get_object(*args, **kwargs)
-        return obj
-
-    def get_context_data(self, **kwargs):
-        # make sure that the invoices are not too many for the view but are still graphed
-        context = super().get_context_data(**kwargs)
-        context['entry'] = Entry.objects.get(pk=self.kwargs['pk'])
-        return context
+# class EntryDetailView(DetailView):
+#     model = Entry
+#     template_name = 'entry.html'
+#
+#     def get_object(self, *args, **kwargs):
+#         obj = super(EntryDetailView, self).get_object(*args, **kwargs)
+#         return obj
+#
+#     def get_context_data(self, **kwargs):
+#         # make sure that the invoices are not too many for the view but are still graphed
+#         context = super().get_context_data(**kwargs)
+#         context['entry'] = Entry.objects.get(pk=self.kwargs['pk'])
+#         return context
 
 
 class TrimmerEntryDetailView(DetailView):
@@ -485,9 +487,13 @@ class TrimmerEntryDetailView(DetailView):
         # make sure that the invoices are not too many for the view but are still graphed
         context = super().get_context_data(**kwargs)
         context['entry'] = TrimmerEntry.objects.get(pk=self.kwargs['pk'])
-        context['light'] = TrimmerLight.objects.filter(entry=context['entry'], duplicate=False).order_by('-asv_support')
+        try:
+            context['pk2'] = self.kwargs['pk2']
+        except:
+            context['pk2'] = 0
+        context['light'] = TrimmerSequence.objects.filter(entry=context['entry'], duplicate=False, chain="Light").order_by('asv_order')
         # context['light_duplicates'] = TrimmerLight.objects.filter(entry=context['entry'], duplicate=True)
-        context['heavy'] = TrimmerHeavy.objects.filter(entry=context['entry'], duplicate=False).order_by('-asv_support')
+        context['heavy'] = TrimmerSequence.objects.filter(entry=context['entry'], duplicate=False, chain="Heavy").order_by('asv_order')
         # context['heavy_duplicates'] = TrimmerHeavy.objects.filter(entry=context['entry'], duplicate=True)
         #context['graph'] = GetAsvGraph()
         #context['graph_pct'] = GetPctGraph()
@@ -543,12 +549,36 @@ def TrimmerStatusListView(request):
     return render(request, 'status_list.html', context)
 
 
-# def EntryListView(request):
-#     context = {}
-#     all_entries = Entry.objects.all()
-#     context['filter'] = EntryFilter(request.GET, queryset=all_entries)
-#     context['queryset'] = context['filter'].qs.order_by('-name')
-#     return render(request, 'query.html', context)
+def query_dict_to_string(querydict):
+    string = '?'
+    string_list = []
+    for i in querydict.keys():
+        string_list.append(i + '=' + querydict[i])
+    return string + '&'.join(string_list)
+
+def SequenceListView(request):
+    context = {}
+    all_entries = TrimmerSequence.objects.filter(entry__show_on_web=True)
+    context['filter'] = TrimmerSequenceFilter(request.GET, queryset=all_entries)
+    context['queryset'] = context['filter'].qs[:200]
+    context['querystring'] = query_dict_to_string(request.GET)
+    return render(request, 'query.html', context)
+
+
+def fasta_file_response(request):
+    context = {}
+    all_entries = TrimmerSequence.objects.filter(entry__show_on_web=True)
+    context['filter'] = TrimmerSequenceFilter(request.GET, queryset=all_entries)
+    context['queryset'] = context['filter'].qs[:200]
+    filename = "neuromabseq_export.fa"
+    content = ''
+    # TODO Need to fix this based on the updated Heavy and Light chain pks
+    for i in context["queryset"]:
+        content += get_header(i, i.chain, i.asv_order)
+        content += i.seq + '\n'
+    response = HttpResponse(content, content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
+    return response
 
 
 # class EntryViewSet(viewsets.ModelViewSet):

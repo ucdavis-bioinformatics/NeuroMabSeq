@@ -111,43 +111,8 @@ def general_table(object, type):
     return table_dict
 
 
-# TODO delete
-class VLSeq(models.Model):
-    id = models.AutoField(primary_key=True)
-    seq = models.CharField(max_length=1500, default='')
-
-# TODO delete
-class VHSeq(models.Model):
-    id = models.AutoField(primary_key=True)
-    seq = models.CharField(max_length=1500, default='')
-
-# TODO delete
-class Metadata(models.Model):
-    id = models.AutoField(primary_key=True)
-    target_type = models.CharField(max_length=25, default='', blank=True)
-    target = models.CharField(max_length=50, default='', blank=True)
-    accession = models.CharField(max_length=20, default='', blank=True)
-    gene_name = models.CharField(max_length=20, default='', blank=True)
-    file_name = models.CharField(max_length=25, default='', blank=True)
-    iso_type = models.CharField(max_length=15, default='', blank=True)
-    validation_t = models.CharField(choices=(('Pass','Pass'), ('ND','ND'), ('Fail', 'Fail')), blank=True, max_length=10)
-    validation_brib = models.CharField(choices=(('Pass','Pass'), ('ND','ND'), ('Fail', 'Fail')), blank=True, max_length=10)
-    validation_brihc = models.CharField(choices=(('Pass','Pass'), ('ND','ND'), ('Fail', 'Fail')), blank=True, max_length=10)
-    validation_ko = models.CharField(choices=(('Pass','Pass'), ('ND','ND'), ('Fail', 'Fail')), blank=True, max_length=10)
-    tcsupe = models.CharField(max_length=25, default='', blank=True)
-    pure = models.CharField(max_length=25, default='', blank=True)
-
-# TODO delete
-class Entry(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50, default='')
-    vlseq = models.OneToOneField(VLSeq, on_delete=models.CASCADE, null=True)
-    vhseq = models.OneToOneField(VHSeq, on_delete=models.CASCADE, null=True)
-    metadata = models.OneToOneField(Metadata, on_delete=models.CASCADE, null=True)
-
-
-
 class TrimmerEntry(models.Model):
+    sample_name = models.CharField(max_length=20)
     id = models.AutoField(primary_key=True)
     mabid = models.CharField(max_length=50, default='')
     show_on_web = models.BooleanField(default=True)
@@ -167,11 +132,11 @@ class TrimmerEntry(models.Model):
 
     @property
     def heavy_duplicates(self):
-        return TrimmerHeavy.objects.filter(entry__pk=self.pk, duplicate=True).order_by('asv_support')
+        return TrimmerSequence.objects.filter(entry__pk=self.pk, duplicate=True, chain="Heavy").order_by('asv_support')
 
     @property
     def light_duplicates(self):
-        return TrimmerLight.objects.filter(entry__pk=self.pk, duplicate=True).order_by('asv_support')
+        return TrimmerSequence.objects.filter(entry__pk=self.pk, duplicate=True, chain="Light").order_by('asv_support')
 
     @property
     def get_url(self):
@@ -180,7 +145,9 @@ class TrimmerEntry(models.Model):
     def __str__(self):
         return '%s' % (self.mabid)
 
-class TrimmerHeavy(models.Model):
+
+
+class TrimmerSequence(models.Model):
     id = models.AutoField(primary_key=True)
     SMARTindex = models.CharField(max_length=20)
     pct_support = models.DecimalField(max_digits=10, decimal_places=5)
@@ -201,7 +168,8 @@ class TrimmerHeavy(models.Model):
     duplicate = models.BooleanField(default=False)
     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
     sample_name = models.CharField(max_length=20, default='')
-
+    chain = models.CharField(choices=(("Light", "Light"),("Heavy", "Heavy")), max_length=10)
+    asv_order = models.IntegerField(blank=True, null=True)
 
     @property
     def strip_domain(self):
@@ -229,14 +197,14 @@ class TrimmerHeavy(models.Model):
     @property
     def get_region(self):
         try:
-            return general_regions_function(self, 'Heavy')
+            return general_regions_function(self, self.chain)
         except:
             return ['error']
 
     @property
     def get_table(self):
         try:
-            return general_table(self, 'Heavy')
+            return general_table(self, self.chain)
         except:
             return ['error']
 
@@ -245,69 +213,135 @@ class TrimmerHeavy(models.Model):
         return self.seq_platform == 'Sanger'
 
 
-class TrimmerLight(models.Model):
-    id = models.AutoField(primary_key=True)
-    SMARTindex = models.CharField(max_length=20)
-    pct_support = models.DecimalField(max_digits=10, decimal_places=5)
-    asv_support = models.DecimalField(max_digits=10, decimal_places=5)
-    total_reads = models.IntegerField()
-    seq_platform = models.CharField(choices=(('Illumina','Illumina'),('Sanger','Sanger')), max_length=10)
-    plate = models.CharField(max_length=30)
-    seq = models.CharField(max_length=1500, default='')
-    e_value = models.CharField(max_length=10, blank=True, null=True)
-    score = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    seq_start_index = models.IntegerField(blank=True, null=True)
-    seq_stop_index = models.IntegerField(blank=True, null=True)
-    scheme = models.CharField(max_length=30, blank=True, null=True)
-    frame = models.IntegerField(blank=True, null=True)
-    aa = models.CharField(max_length=1000, blank=True, null=True)
-    numbering = models.CharField(max_length=3000, blank=True, null=True)
-    domain = models.CharField(max_length=1000, blank=True, null=True)
-    duplicate = models.BooleanField(default=False)
-    entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
-    sample_name = models.CharField(max_length=20, default='')
-
-
-    @property
-    def strip_domain(self):
-        try:
-            return self.domain.replace(',', '')
-        except:
-            return ''
-
-    @property
-    def strip_aa(self):
-        try:
-            return self.aa.replace('`', '')
-        except:
-            return ''
-
-    @property
-    def get_layout(self):
-        try:
-            this = [{'numbering': x, 'domain': y, } for x,y in zip(self.numbering.split(','),
-                                                                   self.domain.replace(',', ''))]
-            return this
-        except:
-            return ''
-
-    @property
-    def get_region(self):
-        try:
-            return general_regions_function(self, 'Light')
-        except:
-            return ['error']
-
-    @property
-    def get_table(self):
-        try:
-            return general_table(self, 'Light')
-        except:
-            return ['error']
-
-    @property
-    def is_sanger(self):
-        return self.seq_platform == 'Sanger'
+#
+# class TrimmerHeavy(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     SMARTindex = models.CharField(max_length=20)
+#     pct_support = models.DecimalField(max_digits=10, decimal_places=5)
+#     asv_support = models.DecimalField(max_digits=10, decimal_places=5)
+#     total_reads = models.IntegerField()
+#     seq_platform = models.CharField(choices=(('Illumina','Illumina'),('Sanger','Sanger')), max_length=10)
+#     plate = models.CharField(max_length=30)
+#     seq = models.CharField(max_length=1500, default='')
+#     e_value = models.CharField(max_length=10, blank=True, null=True)
+#     score = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+#     seq_start_index = models.IntegerField(blank=True, null=True)
+#     seq_stop_index = models.IntegerField(blank=True, null=True)
+#     scheme = models.CharField(max_length=30, blank=True, null=True)
+#     frame = models.IntegerField(blank=True, null=True)
+#     aa = models.CharField(max_length=1000, blank=True, null=True)
+#     numbering = models.CharField(max_length=3000, blank=True, null=True)
+#     domain = models.CharField(max_length=1000, blank=True, null=True)
+#     duplicate = models.BooleanField(default=False)
+#     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
+#     sample_name = models.CharField(max_length=20, default='')
+#
+#
+#     @property
+#     def strip_domain(self):
+#         try:
+#             return self.domain.replace(',', '')
+#         except:
+#             return ''
+#
+#     @property
+#     def strip_aa(self):
+#         try:
+#             return self.aa.replace('`', '')
+#         except:
+#             return ''
+#
+#     @property
+#     def get_layout(self):
+#         try:
+#             this = [{'numbering': x, 'domain': y, } for x, y in zip(self.numbering.split(','),
+#                                                                     self.domain.replace(',', ''))]
+#             return this
+#         except:
+#             return ''
+#
+#     @property
+#     def get_region(self):
+#         try:
+#             return general_regions_function(self, 'Heavy')
+#         except:
+#             return ['error']
+#
+#     @property
+#     def get_table(self):
+#         try:
+#             return general_table(self, 'Heavy')
+#         except:
+#             return ['error']
+#
+#     @property
+#     def is_sanger(self):
+#         return self.seq_platform == 'Sanger'
+#
+#
+# class TrimmerLight(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     SMARTindex = models.CharField(max_length=20)
+#     pct_support = models.DecimalField(max_digits=10, decimal_places=5)
+#     asv_support = models.DecimalField(max_digits=10, decimal_places=5)
+#     total_reads = models.IntegerField()
+#     seq_platform = models.CharField(choices=(('Illumina','Illumina'),('Sanger','Sanger')), max_length=10)
+#     plate = models.CharField(max_length=30)
+#     seq = models.CharField(max_length=1500, default='')
+#     e_value = models.CharField(max_length=10, blank=True, null=True)
+#     score = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+#     seq_start_index = models.IntegerField(blank=True, null=True)
+#     seq_stop_index = models.IntegerField(blank=True, null=True)
+#     scheme = models.CharField(max_length=30, blank=True, null=True)
+#     frame = models.IntegerField(blank=True, null=True)
+#     aa = models.CharField(max_length=1000, blank=True, null=True)
+#     numbering = models.CharField(max_length=3000, blank=True, null=True)
+#     domain = models.CharField(max_length=1000, blank=True, null=True)
+#     duplicate = models.BooleanField(default=False)
+#     entry = models.ForeignKey(TrimmerEntry, on_delete=models.CASCADE)
+#     sample_name = models.CharField(max_length=20, default='')
+#
+#
+#     @property
+#     def strip_domain(self):
+#         try:
+#             return self.domain.replace(',', '')
+#         except:
+#             return ''
+#
+#     @property
+#     def strip_aa(self):
+#         try:
+#             return self.aa.replace('`', '')
+#         except:
+#             return ''
+#
+#     @property
+#     def get_layout(self):
+#         try:
+#             this = [{'numbering': x, 'domain': y, } for x,y in zip(self.numbering.split(','),
+#                                                                    self.domain.replace(',', ''))]
+#             return this
+#         except:
+#             return ''
+#
+#     @property
+#     def get_region(self):
+#         try:
+#             return general_regions_function(self, 'Light')
+#         except:
+#             return ['error']
+#
+#     @property
+#     def get_table(self):
+#         try:
+#             return general_table(self, 'Light')
+#         except:
+#             return ['error']
+#
+#     @property
+#     def is_sanger(self):
+#         return self.seq_platform == 'Sanger'
 
 
 class TrimmerEntryStatus(models.Model):
