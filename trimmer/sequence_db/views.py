@@ -519,7 +519,7 @@ def TrimmerEntryListView(request):
 
 
 
-
+@staff_member_required
 def TrimmerStatusListView(request):
     context = {}
 
