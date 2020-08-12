@@ -4,6 +4,12 @@
 
 ### TODO:
 - csv limit as well ?
+- fix static files
+- setup auto update scripts
+    - `./update.sh`
+    - need directory from Sam
+- auto renew encryption keys
+
 - clean up the entry view..
 - 101.1 101.2 etc if repeats..
 - fix the duplicates in the blat search
