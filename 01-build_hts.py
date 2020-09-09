@@ -2,8 +2,8 @@ import sys
 import os
 from glob import glob
 
-r1f = sys.argv[1]
-r1r = sys.argv[2]
+r1 = sys.argv[1]
+r1 = sys.argv[2]
 primerf = sys.argv[3]
 cmdf = sys.argv[4]
 
