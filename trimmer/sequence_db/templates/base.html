@@ -47,7 +47,7 @@ p {
       <div class="w3-dropdown-content w3-bar-block w3-card-4">
         <a href="/new_query/" class="w3-bar-item w3-button" style="background-color:white">QUERY</a>
         <a href="/blat/" class="w3-bar-item w3-button" style="background-color:white">BLAT SEARCH</a>
-        <a href="/query/" class="w3-bar-item w3-button" style="background-color:white">SEQUENCES</a>
+        <a href="/query/" class="w3-bar-item w3-button" style="background-color:white">FASTA EXPORT</a>
       </div>
     </div>
 
@@ -68,7 +68,7 @@ p {
         </div>
       </div>
 
-      {% if user.username %}
+      {% if user.is_staff %}
       <div class="w3-dropdown-hover w3-hide-small">
         <button class="w3-padding-large w3-button" style="color:white" title="More">UPDATE DATABASE<i class="fa fa-caret-down"></i></button>
         <div class="w3-dropdown-content w3-bar-block w3-card-4">
@@ -101,18 +101,16 @@ p {
         <img align="center" style="padding:5px;max-width:100%" src="https://lh3.googleusercontent.com/pw/ACtC-3d8gaQho1rOKLqYnoa4nwpahzMXxj_GwGZachmqHWJgjTjUL_HLH1kbRM-EDVp8ng5WqjwJQjLyxedRWsTrfVxVsAJzS1EZr6vzezyjOa5DCyHO1KxlzLsfFW69WwGURc9Y4g3fClOmJaG1XhUXpyyA=w2416-h314-no?authuser=0" alt="My image">
 </div>
 {% if user.username %}
-    <div class="w3-container w3-content w3-center w3-padding-20" align="right" style="align:center;max-width:550px;margin-top:42px;margin-bottom:2px;background-color:white" id="about_me">
+    <div class="w3-container w3-content w3-center w3-padding-20" align="center" style="align:center;max-width:550px;margin-top:42px;margin-bottom:2px;background-color:white" id="about_me">
 
-            <h4 style="display:flex;background-color:white;margin:10">
+            <h4 style="display:flex;background-color:gray">
                 {% if user.username %}
                     {% if user.is_superuser %}
                         <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Superuser    </b></div>
-                    {% elif is_lab_admin %}
-                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Lab Admin    </b></div>
                     {% elif user.is_staff %}
                         <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Staff    </b></div>
                     {% elif user.is_active %}
-                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Client   </b></div>
+                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> </div>
                     {% endif %}
                 {% endif %}
             </h4>

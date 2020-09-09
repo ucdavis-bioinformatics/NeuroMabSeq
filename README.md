@@ -3,12 +3,17 @@
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
 
 ### TODO:
+- who should be long term superuser?
 - csv limit as well ?
 - fix static files
 - setup auto update scripts
     - `./update.sh`
     - need directory from Sam
 - auto renew encryption keys
+- get rid of the recaptcha for the blat search or see why having to do it multiple times? super user override. just get rid of it for now
+- 5 unrelated antibodies (light and heavy) (cross lane or plate contamination)
+- 
+
 
 - clean up the entry view..
 - 101.1 101.2 etc if repeats..
@@ -157,3 +162,8 @@ sudo systemctl restart gunicorn
 sudo systemctl restart nginx
 psudo python manage.py collectstatic
 
+
+```
+python manage.py dbshell
+mysql> ALTER TABLE <table_name> AUTO_INCREMENT = 1;
+```

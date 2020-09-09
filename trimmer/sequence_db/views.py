@@ -78,6 +78,46 @@ class MyLoginView(auth_views.LoginView):
         else:
             return redirect('login')
 
+
+
+def signup(request):
+    context = {}
+    if request.method == 'POST':
+        main_form = SignUpForm(request.POST)
+
+        ''' Begin reCAPTCHA validation '''
+
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.parse.urlencode(values).encode()
+        req = urllib.request.Request(url, data=data)
+        response = urllib.request.urlopen(req)
+        result = json.loads(response.read().decode())
+
+        ''' End reCAPTCHA validation '''
+        if result['success']:
+            if main_form.is_valid():
+                main_form.save()
+                username = main_form.cleaned_data.get('username')
+                raw_password = main_form.cleaned_data.get('password1')
+                user = authenticate(username=username, password=raw_password)
+                login(request, user)
+                return redirect("Main Page")
+            else:
+                context['errors'] = main_form.errors
+                context['main_form'] = SignUpForm(request.POST)
+        else:
+            context['main_form'] = SignUpForm(request.POST)
+    else:
+        context['main_form'] = SignUpForm()
+
+    return render(request, 'registration/signup.html', context)
+
+
 def FAQListView(request):
 
     context= {}
@@ -89,11 +129,7 @@ def FAQListView(request):
 
 def MyLogout(request):
     logout(request)
-    html = 'home.html'
-    context = None
-    template = loader.get_template(html)
-    return HttpResponse(template.render(context, request))
-
+    return redirect('/')
 
 
 # TODO fix this so to filter pos and neg from Light and Heavy
@@ -239,23 +275,24 @@ def blat(request):
             # Get the From Data
 
             ''' Begin reCAPTCHA validation '''
-            recaptcha_response = request.POST.get('g-recaptcha-response')
-            url = 'https://www.google.com/recaptcha/api/siteverify'
-            values = {
-                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-                'response': recaptcha_response
-            }
-            data = urllib.parse.urlencode(values).encode()
-            req = urllib.request.Request(url, data=data)
-            response = urllib.request.urlopen(req)
-            result = json.loads(response.read().decode())
+            # recaptcha_response = request.POST.get('g-recaptcha-response')
+            # url = 'https://www.google.com/recaptcha/api/siteverify'
+            # values = {
+            #     'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            #     'response': recaptcha_response
+            # }
+            # data = urllib.parse.urlencode(values).encode()
+            # req = urllib.request.Request(url, data=data)
+            # response = urllib.request.urlopen(req)
+            # result = json.loads(response.read().decode())
             ''' End reCAPTCHA validation '''
 
             sequence = form.cleaned_data['sequence']
             type = form.cleaned_data['type']
             context['form'] = Blat(initial={"sequence": sequence, "type":type})
-            if not result['success']:
-                return render(request, 'blat.html', context)
+
+            # if not result['success']:
+            #     return render(request, 'blat.html', context)
 
             # getwd so it works on cluster too because i think subprocess needs absolute
             cwd = os.getcwd()
