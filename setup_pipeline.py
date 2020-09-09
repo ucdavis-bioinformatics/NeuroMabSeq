@@ -5,7 +5,7 @@ import csv
 from glob import glob
 
 # Constants:
-ncpu = 10
+ncpu = 20
 
 # Read in SampleSheet:
 ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
@@ -44,7 +44,7 @@ for plate in ss:
         cmd = f"python 01-build_hts.py {r1} {r2} {plate['Primers']} 01-runHTS.sh\n"
         outf.write(cmd)
         outf.write("\n#Run HTStream script\n")
-        cmd = f"parallel -j {ncpu} < 01-runTS.sh\n"
+        cmd = f"parallel -j {ncpu} < 01-runHTS.sh\n"
         outf.write(cmd)
         # Build a report of cleaning:
         outf.write("\n# Build a report of cleaning:\n")
