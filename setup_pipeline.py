@@ -10,6 +10,9 @@ ncpu = 96
 # Read in SampleSheet:
 ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
 
+# Submit jobs for all pipelines:
+slurmf = open("submit_slurm.sh", 'w')
+
 # Setup plates:
 for plate in ss:
     r1 = glob(f"./00-RawData/{plate['filePrefix']}*_R1_*")
@@ -61,20 +64,23 @@ for plate in ss:
         # Use ANARCI to annotate results:
         outf.write("\n# Use ANARCI to annotate results:\n")
         cmd = "source /share/biocore/projects/Trimmer_James_UCD/2019.11.18-Trimmer-Hybridoma-Seq/ANARCI-venv/bin/activate;"
-        cmd += "python3 03-annotate-results.py"
+        cmd += "python3 03-annotate-results.py\n"
+        outf.write(cmd)
         # Finally, upload results:
         outf.write("\n# Upload results:\n")
         dest = 'shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/'
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./03-AnnotatedResults/*.tsv {dest}AnnotatedResults"
+        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./03-AnnotatedResults/*.tsv {dest}AnnotatedResults\n"
         outf.write(cmd)
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/*_SampleStatus.tsv {dest}StatusReports"
+        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/*_SampleStatus.tsv {dest}StatusReports\n"
         outf.write(cmd)
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./01-PrimerTrimReport/report.html {dest}HTML_Reports/{plate['plate']}_PrimerTrimReport.html"
+        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./01-PrimerTrimReport/report.html {dest}HTML_Reports/{plate['plate']}_PrimerTrimReport.html\n"
         outf.write(cmd)
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/02-Hybridoma-DADA2-analysis.html {dest}HTML_Reports/{plate['plate']}_report.html"
+        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/02-Hybridoma-DADA2-analysis.html {dest}HTML_Reports/{plate['plate']}_report.html\n"
         outf.write(cmd)
 
+    slurmf.write(f"srun -t 1:0:0 -c {ncpu} -n 1 --mem 16000 --partition production -J {plate['plate']} --output slurmout " + f"./{s}/run_pipeline.sh\n")
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./03-AnnotatedResults/*.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/AnnotatedResults/
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./02-Results/*_SampleStatus.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/StatusReports/
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./02-Results/02-Hybridoma-DADA2-analysis.html  bioshare@bioshare.bioinformatics.ucdavis.edu:'/3ksenvfdffie3aj/HTML_Reports/'$plate'_report.html'
     #ssh -i ~/.ssh/samlogin.pem shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com
+slurmf.close()
