@@ -25,6 +25,8 @@ os.system('mkdir -p 01-PrimerTrim')
 
 outf = open(cmdf, 'w')
 
+htspath = "../../HTStream/build/bin/"
+
 i=0
 for l in open(primerf, 'r'):
     if i == 0:
@@ -37,11 +39,11 @@ for l in open(primerf, 'r'):
         sample = l2[header.index('SampleID')]
         logf = './01-PrimerTrim/' + sample + '.log'
         prefix = './01-PrimerTrim/' + sample
-        cmd = "../HTStream/build/bin/hts_Primers -d 0 -l 0 -e 0 -r 2 -x -P " + l2[header.index('Primer1Seq')] + "TGGGG"
+        cmd = htspath + "hts_Primers -d 0 -l 0 -e 0 -r 2 -x -P " + l2[header.index('Primer1Seq')] + "TGGGG"
         cmd += " -Q " + l2[header.index('Primer2Seq')] + " -1 " + r1 + " -2 " + r2 + " -L " + logf + " | "
-        cmd += "../HTStream/build/bin/hts_NTrimmer -e -AL " + logf + " | "
-        cmd += "../HTStream/build/bin/hts_SeqScreener -C -r -x .01 -k 21 -s aberrant_LC.fasta -AL " + logf + " | "
-        cmd += "../HTStream/build/bin/hts_QWindowTrim -l -n -q 10 -m 260 -AL " + logf + " | "
-        cmd += "../HTStream/build/bin/hts_Overlapper -AL " + logf + " -m 385 -f " + prefix + '\n'
+        cmd += htspath + "hts_NTrimmer -e -AL " + logf + " | "
+        cmd += htspath + "hts_SeqScreener -C -r -x .01 -k 21 -s aberrant_LC.fasta -AL " + logf + " | "
+        cmd += htspath + "hts_QWindowTrim -l -n -q 10 -m 260 -AL " + logf + " | "
+        cmd += htspath + "hts_Overlapper -AL " + logf + " -m 385 -f " + prefix + '\n'
         outf.write(cmd)
 outf.close()
