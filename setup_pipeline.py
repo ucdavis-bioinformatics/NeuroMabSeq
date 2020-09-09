@@ -81,7 +81,7 @@ for plate in ss:
 
     runf.write(f"echo {plate['plate']}\n")
     runf.write(f"cd {os.path.abspath(s)}\n")
-    runf.write('./run_pipeline.sh')
+    runf.write('bash ./run_pipeline.sh\n')
     runf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")    
     #slurmf.write(f"srun -t 1:0:0 -c {ncpu} -n 1 --mem 16000 --partition production -J {plate['plate']} --output slurmout " + f"./{s}/run_pipeline.sh\n")
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./03-AnnotatedResults/*.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/AnnotatedResults/
