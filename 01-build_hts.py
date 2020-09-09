@@ -39,7 +39,7 @@ for l in open(primerf, 'r'):
         sample = l2[header.index('SampleID')]
         logf = './01-PrimerTrim/' + sample + '.log'
         prefix = './01-PrimerTrim/' + sample
-        cmd = htspath + "hts_Primers -d 0 -l 0 -e 0 -r 2 -x -P " + l2[header.index('Primer1Seq')] + "TGGGG"
+        cmd = "nice -n1 " + htspath + "hts_Primers -d 0 -l 0 -e 0 -r 2 -x -P " + l2[header.index('Primer1Seq')] + "TGGGG"
         cmd += " -Q " + l2[header.index('Primer2Seq')] + " -1 " + r1 + " -2 " + r2 + " -L " + logf + " | "
         cmd += htspath + "hts_NTrimmer -e -AL " + logf + " | "
         cmd += htspath + "hts_SeqScreener -C -r -x .01 -k 21 -s aberrant_LC.fasta -AL " + logf + " | "
