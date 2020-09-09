@@ -8,6 +8,9 @@ from django.db.models.fields import PositiveIntegerField
 from .models import *
 from django import forms
 from .validators import validate_file_extension
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
 
 
 class Blat(forms.Form):
@@ -30,3 +33,9 @@ class AddFAQ(forms.Form):
     class Meta:
         model = FAQ
         fields = ('question','message','is_definition')
+
+
+class SignUpForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
