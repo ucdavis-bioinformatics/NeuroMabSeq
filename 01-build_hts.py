@@ -3,7 +3,7 @@ import os
 from glob import glob
 
 r1 = sys.argv[1]
-r1 = sys.argv[2]
+r2 = sys.argv[2]
 primerf = sys.argv[3]
 cmdf = sys.argv[4]
 
