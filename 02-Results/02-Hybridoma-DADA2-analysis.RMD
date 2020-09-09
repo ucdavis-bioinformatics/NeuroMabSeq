@@ -241,7 +241,7 @@ readr::write_tsv(combined.out, paste0(outp, plate, "_", "Sequences.tsv"))
 
 Most common sequence in set:
 
-```{r plotalignment}
+```{r plotalignment1}
 # Plot alignments of commonidxLC (are these aberrant?)
 # So far haven't figure out how to do this in a loop, so just plot the one with the most total reads:
 putative_aberrant = names(sort(colSums(seqtabLC), decreasing=T))[1]
@@ -259,7 +259,7 @@ msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, )
 
 Second most common sequence in set:
 
-```{r plotalignment}
+```{r plotalignment2}
 # Plot alignments of commonidxLC (are these aberrant?)
 # So far haven't figure out how to do this in a loop, so just plot the one with the most total reads:
 putative_aberrant = names(sort(colSums(seqtabLC), decreasing=T))[2]
