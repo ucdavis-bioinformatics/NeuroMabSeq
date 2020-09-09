@@ -16,8 +16,8 @@ library(msaR)
 library(DECIPHER)
 options(stringsAsFactors=F)
 
-minReadSupport = .2  # only ASVs with at least this fraction of reads will be output
-minReadCount = 10  # only samples with at least this many reads will be processed
+# minReadSupport = .2  # only ASVs with at least this fraction of reads will be output
+# minReadCount = 10  # only samples with at least this many reads will be processed
 ```
 
 ### Setup File and Sample Names
@@ -54,14 +54,6 @@ lcfiles = sort(list.files(path, pattern="*_6-REV-LC_SE.fastq.gz", full.names=T))
 hcindexes = str_remove(basename(hcfiles), "_10-REV-HC1_SE.fastq.gz")
 lcindexes = str_remove(basename(lcfiles), "_6-REV-LC_SE.fastq.gz")
 
-# Filter reads that have errors:
-# filtHC = file.path(path, 'filtered', paste0(hcindexes, "_HC_filt.fastq.gz"))
-# filtLC = file.path(path, 'filtered', paste0(lcindexes, "_LC_filt.fastq.gz"))
-
-# outHC = filterAndTrim(hcfiles, filtHC, maxEE = Inf, maxN=0, compress=TRUE, multithread=TRUE, truncQ=0)
-# gc()
-# outLC = filterAndTrim(lcfiles, filtLC, maxEE = 3, maxN=0, compress=TRUE, multithread=TRUE, truncQ=0)
-# gc()
 
 ```
 
@@ -126,97 +118,135 @@ write.table(seqtabLC.tab, file='00-no-filter-seqtab_LC.tsv', sep='\t', row.names
 
 ```
 
-```{r Process HC}
-############ Filter ASVs and samples ######## 
-# Rows are ASVs, cols are samples:
-tmpHC = seqtabHC
-colnames(tmpHC) = paste0('H', 1:ncol(tmpHC))
-
-# Filters HC:
-failedidxHC = rowSums(seqtabHC >= 10) > 0 # throw out samples that have no ASV with at least 10 reads of support 
-commonidxHC = colSums(seqtabHC > 5)/nrow(seqtabHC) < .5   # throw out ASVs that show up in > 50% of samples 
-seqtabHC.f = seqtabHC[failedidxHC, commonidxHC]
-seqtabHC.f.pct = 100*seqtabHC.f/rowSums(seqtabHC.f)
-lowcountidxHC = colSums(seqtabHC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
-seqtabHC.f2 = seqtabHC.f[,lowcountidxHC]
-dim(seqtabHC.f2)
-write.table(data.frame(ASV=colnames(seqtabHC.f2), t(seqtabHC.f2)), file='01-filtered-seqtab_HC.tsv', sep='\t', row.names = F)
-
-
-## Convert HC ASV table to output table:
-options(stringsAsFactors = F)
-HC.out = data.frame()
-for(s in rownames(seqtabHC.f2)){
-  r = seqtabHC.f2[s, ]
-  sample_name = wellIDX[s, 'sample_name']
-  MabID = sampleData$trimmer_id[match(sample_name, sampleData$sample_name)]
-  #sample_name = sampleData$sample_name[match(s, sampleData$inline_index_name)]
-  for(asv in names(which(r/sum(seqtabHC[s,]) > minReadSupport))){ 
-    # Only keep ASVs with at least 20% read support:
-    HC.out = rbind(HC.out, c(sample_name, plate, s, MabID, "HC", r[asv], signif(100*r[asv]/sum(seqtabHC[s,]), 3), sum(seqtabHC[s,]), "Illumina", asv))
-  }
+```{r ProcessingFunction}
+# Align two sequences and calculate percent ID as number of matches / length of shorter sequence
+pctid = function(s1,s2){
+    ss = DNAStringSet(c(s1,s2))
+    aln = AlignSeqs(ss, verbose=F)
+    return(100*sum(as(aln, "matrix")[1,] == as(aln, "matrix")[2,])/min(width(ss)))
 }
-colnames(HC.out) = c("Sample_Name", "plate", "SMARTindex", "MabID", "Chain", "ASVcount", "PctSupport", "TotalReads", "Sequencing", "ASV")
 
-# Find any ASVs reported more than once and note the duplicate
-#HC.out$DuplicatedIn =apply(HC.out, 1, function(x){ paste(setdiff(HC.out$MabID[HC.out$HeavyChain %in% x['HeavyChain']], x['MabID']), collapse=', ')})
+zeroCommon = function(m){
+    # Drop ASVs present in >50 of samples with more than .05% of total reads (aberrant LC and/or contaminants)
+    # The idea is that using a non-fixed minimum number of reads avoids dropping ASVs that are strongly present in one or
+    # a few samples, but have been sequenced to really high depth with bleed into other samples. 
+    #commonidx = colSums(m > 10)/nrow(m) < .5   # only keep ASVs that show up in < 50% of samples 
+    m.zeroed = m
+    commonidx = colSums(m > (.0005 * sum(m)))/nrow(m) > .5
+    m.zeroed[,commonidx] = 0 #= m.zeroed[,commonidx]
+    return(m.zeroed)
+}
 
-HC.out$DuplicatedIn =apply(HC.out, 1, function(x){ paste(setdiff(HC.out$Sample_Name[HC.out$ASV %in% x['ASV']], x['Sample_Name']), collapse=', ')})
 
+# Zero out every ASV that doesn't get at least 2% support in the ASV and at least 2% support in the sample.
+# Rules:
+#   1) Supporting read count must represent at least 2% of reads for that SAMPLE
+#   2) Supporting read count must represent at least 2% of reads for that ASV
+#   3) Supporting read count must be > 10
+#   4) ASV may not have a read count > 10 in more than 1/2 of samples 
+#   5) ASV must be < 90% identical to other ASVs from the sample ()
+zeroMatrix = function(m){
+  m.Sample.pct = 100*m/rowSums(zeroCommon(m))
+  m.ASV.pct = t(100*t(m)/colSums(zeroCommon(m)))
+  m.zeroed = m
+  # Zero out anything that doesn't make the cut:
+  for(i in 1:nrow(m.zeroed)){
+      for(j in 1:ncol(m.zeroed)){
+          if(m.ASV.pct[i,j] < 2 | m.Sample.pct[i,j] < 2 | m[i,j] < 10){
+          m.zeroed[i,j] = 0
+          }
+      }
+  }
+  
+  # Within each sample, compute an alignment and collapse ASV counts for sequences that are very similar.
+  for(i in 1:nrow(m.zeroed)){
+      #seqcounts = m.zeroed[i,m.zeroed[i,]>0]
+      seqcounts = m.zeroed[i,]
+      if(sum(seqcounts > 0) > 1){ # don't process single ASV samples
+          for(x in 1:(length(seqcounts)-1)){
+              for(y in 2:length(seqcounts)){
+                  if(m.zeroed[i,x] != 0 & m.zeroed[i,y] != 0 & x != y){
+                  #if(seqcounts[x] != 0 & seqcounts[y] != 0 & x != y){
+                      if(pctid(names(seqcounts)[x], names(seqcounts)[y]) > 90){
+                          cat(paste0(c(paste(c(x,y), sep=','), '\n')))
+                          loser = names(which(seqcounts[c(x,y)] == min(seqcounts[c(x,y)])))
+                          m.zeroed[i,loser] = 0
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+  #Finally, zero out the common ASVs (contaminants/aberrant LC)
+  m.zeroed = zeroCommon(m.zeroed)
+
+  # Drop ASVs that are not present in any samples after zeroing:
+  m.zeroed = m.zeroed[,colSums(m.zeroed)>0]
+  return(m.zeroed)
+}
+
+
+
+# A function to convert seqtab results to a table:
+asvToTable = function(st.filtered, st, sampleData, chain){
+    options(stringsAsFactors = F)
+    st.out = data.frame()
+    for(s in rownames(st.filtered)){
+        r = st.filtered[s, ]
+        r = r[order(r, decreasing=T)]
+        sample_name = wellIDX[s, 'sample_name']
+        MabID = sampleData$trimmer_id[match(sample_name, sampleData$sample_name)]
+        i=1
+        for(asv in names(which(r > 0))){ 
+            st.out = rbind(st.out, c(sample_name, plate, s, MabID, chain, 
+                        paste0(sample_name, ".", chain, i), r[asv], signif(100*r[asv]/sum(st[s,]), 3), sum(st[s,]), "Illumina", asv))
+            i = i + 1
+        }
+    }
+    colnames(st.out) = c("Sample_Name", "plate", "SMARTindex", "MabID", "Chain", "ChainID", "ASVcount", "PctSupport", "TotalReads", "Sequencing", "ASV")
+    # Find any ASVs reported more than once within the plate and note the duplicate
+    st.out$DuplicatedIn = apply(st.out, 1, function(x){ paste(setdiff(st.out$Sample_Name[st.out$ASV %in% x['ASV']], x['Sample_Name']), collapse=', ')})
+    return(st.out)
+}
+
+```
+
+
+```{r Process ASVtables}
+
+############ Filter ASVs and samples ######## 
+
+# Filter and write HC:
+seqtabHC.f1 = zeroCommon(seqtabHC)  # Used for no-abLC denominantor 
+seqtabHC.f2 = zeroMatrix(seqtabHC)
+readr::write_tsv(data.frame(t(seqtabHC.f2)), paste0(outp, "01-filtered_HC.tsv"))
+HC.out = asvToTable(seqtabHC.f2, seqtabHC.f1, sampleData, "HC")
 readr::write_tsv(HC.out, paste0(outp, plate, "_", "HeavyChain.tsv"))
 
-```
-
-
-```{r, Process LC }
-
-# Filters LC:
-tmpLC = seqtabLC
-colnames(tmpLC) = paste0('L', 1:ncol(tmpLC))
-
-failedidxLC = rowSums(seqtabLC >= 10) > 0
-commonidxLC = colSums(seqtabLC > 5)/nrow(seqtabLC) < .5  # throw out ASVs that show up in >50% samples with at least 5 reads
-seqtabLC.f = seqtabLC[failedidxLC, commonidxLC]
-seqtabLC.f.pct = 100*seqtabLC.f/(rowSums(seqtabLC.f)+1)
-lowcountidxLC = colSums(seqtabLC.f.pct > 30) > 0 # Throw out ASVs that do not get support from at least 30% of reads
-seqtabLC.f2 = seqtabLC.f[,lowcountidxLC]
-dim(seqtabLC.f2)
-write.table(data.frame(ASV=colnames(seqtabLC.f2), t(seqtabLC.f2)), file='01-filtered-seqtab_LC.tsv', sep='\t', row.names=F)
-
-## Convert LC ASV table to output table:
-options(stringsAsFactors = F)
-LC.out = data.frame()
-for(s in rownames(seqtabLC.f2)){
-  r = seqtabLC.f2[s, ]
-  sample_name = wellIDX[s, 'sample_name']
-  MabID = sampleData$trimmer_id[match(sample_name, sampleData$sample_name)]
-  #sample_name = sampleData$sample_name[match(s, sampleData$inline_index_name)]
-  for(asv in names(which(r/sum(seqtabLC[s,]) > minReadSupport))){
-    LC.out = rbind(LC.out, c(sample_name, plate, s, MabID, "LC", r[asv], signif(100*r[asv]/sum(seqtabLC[s,]), 3), sum(seqtabLC[s,]), "Illumina", asv))
-  }
-}
-colnames(LC.out) = c("Sample_Name", "plate", "SMARTindex", "MabID", "Chain", "ASVcount", "PctSupport", "TotalReads", "Sequencing", "ASV")
-# Find any ASVs reported more than once and note the duplicate
-# LC.out$DuplicatedIn = apply(LC.out, 1, function(x){ paste(setdiff(LC.out$MabID[LC.out$LightChain %in% x['LightChain']], x['MabID']), collapse=', ')})
-LC.out$DuplicatedIn = apply(LC.out, 1, function(x){ paste(setdiff(LC.out$Sample_Name[LC.out$ASV %in% x['ASV']], x['Sample_Name']), collapse=', ')})
-
+# Filter and write LC:
+seqtabLC.f1 = zeroCommon(seqtabLC)
+seqtabLC.f2 = zeroMatrix(seqtabLC)
+readr::write_tsv(data.frame(t(seqtabLC.f2)), paste0(outp, "01-filtered_LC.tsv"))
+LC.out = asvToTable(seqtabLC.f2, seqtabLC.f1, sampleData, "LC")
 readr::write_tsv(LC.out, paste0(outp, plate, "_", "LightChain.tsv"))
 
-```
-
-```{r writeBoth}
+# Combine and write both
 combined.out = rbind(HC.out, LC.out)
 readr::write_tsv(combined.out, paste0(outp, plate, "_", "Sequences.tsv"))
-
 ```
 
+
 ### Putative aberrant LC alignment
+
+Most common sequence in set:
+
 ```{r plotalignment}
 # Plot alignments of commonidxLC (are these aberrant?)
 # So far haven't figure out how to do this in a loop, so just plot the one with the most total reads:
-putative_aberrant = names(sort(colSums(seqtabLC[,!commonidxLC, drop=F]), decreasing=T))[1]
+putative_aberrant = names(sort(colSums(seqtabLC), decreasing=T))[1]
 dna = DNAStringSet(c(sp0, putative_aberrant))  
-names(dna) = c("AberrantLC", "PutativeALC") 
+names(dna) = c("AberrantLC", "MostCommonSeq") 
 
 alignedDNA = AlignSeqs(dna, verbose=F)
 
@@ -226,6 +256,25 @@ msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, )
 \
 \
 \
+
+Second most common sequence in set:
+
+```{r plotalignment}
+# Plot alignments of commonidxLC (are these aberrant?)
+# So far haven't figure out how to do this in a loop, so just plot the one with the most total reads:
+putative_aberrant = names(sort(colSums(seqtabLC), decreasing=T))[2]
+dna = DNAStringSet(c(sp0, putative_aberrant))  
+names(dna) = c("AberrantLC", "SecondMostCommonSeq") 
+
+alignedDNA = AlignSeqs(dna, verbose=F)
+
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, )
+
+```
+\
+\
+\
+
 ```{r summary table}
 ## Build Status Table for all samples:
 status.out = data.frame(sampleData,

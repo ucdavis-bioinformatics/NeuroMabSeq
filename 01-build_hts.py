@@ -2,15 +2,15 @@ import sys
 import os
 from glob import glob
 
-#r1f = sys.argv[1]
-#r1r = sys.argv[2]
-#primerf = sys.argv[3]
-#cmdf = sys.argv[4]
+r1f = sys.argv[1]
+r1r = sys.argv[2]
+primerf = sys.argv[3]
+cmdf = sys.argv[4]
 
-r1 = glob('./00-RawData/*_R1_*.fastq.gz')[0]
-r2 = r1.replace('_R1_', '_R2_')
-primerf = '1_Short_primers.csv'
-cmdf = '01-trim-1_Short_CSP.sh'
+#r1 = glob('./00-RawData/*_R1_*.fastq.gz')[0]
+#r2 = r1.replace('_R1_', '_R2_')
+#primerf = '1_Short_primers.csv'
+#cmdf = '01-trim-1_Short_CSP.sh'
 
 # r1f = './00-RawData/2_Long_CSP_Pool_S2_L001_R1_001.fastq.gz'
 # r1r = './00-RawData/2_Long_CSP_Pool_S2_L001_R2_001.fastq.gz'
