@@ -11,7 +11,8 @@ ncpu = 96
 ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
 
 # Submit jobs for all pipelines:
-slurmf = open("submit_slurm.sh", 'w')
+#slurmf = open("submit_slurm.sh", 'w')
+runf = open("run_sequential.sh", 'w')
 
 # Setup plates:
 for plate in ss:
@@ -78,9 +79,13 @@ for plate in ss:
         cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/02-Hybridoma-DADA2-analysis.html {dest}HTML_Reports/{plate['plate']}_report.html\n"
         outf.write(cmd)
 
-    slurmf.write(f"srun -t 1:0:0 -c {ncpu} -n 1 --mem 16000 --partition production -J {plate['plate']} --output slurmout " + f"./{s}/run_pipeline.sh\n")
+    runf.write(f"echo {plate['plate']}\n")
+    runf.write(f"cd {os.path.abspath(s)}\n")
+    runf.write('./run_pipeline.sh')
+    runf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")    
+    #slurmf.write(f"srun -t 1:0:0 -c {ncpu} -n 1 --mem 16000 --partition production -J {plate['plate']} --output slurmout " + f"./{s}/run_pipeline.sh\n")
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./03-AnnotatedResults/*.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/AnnotatedResults/
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./02-Results/*_SampleStatus.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/StatusReports/
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./02-Results/02-Hybridoma-DADA2-analysis.html  bioshare@bioshare.bioinformatics.ucdavis.edu:'/3ksenvfdffie3aj/HTML_Reports/'$plate'_report.html'
     #ssh -i ~/.ssh/samlogin.pem shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com
-slurmf.close()
+#slurmf.close()
