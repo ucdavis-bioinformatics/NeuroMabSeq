@@ -13,21 +13,22 @@ Folder Structure:
 
 
 Pipeline:
-    SampleSheet.txt is a 3 column file that defines the plates. It has three columns:
+    SampleSheet.txt is a 4 column file that defines the plates and primers used. 
+    Columns are:
         filePrefix - prefix for the fastq files - formatting varies depending on DNA Tech Core naming
         plate: consistent naming (TRIMMER00NN_PNN) for output plates and associated tables.
         submissionID: contains the ID the submission system uses, this should be 12 random digits
+        Primers: contains the name of the primer definition to use for demultiplexing and trimming.
 
 1) Run setup_pipeline.py 
-    1) load the SampleSheet.txt file
-    2) for each sample
-        - create an 01-Processing/TRIMMER00NN folder
-        - link reads, copy in all of the important pieces
-        - setup the scripts based on the primers used
-            -run_pipeline.sh
-            -01-build_hts.py
-             
+    Note that this script can be run without overwriting previous outputs.
+    TODO:
+        -Either modify setup_pipeline.py so that it writes a Snakemake pipeline for each plate
+        or
+        -Find some other way to only process new plates automatically.
+            -This might be as simple as checking for 03-AnnotatedResults/{plate}_Sequences.tsv
     
-
-
+2) Use run_sequential.sh to run each plate on one server. 
+    Alternatively run the ./01-Processing/TRIMMER00NN/run_pipeline.sh script for any one plate.
+    
 
