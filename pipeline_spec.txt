@@ -21,6 +21,7 @@ Pipeline:
         Primers: contains the name of the primer definition to use for demultiplexing and trimming.
 
 1) Run setup_pipeline.py 
+    python3 NeuroMabSeq/setup_pipeline.py
     Note that this script can be run without overwriting previous outputs.
     TODO:
         -Either modify setup_pipeline.py so that it writes a Snakemake pipeline for each plate
@@ -30,5 +31,5 @@ Pipeline:
     
 2) Use run_sequential.sh to run each plate on one server. 
     Alternatively run the ./01-Processing/TRIMMER00NN/run_pipeline.sh script for any one plate.
-    
+
 

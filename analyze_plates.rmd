@@ -1,0 +1,632 @@
+---
+title:  'Analysis of all plates'
+author: "Sam Hunter"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r global_options, include=FALSE}
+# Set up global options for nice reports and keeping figures:
+knitr::opts_chunk$set(fig.width=14, fig.height=8, fig.path='Figs/',
+                      echo=FALSE, warning=FALSE, message=FALSE)
+options(stringsAsFactors=F)
+
+nice_colors = c("#999999", "#E69F00", "#56B4E9","#e98756","#c08160","#5800e6", "#CDDC49",
+                "#C475D3", "#E94B30", "#233F57", "#FEE659", "#A1CFDD", "#F4755E", "#D6F6F7","#EB6D58", "#6898BF")
+
+```
+
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_knit$set(root.dir = '/bio/CoreWork/2019.11.18-Trimmer-Hybridoma-Seq/2020-02-07-run-rerun_of_27-samples-SMARTPCR')
+#library(dada2)
+library(kableExtra)
+library(ggplot2)
+#library(stringr)
+#library(msaR)
+#library(DECIPHER)
+library(tidyr)
+options(stringsAsFactors=F)
+library(pheatmap)
+```
+
+### Setup File and Sample Names
+
+```{r Load Data, echo=FALSE}
+# Load plate data, both demux_stats AND SampleStatus:
+
+dscols = c("plate","Chain","SMARTindex","RawReads","ReadsWithPrimer","Aberrant_LC_reads",
+           "Qtrimmed","Overlapped","folder")
+rscols = c("sample_name","plate_location","trimmer_id","volume","concentration",
+           "comments","amplicon_concentration","lib_concentration","failure",
+           "inline_index_name","inline_index","LCs.Reported","HCs.Reported") 
+
+index_well = read.table("SMARTindex_well.tsv", header=T, as.is=T)
+
+smartcounts = data.frame()
+annotated = data.frame()
+asvcounts = data.frame()
+for(plate in dir(".", pattern='^TRIMMER0')){
+    cat(paste0(plate,'\n'))
+    #Load demux stats
+    ds = read.table(paste0(plate, '/01-PrimerTrimReport/demux_stats.tsv'), as.is=T, header=T, sep='\t')
+    ds$folder = plate
+    ds$plate_location = index_well$well[match(ds$SMARTindex, index_well$index_name)]
+
+    #Load SampleStatus
+    rsf = dir(paste0(plate, '/02-Results/'), pattern="*_SampleStatus.tsv", full.names=T)[1]
+    rs = read.table(rsf, as.is=T, sep='\t', header=T)
+
+    # if(plate == 'TRIMMER0005'){
+    #     rs$inline_index_name = rs$index_name
+    # }
+
+    if(!("lib_concentration" %in% colnames(rs))){
+        rs$lib_concentration = NA
+    }
+
+    #Break if there are problems with import:
+    #stopifnot(ds$SMARTindex %in% rs$inline_index_name)
+    #combined = data.frame(ds[,dscols], rs[match(ds$SMARTindex, rs$inline_index_name), rscols])
+    combined = data.frame(ds[,dscols], rs[match(ds$plate_location, rs$plate_location), rscols])
+    smartcounts = rbind(smartcounts, combined)
+
+    #Load Annotated Results:
+    annf = dir(paste0(plate,'/03-AnnotatedResults/'), pattern="*_Sequences.tsv", full.names=T)[1]
+    ann = read.table(annf, as.is=T, sep='\t', header=T)
+    annotated = rbind(annotated, ann)
+
+    # Load and summarize unfiltered ASV counts:
+    smindex = gsub('-', '.', paste0('X', index_well$index_name))
+
+    hcasv = read.table(paste0(plate,'/02-Results/00-no-filter-seqtab_HC.tsv'), header=T, as.is=T)
+    hcasv = hcasv[,-c(1)]
+    hc_gt0 = colSums(hcasv>0)[smindex]
+    hc_gte10 = colSums(hcasv>=10)[smindex]
+
+    lcasv = read.table(paste0(plate,'/02-Results/00-no-filter-seqtab_LC.tsv'), header=T, as.is=T)
+    lcasv = lcasv[,-c(1)]
+    lc_gt0 = colSums(lcasv>0)[smindex]
+    lc_gte10 = colSums(lcasv>=10)[smindex]
+
+    df = data.frame(row.names=NULL, Plate=rep(plate,96), 
+                index_well, hc_gt0, hc_gte10, lc_gt0, lc_gte10, rs[,c("LCs.Reported","HCs.Reported")])
+    asvcounts = rbind(asvcounts, df)
+}
+
+smartcounts$pctReadsWPrimer = 100 * smartcounts$ReadsWithPrimer/(smartcounts$RawReads + 1)
+smartcounts$pctOverlapped = 100 * smartcounts$Overlapped/(smartcounts$ReadsWithPrimer + 1)
+smartcounts$NonAberrantReads = smartcounts$ReadsWithPrimer - smartcounts$Aberrant_LC_reads
+smartcounts$LCs.Reported[is.na(smartcounts$LCs.Reported )] = 0
+smartcounts$HCs.Reported[is.na(smartcounts$HCs.Reported )] = 0
+
+
+save(smartcounts, annotated, file="smartcounts_annotated.RData")
+
+
+# Write some tables of failed samples using different criteria:
+
+# Write all samples:
+write.table(smartcounts, file="All_plates_read_counts.tsv", row.names=F, col.names=T, sep='\t')
+
+# Write controls:
+control_samples = smartcounts[grep('control|empty', ignore.case=T, smartcounts$trimmer_id), ]
+#control_samples = smartcounts[smartcounts$SMARTindex %in% c("88-SMARTindex", "96-SMARTindex"), ]
+write.table(control_samples, file="ALL_controls.tsv", row.names=F, col.names=T, sep='\t')
+
+## Failures can come in multiple flavors:
+```
+
+*************
+#### Samples that didn't produce an ASV in one or both chains:
+```{r p000.failedSamplesTables1, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
+idx = hc$LCs.Reported == 0 | hc$HCs.Reported == 0
+noasvHC = hc[idx, ]
+noasvHC = noasvHC[order(noasvHC$sample_name, noasvHC$Chain), ]
+rownames(noasvHC) = noasvHC$sample_name
+
+noasvLC = lc[match(noasvHC$sample_name, lc$sample_name), ]
+
+noasv = data.frame(sample_name=noasvHC$sample_name,
+                    plate=noasvHC$plate,
+                    HCDemultiplexed=noasvHC$ReadsWithPrimer,
+                    HCOverlapped=noasvHC$Overlapped,
+                    HCs.Reported=noasvHC$HCs.Reported,
+                    LCDemultiplexed=noasvLC$ReadsWithPrimer,
+                    Aberrant_LC_reads=noasvLC$Aberrant_LC_reads,
+                    LCOverlapped=noasvLC$Overlapped,
+                    LCs.Reported=noasvLC$LCs.Reported
+                    )
+write.table(noasv, file="Samples_with_at_least_one_dropout.tsv", sep='\t', row.names=F, col.names=T)
+
+
+
+```
+
+#### Sample that produced few reads in heavy, light, and aberrant 
+```{r p000.failedSamplesTables2, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
+# Get rid of the test plate:
+sc = smartcounts[smartcounts$plate != 'TRIMMER0004-1_P4', ]
+
+f[f$LCs.Reported > 0 & f$HCs.Reported > 0,]
+
+lc = sc[sc$Chain=='L', ]
+hc = sc[sc$Chain=='H', ]
+
+# Count reads per sample 
+readsPerSample = tapply(sc$ReadsWithPrimer, INDEX=sc$sample_name, sum)
+HCreadsPerSample = tapply(hc$ReadsWithPrimer, INDEX=hc$sample_name, sum)
+LCreadsPerSample = tapply(lc$ReadsWithPrimer, INDEX=lc$sample_name, sum)
+ABreadsPerSample = tapply(sc$Aberrant_LC_reads, INDEX=sc$sample_name, sum)
+
+failed = which(readsPerSample<20, useNames=T)
+
+f = sc[sc$sample_name %in% names(failed), ]
+
+df = data.frame(Sample=names(failed), 
+        HCreads = HCreadsPerSample[match(names(failed), names(HCreadsPerSample))],
+        LCreads = HCreadsPerSample[match(names(failed), names(HCreadsPerSample))],
+
+        )
+
+
+gte10 = tapply(smartcounts$ReadsWithPrimer >= 10, INDEX=smartcounts$sample_name, sum)
+idx = names(gte10[gte10==0])
+
+
+kable(demuxed) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+
+```
+
+```{r p000.failedSamplesTables, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
+
+# Write some tables with failed samples (dropouts)
+# This counts reads in heavy and light chains:
+gte10 = tapply(smartcounts$ReadsWithPrimer >= 10, INDEX=smartcounts$sample_name, sum)
+idx = names(gte10[gte10==0])
+
+samples_with_few_reads = smartcounts[smartcounts$sample_name %in% idx, ]
+samples_with_few_reads = samples_with_few_reads[grep('control', samples_with_few_reads$trimmer_id, invert=T),]
+samples_with_few_reads = samples_with_few_reads[order(samples_with_few_reads$sample_name), ]
+write.table(samples_with_few_reads, file="Samples_with_few_reads.tsv", row.names=F, col.names=T, sep='\t')
+
+# Samples with no overlaps:
+gt10 = tapply(smartcounts$Overlapped >= 10, INDEX=smartcounts$sample_name, sum)
+idx = names(gt10[gt10==0])
+
+samples_without_overlaps = smartcounts[smartcounts$sample_name %in% idx, ]
+samples_without_overlaps = samples_without_overlaps[order(samples_without_overlaps$sample_name), ]
+samples_without_overlaps = samples_without_overlaps[grep('control', samples_without_overlaps$trimmer_id, invert=T),]
+write.table(samples_without_overlaps, file="Samples_without_overlaps.tsv", row.names=F, col.names=T, sep='\t')
+
+# What was P5_D9 reported?
+### TODO: look into P5_D9, why was it reported, counts are < 10 for both chains!!
+#samples_without_overlaps[!is.na(samples_without_overlaps$LCs.Reported), ]
+
+#idx_lowcounts = 
+
+# Don't Drop test plate:
+# smartcounts2 = smartcounts[smartcounts$folder != 'TRIMMER0004-1', ]
+
+# It turns out that I use >= 10 in my other script
+# table(lc$LCs.Reported, lc$Overlapped >= 10, useNA='ifany')
+
+# lc[!is.na(lc$LCs.Reported) & lc$Overlapped <= 10, ]
+
+# table(hc$HCs.Reported, hc$Overlapped >= 10, useNA='ifany')
+
+
+
+```
+
+***********
+## Basic statistics
+<!--
+## TODO make a reads lost (ReadsWithPrimer - Overlapped) boxplot.
+
+## TODO make a pcOverlapped vs concentration
+
+
+## TODO make a comparison plot of light chain read numbers vs HC read numbers.
+    ## do this for aberrant vs non.
+    ## how consistent are aberrant reads?
+
+## Diana is going to make a spreadsheet with additional metadata
+
+ggplot(smartcounts, aes(x=smartcounts$ReadsWithPrimer, y=smartcounts$Overlapped, col=smartcounts$plate)) + 
+geom_point() + ylim(c(0,100)) + xlim(c(0,100))
+
+!-->
+
+
+### Reads per plate:
+
+```{r p000.ReadsPerPlate, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
+df = smartcounts[!duplicated(smartcounts$plate), ]
+
+#tapply()
+
+ggplot(df, aes(x=plate, y=RawReads)) + 
+    geom_bar(stat="identity", color='black', fill='grey') + theme_bw() +
+    ggtitle("Total reads per plate") +
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10))
+
+```
+***********
+
+### Overall stats
+
+```{r readDemuxed, echo=FALSE}
+tmp = smartcounts[!duplicated(smartcounts$plate), ]
+
+demuxcounts = tapply(smartcounts$ReadsWithPrimer, INDEX=smartcounts$plate, sum)
+hcReads =tapply(hc$ReadsWithPrimer, INDEX=hc$plate, sum)
+lcReads =tapply(lc$ReadsWithPrimer, INDEX=lc$plate, sum)
+aberrantReads = tapply(smartcounts$Aberrant_LC_reads, INDEX=smartcounts$plate, sum)
+hcFewReads = tapply(X=hc$ReadsWithPrimer < 10, INDEX=hc$plate, FUN=sum)
+lcFewReads = tapply(X=lc$ReadsWithPrimer < 10, INDEX=lc$plate, FUN=sum)
+hcFewOverlapped = tapply(X=hc$Overlapped < 10, INDEX=hc$plate, FUN=sum)
+lcFewOverlapped = tapply(X=lc$Overlapped < 10, INDEX=lc$plate, FUN=sum)
+hcReported = tapply(X=hc$HCs.Reported>0, INDEX=hc$plate, FUN=sum, na.rm=T)
+lcReported = tapply(X=lc$LCs.Reported>0, INDEX=lc$plate, FUN=sum, na.rm=T)
+
+demuxed = data.frame(tmp[,c('plate','RawReads')], demuxcounts=demuxcounts[tmp$plate])
+demuxed$PCT.DMX = 100*demuxed$demuxcounts/demuxed$RawReads
+demuxed$hcReads = hcReads[tmp$plate]
+demuxed$lcReads = lcReads[tmp$plate]
+demuxed$aberrantReads = aberrantReads[tmp$plate]
+demuxed$PCT.Ab = 100 * demuxed$aberrantReads / demuxed$lcReads
+demuxed$hcFewReads = hcFewReads[tmp$plate]
+demuxed$lcFewReads = lcFewReads[tmp$plate]
+demuxed$hcFewOverlapped = hcFewOverlapped[tmp$plate]
+demuxed$lcFewOverlapped = lcFewOverlapped[tmp$plate]
+demuxed$hcReported = hcReported[tmp$plate]
+demuxed$lcReported = lcReported[tmp$plate]
+
+# ggplot(demuxed, aes(x=RawReads, y=demuxcounts, color=plate)) + 
+#     geom_point()
+#https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+kable(demuxed) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
+***********
+
+<!---
+### Dropouts
+
+#### Heavy Chain reads with barcodes dropouts (< 10 reads for HC primers+Barcode) by plate:
+
+```{r HCdropouttable, echo=FALSE}
+#tapply(X=hc$ReadsWithPrimer < 10, INDEX=hc$plate, FUN=sum)
+tb = table(hc$plate, hc$ReadsWithPrimer < 10)
+
+# kable(tb) %>%
+#   kable_styling("striped", full_width = F) %>%
+#   row_spec(0, angle = 0)
+
+```
+
+
+#### Light Chain reads with barcodes dropouts (< 10 reads for LC primers+Barcode) by plate:
+```{r LCdropouttable, echo=FALSE}
+
+tb = table(lc$plate, lc$ReadsWithPrimer < 10)
+
+# kable(tb) %>%
+#   kable_styling("striped", full_width = F) %>%
+#   row_spec(0, angle = 0)
+
+```
+
+
+#### Heavy Chain reads overlapped dropouts (< 10 reads overlapped) by plate:
+
+```{r HC_overlap_dropouttable, echo=FALSE}
+
+tb = table(hc$plate, hc$Overlapped < 10)
+
+# kable(tb) %>%
+#   kable_styling("striped", full_width = F) %>%
+#   row_spec(0, angle = 0)
+
+```
+
+
+#### Light Chain reads with barcodes dropouts (< 10 reads for LC primers+Barcode) by plate:
+```{r LC_overlap_dropouttable, echo=FALSE}
+
+tb = table(lc$plate, lc$Overlapped < 10)
+
+# kable(tb) %>%
+#   kable_styling("striped", full_width = F) %>%
+#   row_spec(0, angle = 0)
+
+```
+
+Dropouts reported here represent samples where too few reads were available for producing ASVs. Additional dropout may occur during ASV generation.
+
+--->
+***********
+
+### Variance in reads by SMARTindex (sample) across plates
+
+#### Percentage of reads by Primer+Index 
+Note that the denominator is total reads per plate.
+```{r p001.Boxplot_PercentReadsWithPrimer, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
+ggplot(smartcounts, aes(x=plate, y=pctReadsWPrimer)) +
+    geom_boxplot(color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Percent reads with Primer+Index") +
+    geom_jitter(shape=16, position=position_jitter(0.2), color='lightgreen', alpha=0.5)+
+    facet_wrap(.~Chain)
+```
+
+
+
+#### Variance in total reads by Primer+Index 
+```{r p001.VarianceTotalReadsWithPrimer, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
+
+df = tapply(X=smartcounts$ReadsWithPrimer, INDEX=smartcounts$plate, FUN=var)
+df = data.frame(Sample=names(df), var=df)
+
+ggplot(df, aes(x=Sample, y=var)) +
+    geom_bar(stat="identity", color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Variance in read count with Primer+Index")
+    #geom_jitter(shape=16, position=position_jitter(0.2), color='lightgreen', alpha=0.5)+
+    #facet_wrap(.~Chain)
+```
+
+
+
+#### Variance in percent reads by Primer+Index
+```{r p001.VariancePctReadsWithPrimer, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
+
+df = tapply(X=smartcounts$pctReadsWPrimer, INDEX=smartcounts$plate, FUN=var)
+df = data.frame(Sample=names(df), var=df)
+
+ggplot(df, aes(x=Sample, y=var)) +
+    geom_bar(stat="identity", color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Variance in percent read count with Primer+Index")
+    #geom_jitter(shape=16, position=position_jitter(0.2), color='lightgreen', alpha=0.5)+
+    #facet_wrap(.~Chain)
+```
+
+
+
+#### Percent of reads with Primer+Index that could be overlapped
+```{r p002.HC_PercentReadsWithPrimer, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
+
+ggplot(smartcounts, aes(x=plate, y=pctOverlapped)) +
+    geom_boxplot(color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Percent of reads with Primer+Index overlapped") +
+    geom_jitter(shape=16, position=position_jitter(0.2), color='lightgreen', alpha=0.5)+
+    facet_wrap(.~Chain)
+```
+
+#### ASVs supported by 20 or more reads vs ASVs reported based on cutoffs (>=30%)
+
+##### Number of HC ASVs with support from 10 or more reads:
+```{r p002.ASVcounts_hc, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
+#tmp = pivot_longer(data=asvcounts, cols=c("hc_gt0", "hc_gte10", "lc_gt0", "lc_gte10", "LCs.Reported", "HCs.Reported"))
+ggplot(asvcounts, aes(x=Plate, y=hc_gte10)) +
+    geom_boxplot(color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Number of HC ASVs with support from 10 or more reads") +
+    geom_point(color='lightgreen', alpha=.5)
+    #geom_jitter(shape=16, position=position_jitter(0.0002), color='lightgreen', alpha=0.5) #+
+    #facet_wrap(.~Chain)
+
+```
+
+##### Number of HC ASVs reported:
+```{r p002.ASVreported_hc, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
+#tmp = pivot_longer(data=asvcounts, cols=c("hc_gt0", "hc_gte10", "lc_gt0", "lc_gte10", "LCs.Reported", "HCs.Reported"))
+ggplot(asvcounts, aes(x=Plate, y=HCs.Reported)) +
+    geom_boxplot(color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Number of HC ASVs reported") +
+    geom_point(color='lightgreen', alpha=.5)
+    #geom_jitter(shape=16, position=position_jitter(0.02), color='lightgreen', alpha=0.5) #+
+    #facet_wrap(.~Chain)
+
+```
+
+
+##### Number of LC ASVs with support from 10 or more reads:
+```{r p002.ASVcounts_lc, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
+#tmp = pivot_longer(data=asvcounts, cols=c("hc_gt0", "hc_gte10", "lc_gt0", "lc_gte10", "LCs.Reported", "HCs.Reported"))
+ggplot(asvcounts, aes(x=Plate, y=lc_gte10)) +
+    geom_boxplot(color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Number of HC ASVs with support from 10 or more reads") +
+    geom_jitter(shape=16, position=position_jitter(0.002), color='lightgreen', alpha=0.5) #+
+    #facet_wrap(.~Chain)
+
+```
+
+##### Number of LC ASVs reported:
+```{r p002.ASVreported_lc, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
+#tmp = pivot_longer(data=asvcounts, cols=c("hc_gt0", "hc_gte10", "lc_gt0", "lc_gte10", "LCs.Reported", "HCs.Reported"))
+ggplot(asvcounts, aes(x=Plate, y=LCs.Reported)) +
+    geom_boxplot(color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Number of LC ASVs reported") +
+    geom_point(color='lightgreen', alpha=.5)
+    #geom_jitter(shape=16, position=position_jitter(0.002), color='lightgreen', alpha=0.5) #+
+    #facet_wrap(.~Chain)
+
+```
+
+
+#### TRIMMER0004 comparison:
+Plate 4-1 (TRIMMER0004-1_P4) was prepared with an alternative PCR method in an attempt at producing more uniform amplicon counts across samples. Only 32 samples were prepped for 4-1, so only the matching 32 samples are included from 4-2. 
+
+
+```{r p002.bxp_pctPrimer_TRIMMER0004-1, echo=FALSE, fig.height=8, fig.width=16, fig.align="center"}
+
+p4.1 = rbind(smartcounts[smartcounts$plate == 'TRIMMER0004-1_P4' & smartcounts$Chain=='H', ][1:32, ],
+             smartcounts[smartcounts$plate == 'TRIMMER0004-1_P4' & smartcounts$Chain=='L', ][1:32, ])
+p4.2 = rbind(smartcounts[smartcounts$plate == 'TRIMMER0004-2_P4' & smartcounts$Chain=='H', ][1:32, ],
+             smartcounts[smartcounts$plate == 'TRIMMER0004-2_P4' & smartcounts$Chain=='L', ][1:32, ])
+
+p4.1$pctReadsWPrimer = 100 * p4.1$ReadsWithPrimer/sum(p4.1$ReadsWithPrimer)
+p4.2$pctReadsWPrimer = 100 * p4.2$ReadsWithPrimer/sum(p4.2$ReadsWithPrimer)
+
+p4.1$pctOverlapped = 100 * p4.1$Overlapped/sum(p4.1$Overlapped)
+p4.2$pctOverlapped = 100 * p4.2$Overlapped/sum(p4.2$Overlapped)
+
+
+
+df = rbind(p4.1, p4.2)
+
+ggplot(df, aes(x=plate, y=pctReadsWPrimer)) +
+    geom_boxplot(color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Percent of reads with Primer+Index") +
+    geom_jitter(shape=16, position=position_jitter(0.2), color='lightgreen', alpha=0.5) +
+    facet_wrap(.~Chain)
+
+
+```
+
+
+```{r p002.bxp_pctOv_TRIMMER0004-1, echo=FALSE, fig.height=8, fig.width=16, fig.align="center"}
+
+ggplot(df, aes(x=plate, y=pctOverlapped)) +
+    geom_boxplot(color="black", fill="grey") + theme_bw() + 
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
+    #scale_fill_manual(values=nice_colors)  +
+    ggtitle("Percent of reads with Primer+Index Overlapped") +
+    geom_jitter(shape=16, position=position_jitter(0.2), color='lightgreen', alpha=0.5) +
+    facet_wrap(.~Chain)
+
+```
+
+
+#### Plate 4-1 dropouts:
+```{r p002.4.1.table_dropouts, echo=FALSE}
+
+tb = table(p4.1$Chain, p4.1$Overlapped < 10)
+
+kable(tb) %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, angle = 0)
+
+```
+
+#### Plate 4-2 dropouts:
+```{r p002.4.2.table_dropouts, echo=FALSE}
+
+tb = table(p4.2$Chain, p4.2$Overlapped < 10)
+
+kable(tb) %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, angle = 0)
+
+```
+
+
+***********
+
+
+#### Other plots..
+##### Light chain
+```{r LC_Heatmap_ReadsWPrimer, echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
+df = pivot_wider(lc, id_cols=c("plate","SMARTindex"), 
+    names_from = plate, values_from = "ReadsWithPrimer")
+df = data.frame(df)
+rownames(df) = df$SMARTindex
+df = df[,-1]
+
+pheatmap(df, cluster_cols=F, cluster_rows=F, main="Light Chain: Total Reads with Primer per Sample")
+```
+
+```{r LC_Heatmap_pctReadsWPrimer, echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
+## Light Chain
+df = pivot_wider(lc, id_cols=c("plate","SMARTindex"), 
+    names_from = plate, values_from = "pctReadsWPrimer")
+df = data.frame(df)
+rownames(df) = df$SMARTindex
+df = df[,-1]
+
+pheatmap(df, cluster_cols=F, cluster_rows=F, main="Light Chain: Percent Reads with Primer per Sample")
+```
+
+Count of overlapped reads, samples with < 10 reads are Red, samples with 10-50 reads a yellow, samples with > 50 reads are green. 
+```{r LC_Heatmap_ReadsOverlapped, echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
+## Light Chain
+library(RColorBrewer)
+df = pivot_wider(lc, id_cols=c("plate","SMARTindex"), 
+    names_from = plate, values_from = "Overlapped")
+df = data.frame(df)
+rownames(df) = df$SMARTindex
+df = df[,-1]
+
+pheatmap(df, color=c("red", "yellow", "green"),
+       breaks=c(0, 10, 50, 200), 
+    cluster_cols=F, cluster_rows=F, main="Light Chain: Total Reads Overlapped per Sample")
+
+```
+
+
+
+##### Heavy Chain
+
+```{r HC_Heatmap_ReadsWPrimer, echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
+df = pivot_wider(hc, id_cols=c("plate","SMARTindex"), 
+    names_from = plate, values_from = "ReadsWithPrimer")
+df = data.frame(df)
+rownames(df) = df$SMARTindex
+df = df[,-1]
+
+pheatmap(df, cluster_cols=F, cluster_rows=F, main="Heavy Chain: Total Reads with Primer per Sample")
+```
+
+```{r HC_Heatmap_pctReadsWPrimer, echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
+df = pivot_wider(hc, id_cols=c("plate","SMARTindex"), 
+    names_from = plate, values_from = "pctReadsWPrimer")
+df = data.frame(df)
+rownames(df) = df$SMARTindex
+df = df[,-1]
+
+pheatmap(df, cluster_cols=F, cluster_rows=F, main="Heavy Chain: Percent Reads with Primer per Sample")
+```
+
+Count of overlapped reads, samples with < 10 reads are Red, samples with 10-50 reads a yellow, samples with > 50 reads are green. 
+```{r HC_Heatmap_ReadsOverlapped, echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
+library(RColorBrewer)
+df = pivot_wider(hc, id_cols=c("plate","SMARTindex"), 
+    names_from = plate, values_from = "Overlapped")
+df = data.frame(df)
+rownames(df) = df$SMARTindex
+df = df[,-1]
+
+pheatmap(df, color=c("red", "yellow", "green"),
+       breaks=c(0, 10, 50, 200), 
+    cluster_cols=F, cluster_rows=F, main="Heavy Chain: Total Reads Overlapped per Sample")
+
+```
+
+
+
+
+
