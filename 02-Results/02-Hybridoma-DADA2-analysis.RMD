@@ -31,8 +31,17 @@ outp = './'
 #plate = "TRIMMER0005_P5"
 
 ## Load sample data from submission system:
-sampleData = read.table(paste("https://submissions.dnatech.ucdavis.edu/server/api/submissions/", 
+# sampleData = read.table(paste("https://submissions.dnatech.ucdavis.edu/server/api/submissions/", 
+#                               submission, "/download/?format=tsv&data=samples", sep=''), sep='\t', header=T, as.is=T)
+
+sampleData = read.table(paste("https://ucdavis.coreomics.com/server/api/submissions/", 
                               submission, "/download/?format=tsv&data=samples", sep=''), sep='\t', header=T, as.is=T)
+
+#sampleData = read.table('https://ucdavis.coreomics.com/server/api/submissions/b51b81e9ee80/download/?format=tsv&data=samples', sep='\t', header=T, as.is=T)
+
+
+#https://ucdavis.coreomics.com/server/api/submissions/b51b81e9ee80/download/?format=tsv&data=samples
+
 
 # Load SMARTindex --> Well ID conversion:
 wellIDX = read.table("SMARTindex_well.tsv", head=T, as.is=T)
