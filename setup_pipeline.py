@@ -42,7 +42,7 @@ for plate in ss:
         outf.write(cmd)
         cmd = "module load R/3.6.1\n"
         outf.write(cmd)
-        cmd = "module load module load hmmer/3.1b2\n"
+        cmd = "module load hmmer/3.1b2\n"
         outf.write(cmd)
         cmd = "source /share/biocore/projects/Trimmer_James_UCD/2019.11.18-Trimmer-Hybridoma-Seq/ANARCI-venv/bin/activate\n"
         outf.write(cmd)

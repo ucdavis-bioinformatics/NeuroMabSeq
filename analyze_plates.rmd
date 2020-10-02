@@ -42,20 +42,20 @@ rscols = c("sample_name","plate_location","trimmer_id","volume","concentration",
            "comments","amplicon_concentration","lib_concentration","failure",
            "inline_index_name","inline_index","LCs.Reported","HCs.Reported") 
 
-index_well = read.table("SMARTindex_well.tsv", header=T, as.is=T)
+index_well = read.table("../NeuroMabSeq/SMARTindex_well.tsv", header=T, as.is=T)
 
 smartcounts = data.frame()
 annotated = data.frame()
 asvcounts = data.frame()
-for(plate in dir(".", pattern='^TRIMMER0')){
+for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
     cat(paste0(plate,'\n'))
     #Load demux stats
-    ds = read.table(paste0(plate, '/01-PrimerTrimReport/demux_stats.tsv'), as.is=T, header=T, sep='\t')
+    ds = read.table(paste0('../01-Processing/', plate, '/01-PrimerTrimReport/demux_stats.tsv'), as.is=T, header=T, sep='\t')
     ds$folder = plate
     ds$plate_location = index_well$well[match(ds$SMARTindex, index_well$index_name)]
 
     #Load SampleStatus
-    rsf = dir(paste0(plate, '/02-Results/'), pattern="*_SampleStatus.tsv", full.names=T)[1]
+    rsf = dir(paste0("../01-Processing/", plate, '/02-Results/'), pattern="*_SampleStatus.tsv", full.names=T)[1]
     rs = read.table(rsf, as.is=T, sep='\t', header=T)
 
     # if(plate == 'TRIMMER0005'){
@@ -73,25 +73,26 @@ for(plate in dir(".", pattern='^TRIMMER0')){
     smartcounts = rbind(smartcounts, combined)
 
     #Load Annotated Results:
-    annf = dir(paste0(plate,'/03-AnnotatedResults/'), pattern="*_Sequences.tsv", full.names=T)[1]
+    annf = dir(paste0("../01-Processing/", plate,'/03-AnnotatedResults/'), pattern="*_Sequences.tsv", full.names=T)[1]
     ann = read.table(annf, as.is=T, sep='\t', header=T)
     annotated = rbind(annotated, ann)
 
     # Load and summarize unfiltered ASV counts:
     smindex = gsub('-', '.', paste0('X', index_well$index_name))
 
-    hcasv = read.table(paste0(plate,'/02-Results/00-no-filter-seqtab_HC.tsv'), header=T, as.is=T)
+    hcasv = read.table(paste0("../01-Processing/", plate,'/02-Results/00-no-filter-seqtab_HC.tsv'), header=T, as.is=T)
     hcasv = hcasv[,-c(1)]
     hc_gt0 = colSums(hcasv>0)[smindex]
     hc_gte10 = colSums(hcasv>=10)[smindex]
 
-    lcasv = read.table(paste0(plate,'/02-Results/00-no-filter-seqtab_LC.tsv'), header=T, as.is=T)
+    lcasv = read.table(paste0("../01-Processing/", plate,'/02-Results/00-no-filter-seqtab_LC.tsv'), header=T, as.is=T)
     lcasv = lcasv[,-c(1)]
     lc_gt0 = colSums(lcasv>0)[smindex]
     lc_gte10 = colSums(lcasv>=10)[smindex]
 
     df = data.frame(row.names=NULL, Plate=rep(plate,96), 
                 index_well, hc_gt0, hc_gte10, lc_gt0, lc_gte10, rs[,c("LCs.Reported","HCs.Reported")])
+    df[is.na(df)] = 0
     asvcounts = rbind(asvcounts, df)
 }
 
@@ -121,64 +122,53 @@ write.table(control_samples, file="ALL_controls.tsv", row.names=F, col.names=T, 
 *************
 #### Samples that didn't produce an ASV in one or both chains:
 ```{r p000.failedSamplesTables1, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
-idx = hc$LCs.Reported == 0 | hc$HCs.Reported == 0
-noasvHC = hc[idx, ]
-noasvHC = noasvHC[order(noasvHC$sample_name, noasvHC$Chain), ]
-rownames(noasvHC) = noasvHC$sample_name
+idx = smartcounts$LCs.Reported == 0 | smartcounts$HCs.Reported == 0
+noasv = smartcounts[idx, ]
+noasv = noasv[order(noasv$sample_name, noasv$Chain), ]
+# rownames(noasv) = noasv$sample_name
 
-noasvLC = lc[match(noasvHC$sample_name, lc$sample_name), ]
-
-noasv = data.frame(sample_name=noasvHC$sample_name,
-                    plate=noasvHC$plate,
-                    HCDemultiplexed=noasvHC$ReadsWithPrimer,
-                    HCOverlapped=noasvHC$Overlapped,
-                    HCs.Reported=noasvHC$HCs.Reported,
-                    LCDemultiplexed=noasvLC$ReadsWithPrimer,
-                    Aberrant_LC_reads=noasvLC$Aberrant_LC_reads,
-                    LCOverlapped=noasvLC$Overlapped,
-                    LCs.Reported=noasvLC$LCs.Reported
-                    )
 write.table(noasv, file="Samples_with_at_least_one_dropout.tsv", sep='\t', row.names=F, col.names=T)
 
 
 
 ```
 
-#### Sample that produced few reads in heavy, light, and aberrant 
 ```{r p000.failedSamplesTables2, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
+#### Sample that produced few reads in heavy, light, and aberrant 
+### This code block isn't done and was part of some old filtering approach.
 # Get rid of the test plate:
-sc = smartcounts[smartcounts$plate != 'TRIMMER0004-1_P4', ]
+# sc = smartcounts[smartcounts$plate != 'TRIMMER0004-1_P4', ]
 
-f[f$LCs.Reported > 0 & f$HCs.Reported > 0,]
+# #f = sc[sc$LCs.Reported > 0 & f$HCs.Reported > 0,]
 
-lc = sc[sc$Chain=='L', ]
-hc = sc[sc$Chain=='H', ]
+# lc = sc[sc$Chain=='L', ]
+# hc = sc[sc$Chain=='H', ]
 
-# Count reads per sample 
-readsPerSample = tapply(sc$ReadsWithPrimer, INDEX=sc$sample_name, sum)
-HCreadsPerSample = tapply(hc$ReadsWithPrimer, INDEX=hc$sample_name, sum)
-LCreadsPerSample = tapply(lc$ReadsWithPrimer, INDEX=lc$sample_name, sum)
-ABreadsPerSample = tapply(sc$Aberrant_LC_reads, INDEX=sc$sample_name, sum)
+# # Count reads per sample 
+# readsPerSample = tapply(sc$ReadsWithPrimer, INDEX=sc$sample_name, sum)
+# HCreadsPerSample = tapply(hc$ReadsWithPrimer, INDEX=hc$sample_name, sum)
+# LCreadsPerSample = tapply(lc$ReadsWithPrimer, INDEX=lc$sample_name, sum)
+# ABreadsPerSample = tapply(sc$Aberrant_LC_reads, INDEX=sc$sample_name, sum)
 
-failed = which(readsPerSample<20, useNames=T)
+# failed = which(readsPerSample<20, useNames=T)
 
-f = sc[sc$sample_name %in% names(failed), ]
+# f = sc[sc$sample_name %in% names(failed), ]
 
-df = data.frame(Sample=names(failed), 
-        HCreads = HCreadsPerSample[match(names(failed), names(HCreadsPerSample))],
-        LCreads = HCreadsPerSample[match(names(failed), names(HCreadsPerSample))],
+# df = data.frame(Sample=names(failed), 
+#         HCreads = HCreadsPerSample[match(names(failed), names(HCreadsPerSample))],
+#         LCreads = HCreadsPerSample[match(names(failed), names(HCreadsPerSample))],
 
-        )
-
-
-gte10 = tapply(smartcounts$ReadsWithPrimer >= 10, INDEX=smartcounts$sample_name, sum)
-idx = names(gte10[gte10==0])
+#         )
 
 
-kable(demuxed) %>%
-  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
-        position="left", fixed_thead=T) %>%
-  row_spec(0, angle = 0)
+# gte10 = tapply(smartcounts$ReadsWithPrimer >= 10, INDEX=smartcounts$sample_name, sum)
+# idx = names(gte10[gte10==0])
+
+
+# kable(demuxed) %>%
+#   kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+#         position="left", fixed_thead=T) %>%
+#   row_spec(0, angle = 0)
 
 ```
 
@@ -261,6 +251,10 @@ ggplot(df, aes(x=plate, y=RawReads)) +
 ### Overall stats
 
 ```{r readDemuxed, echo=FALSE}
+#sc = smartcounts[smartcounts$plate != 'TRIMMER0004-1_P4', ]
+lc = smartcounts[smartcounts$Chain=='L', ]
+hc = smartcounts[smartcounts$Chain=='H', ]
+
 tmp = smartcounts[!duplicated(smartcounts$plate), ]
 
 demuxcounts = tapply(smartcounts$ReadsWithPrimer, INDEX=smartcounts$plate, sum)
@@ -357,6 +351,16 @@ Dropouts reported here represent samples where too few reads were available for 
 
 ### Variance in reads by SMARTindex (sample) across plates
 
+Values on the Y-axis are per-primer pair and calculated like:  
+
+100 * (number of reads with correct primer sequence)/(total number of reads for the plate).
+
+The better the pooling and more consistently samples performed within plate, the less variance in percent reads there should be. 
+
+Optimal y-value should be ~ 0.5 because there are 96*2 barcode pairs (100/192).
+
+The values for LC include the aberrant reads.
+
 #### Percentage of reads by Primer+Index 
 Note that the denominator is total reads per plate.
 ```{r p001.Boxplot_PercentReadsWithPrimer, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
@@ -373,7 +377,7 @@ ggplot(smartcounts, aes(x=plate, y=pctReadsWPrimer)) +
 
 #### Variance in total reads by Primer+Index 
 ```{r p001.VarianceTotalReadsWithPrimer, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
-
+options(scipen=10)
 df = tapply(X=smartcounts$ReadsWithPrimer, INDEX=smartcounts$plate, FUN=var)
 df = data.frame(Sample=names(df), var=df)
 
@@ -388,7 +392,8 @@ ggplot(df, aes(x=Sample, y=var)) +
 
 
 
-#### Variance in percent reads by Primer+Index
+#### Variance in percent reads with primer by Plate
+
 ```{r p001.VariancePctReadsWithPrimer, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
 
 df = tapply(X=smartcounts$pctReadsWPrimer, INDEX=smartcounts$plate, FUN=var)
@@ -406,6 +411,10 @@ ggplot(df, aes(x=Sample, y=var)) +
 
 
 #### Percent of reads with Primer+Index that could be overlapped
+Percent overlap should be ~100 because insert lengths are short enough that all on-target amplicons should overlap unless read quality was low. 
+There should also be very low plate-to-plate or sample-to-sample variance in overlap unless read quality was low, there were a large number of primer dimers
+or something else went wrong.
+
 ```{r p002.HC_PercentReadsWithPrimer, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
 
 ggplot(smartcounts, aes(x=plate, y=pctOverlapped)) +
@@ -417,9 +426,11 @@ ggplot(smartcounts, aes(x=plate, y=pctOverlapped)) +
     facet_wrap(.~Chain)
 ```
 
-#### ASVs supported by 20 or more reads vs ASVs reported based on cutoffs (>=30%)
+#### ASVs supported by 10 or more reads
 
 ##### Number of HC ASVs with support from 10 or more reads:
+In plates containing monoclonal samples, each sample should contain one heavy chain and two light chain sequences. Plates that contain non-monoclonal (parent) samples will have multiple sequences. The values reported here represent pre-filtered ASV counts for ASVs with more than 10 supporting reads.
+
 ```{r p002.ASVcounts_hc, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
 #tmp = pivot_longer(data=asvcounts, cols=c("hc_gt0", "hc_gte10", "lc_gt0", "lc_gte10", "LCs.Reported", "HCs.Reported"))
 ggplot(asvcounts, aes(x=Plate, y=hc_gte10)) +
@@ -434,6 +445,9 @@ ggplot(asvcounts, aes(x=Plate, y=hc_gte10)) +
 ```
 
 ##### Number of HC ASVs reported:
+
+This plot shows the distribution of number of HC ASVs reported after filtering per plate.
+
 ```{r p002.ASVreported_hc, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
 #tmp = pivot_longer(data=asvcounts, cols=c("hc_gt0", "hc_gte10", "lc_gt0", "lc_gte10", "LCs.Reported", "HCs.Reported"))
 ggplot(asvcounts, aes(x=Plate, y=HCs.Reported)) +
@@ -449,6 +463,8 @@ ggplot(asvcounts, aes(x=Plate, y=HCs.Reported)) +
 
 
 ##### Number of LC ASVs with support from 10 or more reads:
+In plates containing monoclonal samples, each sample should contain one heavy chain and two light chain sequences. Plates that contain non-monoclonal (parent) samples will have multiple sequences. The values reported here represent pre-filtered ASV counts for ASVs with more than 10 supporting reads.
+
 ```{r p002.ASVcounts_lc, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
 #tmp = pivot_longer(data=asvcounts, cols=c("hc_gt0", "hc_gte10", "lc_gt0", "lc_gte10", "LCs.Reported", "HCs.Reported"))
 ggplot(asvcounts, aes(x=Plate, y=lc_gte10)) +
@@ -462,6 +478,9 @@ ggplot(asvcounts, aes(x=Plate, y=lc_gte10)) +
 ```
 
 ##### Number of LC ASVs reported:
+
+This plot shows the distribution of number of LC ASVs reported after filtering per plate.
+
 ```{r p002.ASVreported_lc, echo=FALSE, fig.height=8, fig.width=20, fig.align="center"}
 #tmp = pivot_longer(data=asvcounts, cols=c("hc_gt0", "hc_gte10", "lc_gt0", "lc_gte10", "LCs.Reported", "HCs.Reported"))
 ggplot(asvcounts, aes(x=Plate, y=LCs.Reported)) +
@@ -629,4 +648,20 @@ pheatmap(df, color=c("red", "yellow", "green"),
 
 
 
+#### Duplicate ASVs
 
+
+
+##### HC 
+
+```{r DuplicateHeavyChain, }
+hca = annotated[annotated$Chain == 'HC', ]
+dhc = hca$ASV[duplicated(hca$ASV)]
+df = data.frame(ASV=hca$ASV[duplicated(hca$ASV)])
+
+df$DuplicatedIn = sapply(df$ASV, function(x){ paste(hca$Sample_Name[hca$ASV == x], collapse = ', ')})
+df$Count = sapply(strsplit(df$DuplicatedIn, ', '), length)
+
+st.out$DuplicatedIn = apply(st.out, 1, function(x){ paste(setdiff(st.out$Sample_Name[st.out$ASV %in% x['ASV']], x['Sample_Name']), collapse=', ')})
+
+```
