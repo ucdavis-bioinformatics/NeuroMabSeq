@@ -654,14 +654,33 @@ pheatmap(df, color=c("red", "yellow", "green"),
 
 ##### HC 
 
-```{r DuplicateHeavyChain, }
-hca = annotated[annotated$Chain == 'HC', ]
-dhc = hca$ASV[duplicated(hca$ASV)]
-df = data.frame(ASV=hca$ASV[duplicated(hca$ASV)])
+```{r DuplicateHeavyChain,  echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
+hca = annotated[annotated$Chain == 'HC' & annotated$plate != 'TRIMMER0004-1_P4', ]
+df = data.frame(ASV=unique(hca$ASV[duplicated(hca$ASV)]))
 
-df$DuplicatedIn = sapply(df$ASV, function(x){ paste(hca$Sample_Name[hca$ASV == x], collapse = ', ')})
+df$DuplicatedIn = sapply(df$ASV, function(x){paste(sort(hca$Sample_Name[hca$ASV == x]), collapse = ', ')})
+df$MabIDs = sapply(df$ASV, function(x){paste(sort(hca$MabID[hca$ASV == x]), collapse = ', ')})
+                                                       
 df$Count = sapply(strsplit(df$DuplicatedIn, ', '), length)
 
-st.out$DuplicatedIn = apply(st.out, 1, function(x){ paste(setdiff(st.out$Sample_Name[st.out$ASV %in% x['ASV']], x['Sample_Name']), collapse=', ')})
+df = df[order(df$Count, decreasing=T), ]
+
+write.table(df, file="DuplicatedHC_ASVs.tsv", row.names=F, sep='\t', quote=F)
+
+```
+
+
+```{r DuplicateLightChain,  echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
+lca = annotated[annotated$Chain == 'LC' & annotated$plate != 'TRIMMER0004-1_P4', ]
+df = data.frame(ASV=unique(lca$ASV[duplicated(lca$ASV)]))
+
+df$DuplicatedIn = sapply(df$ASV, function(x){paste(sort(lca$Sample_Name[lca$ASV == x]), collapse = ', ')})
+df$MabIDs = sapply(df$ASV, function(x){paste(sort(lca$MabID[lca$ASV == x]), collapse = ', ')})
+                                                       
+df$Count = sapply(strsplit(df$DuplicatedIn, ', '), length)
+
+df = df[order(df$Count, decreasing=T), ]
+
+write.table(df, file="DuplicatedLC_ASVs.tsv", row.names=F, sep='\t', quote=F)
 
 ```
