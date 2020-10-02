@@ -496,15 +496,15 @@ ggplot(asvcounts, aes(x=Plate, y=LCs.Reported)) +
 
 
 #### TRIMMER0004 comparison:
-Plate 4-1 (TRIMMER0004-1_P4) was prepared with an alternative PCR method in an attempt at producing more uniform amplicon counts across samples. Only 32 samples were prepped for 4-1, so only the matching 32 samples are included from 4-2. 
+Plate 4.1 (TRIMMER0004.1_P4) was prepared with an alternative PCR method in an attempt at producing more uniform amplicon counts across samples. Only 32 samples were prepped for 4.1, so only the matching 32 samples are included from 4.2. 
 
 
 ```{r p002.bxp_pctPrimer_TRIMMER0004-1, echo=FALSE, fig.height=8, fig.width=16, fig.align="center"}
 
-p4.1 = rbind(smartcounts[smartcounts$plate == 'TRIMMER0004-1_P4' & smartcounts$Chain=='H', ][1:32, ],
-             smartcounts[smartcounts$plate == 'TRIMMER0004-1_P4' & smartcounts$Chain=='L', ][1:32, ])
-p4.2 = rbind(smartcounts[smartcounts$plate == 'TRIMMER0004-2_P4' & smartcounts$Chain=='H', ][1:32, ],
-             smartcounts[smartcounts$plate == 'TRIMMER0004-2_P4' & smartcounts$Chain=='L', ][1:32, ])
+p4.1 = rbind(smartcounts[smartcounts$plate == 'TRIMMER0004.1_P4' & smartcounts$Chain=='H', ][1:32, ],
+             smartcounts[smartcounts$plate == 'TRIMMER0004.1_P4' & smartcounts$Chain=='L', ][1:32, ])
+p4.2 = rbind(smartcounts[smartcounts$plate == 'TRIMMER0004.2_P4' & smartcounts$Chain=='H', ][1:32, ],
+             smartcounts[smartcounts$plate == 'TRIMMER0004.2_P4' & smartcounts$Chain=='L', ][1:32, ])
 
 p4.1$pctReadsWPrimer = 100 * p4.1$ReadsWithPrimer/sum(p4.1$ReadsWithPrimer)
 p4.2$pctReadsWPrimer = 100 * p4.2$ReadsWithPrimer/sum(p4.2$ReadsWithPrimer)
