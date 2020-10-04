@@ -54,7 +54,7 @@ $(document).ready(function() {
           {% for faq in questions %}
             <tr>
               <td>{{faq.question}}</td>
-              <td>{{faq.message}}</td>
+              <td>{{faq.message|urlize}}</td>
 
               {% if user.is_staff %}
                 <td>
@@ -90,7 +90,7 @@ $(document).ready(function() {
           {% for faq in definitions %}
             <tr>
               <td>{{faq.question}}</td>
-              <td>{{faq.message}}</td>
+              <td>{{faq.message|urlize}}</td>
 
               {% if user.is_staff %}
                 <td>

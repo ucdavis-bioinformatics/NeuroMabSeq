@@ -167,7 +167,7 @@ def data_upload(update):
             except:
                 entry = None
 
-            if update and entry and not sanger:
+            if update and entry:
                 print ("Next file")
                 break
 
