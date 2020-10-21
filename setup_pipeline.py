@@ -28,7 +28,7 @@ for plate in ss:
     os.system('ln -s ' + os.path.abspath(r2) + ' ./' + s + '/00-RawData/')
     os.system('ln -s ' + os.path.abspath('./NeuroMabSeq/01-build_hts.py') + ' ./' + s + '/')
     os.system('ln -s ' + os.path.abspath('./NeuroMabSeq/aberrant_LC.fasta') + ' ./' + s + '/')
-    os.system('cp ./NeuroMabSeq/01-PrimerTrimReport/report.RMD ./' + s + '/01-PrimerTrimReport/')
+    os.system('cp ./NeuroMabSeq/01-PrimerTrimReport/report.RMD ./' + s + '/01-PrimerTrimReport/' + s + "_report.RMD")
     os.system('ln -s ' + os.path.abspath('./NeuroMabSeq/SMARTindex_well.tsv') + ' ./' + s + '/02-Results/')
     os.system('cp ./NeuroMabSeq/02-Results/02-Hybridoma-DADA2-analysis.RMD ./' + s + '/02-Results/')
     os.system('ln -s ' + os.path.abspath('./NeuroMabSeq/03-annotate-results.py') + ' ./' + s + '/')
@@ -56,7 +56,7 @@ for plate in ss:
         outf.write("\n# Build a report of cleaning:\n")
         cmd = f"module load R/3.6.1;"
         cmd += f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
-        cmd += f"rmarkdown::render('./01-PrimerTrimReport/report.RMD')\"\n"
+        cmd += f"rmarkdown::render('./01-PrimerTrimReport/{s}_report.RMD')\"\n"
         outf.write(cmd)
         # Build ASVs:
         outf.write("\n# Build ASVs:\n")
@@ -76,7 +76,7 @@ for plate in ss:
         outf.write(cmd)
         cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/*_SampleStatus.tsv {dest}StatusReports\n"
         outf.write(cmd)
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./01-PrimerTrimReport/report.html {dest}HTML_Reports/{plate['plate']}_PrimerTrimReport.html\n"
+        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./01-PrimerTrimReport/{s}_report.html {dest}HTML_Reports/{plate['plate']}_PrimerTrimReport.html\n"
         outf.write(cmd)
         cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/02-Hybridoma-DADA2-analysis.html {dest}HTML_Reports/{plate['plate']}_report.html\n"
         outf.write(cmd)
