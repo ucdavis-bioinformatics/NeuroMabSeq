@@ -49,6 +49,8 @@ rownames(wellIDX) = wellIDX$index_name
 P = strsplit(plate, '_|-')[[1]][2]
 wellIDX$sample_name = paste(P, wellIDX$well, sep='_')
 
+# Enforce plate name passed to this script. The information from the submission system (sampleData) can be wrong:
+sampleData$sample_name = paste(P, sampleData$plate_location, sep='_')
 
 #path = "../01-PrimerTrim-keep-aberrant-LC/"
 path = "../01-PrimerTrim/"
