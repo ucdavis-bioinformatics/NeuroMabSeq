@@ -242,7 +242,7 @@ kable(tb) %>%
 #### Summarized sequences (ASVs) identified per sample for all funding years. 
 Values are number of samples that fall within each category.
 
-Note that these categories were generated using the number of sequences identifid in each sample where [ANARCI](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci/) could categorize the resulting sequence and predict domains.
+Note that these categories were generated using the number of sequences identified in each sample where [ANARCI](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci/) could categorize the resulting sequence and predict domains.
 
 ```{r t002.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
 tb = table(YieldCategory, ndup$SampleType)[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
@@ -707,6 +707,7 @@ pheatmap(df, color=c("red", "yellow", "green"),
 
 #### Duplicate ASVs
 
+See TSV file for duplicate results.
 
 ```{r DuplicateHeavyChain,  echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
 hca = annotated[annotated$Chain == 'HC' & annotated$plate != 'TRIMMER0004-1_P4', ]
