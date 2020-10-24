@@ -115,19 +115,24 @@ smartcounts$NonAberrantReads = smartcounts$ReadsWithPrimer - smartcounts$Aberran
 smartcounts$LCs.Reported[is.na(smartcounts$LCs.Reported )] = 0
 smartcounts$HCs.Reported[is.na(smartcounts$HCs.Reported )] = 0
 
-# Get corrected trimmer_ID (MabID)
-smartcounts$CorrectedMabID = sampleMetaData$trimmer_id[match(smartcounts$sample_name, sampleMetaData$sample_name)]
+# Get corrected trimmer_id (MabID)
+smartcounts$Original.trimmer_id = smartcounts$trimmer_id
+smartcounts$trimmer_id = sampleMetaData$trimmer_id[match(smartcounts$sample_name, sampleMetaData$sample_name)]
+
+# Set correted trimmer_id (MabID) for annotated file:
+annotated$Original.MabID = annotated$MabID
+annotated$MabID = sampleMetaData$trimmer_id[match(annotated$Sample_Name, sampleMetaData$sample_name)]
 
 # Add sequence data info:
 smartcounts = data.frame(smartcounts, plateMetaData[match(smartcounts$plate, plateMetaData$plate), c("SeqYear", "SeqMonth", "SeqDay")])
 
 # Add a guess about sample type based on number of dots in the name.
 smartcounts$SampleType = ''
-stidx = sapply(strsplit(smartcounts$CorrectedMabID, '.', fixed=T), length)
+stidx = sapply(strsplit(smartcounts$trimmer_id, '.', fixed=T), length)
 smartcounts$SampleType[stidx == 1] = "oligoclonal"
 smartcounts$SampleType[stidx > 1] = "monoclonal"
-smartcounts$SampleType[grep("positive", smartcounts$CorrectedMabID, ignore.case=T)] = 'PositiveControl'
-smartcounts$SampleType[grep("negative|blank|empty|neagtive", smartcounts$CorrectedMabID, ignore.case=T)] = 'NegativeControl'
+smartcounts$SampleType[grep("positive", smartcounts$trimmer_id, ignore.case=T)] = 'PositiveControl'
+smartcounts$SampleType[grep("negative|blank|empty|neagtive", smartcounts$trimmer_id, ignore.case=T)] = 'NegativeControl'
 
 # Add a count for the number of sequences annotated:
 ## TODO: Figure out what to call "H" and "G" type heavy chains...
