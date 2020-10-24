@@ -17,7 +17,7 @@ nice_colors = c("#999999", "#E69F00", "#56B4E9","#e98756","#c08160","#5800e6", "
 ```
 
 
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 #knitr::opts_knit$set(root.dir = '/bio/CoreWork/2019.11.18-Trimmer-Hybridoma-Seq/2020-02-07-run-rerun_of_27-samples-SMARTPCR')
 #library(dada2)
@@ -31,9 +31,13 @@ options(stringsAsFactors=F)
 library(pheatmap)
 ```
 
-### Setup File and Sample Names
+
+### NOTE: only the plates in the following list are included in this report.
+
 
 ```{r Load Data, echo=FALSE}
+### Setup File and Sample Names
+
 # Load plate data, both demux_stats AND SampleStatus:
 
 dscols = c("plate","Chain","SMARTindex","RawReads","ReadsWithPrimer","Aberrant_LC_reads",
@@ -44,17 +48,20 @@ rscols = c("sample_name","plate_location","trimmer_id","volume","concentration",
 
 index_well = read.table("../NeuroMabSeq/SMARTindex_well.tsv", header=T, as.is=T)
 
+sampleMetaData = read.table("../NeuroMabSeq/metadata/alldata_master.tsv", header=T, as.is=T, sep='\t', comment.char='', quote='')
+plateMetaData = read.table("../NeuroMabSeq/SampleSheet.txt", header=T, as.is=T, sep='\t')
+
 smartcounts = data.frame()
 annotated = data.frame()
 asvcounts = data.frame()
 for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
     cat(paste0(plate,'\n'))
-    #Load demux stats
+    #Load demux stats. There are two entires per well:
     ds = read.table(paste0('../01-Processing/', plate, '/01-PrimerTrimReport/demux_stats.tsv'), as.is=T, header=T, sep='\t')
     ds$folder = plate
     ds$plate_location = index_well$well[match(ds$SMARTindex, index_well$index_name)]
 
-    #Load SampleStatus
+    #Load SampleStatus. There is one entry per well:
     rsf = dir(paste0("../01-Processing/", plate, '/02-Results/'), pattern="*_SampleStatus.tsv", full.names=T)[1]
     rs = read.table(rsf, as.is=T, sep='\t', header=T)
 
@@ -62,6 +69,7 @@ for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
     #     rs$inline_index_name = rs$index_name
     # }
 
+    # Some plates have slightly different annotation and column names:
     if(!("lib_concentration" %in% colnames(rs))){
         rs$lib_concentration = NA
     }
@@ -70,6 +78,8 @@ for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
     #stopifnot(ds$SMARTindex %in% rs$inline_index_name)
     #combined = data.frame(ds[,dscols], rs[match(ds$SMARTindex, rs$inline_index_name), rscols])
     combined = data.frame(ds[,dscols], rs[match(ds$plate_location, rs$plate_location), rscols])
+    
+    # smartcounts has two entries per well, one for H and one for L
     smartcounts = rbind(smartcounts, combined)
 
     #Load Annotated Results:
@@ -95,13 +105,47 @@ for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
     df[is.na(df)] = 0
     asvcounts = rbind(asvcounts, df)
 }
+smartcounts_backup = smartcounts
 
+
+# Calculate some statistics for plotting:
 smartcounts$pctReadsWPrimer = 100 * smartcounts$ReadsWithPrimer/(smartcounts$RawReads + 1)
 smartcounts$pctOverlapped = 100 * smartcounts$Overlapped/(smartcounts$ReadsWithPrimer + 1)
 smartcounts$NonAberrantReads = smartcounts$ReadsWithPrimer - smartcounts$Aberrant_LC_reads
 smartcounts$LCs.Reported[is.na(smartcounts$LCs.Reported )] = 0
 smartcounts$HCs.Reported[is.na(smartcounts$HCs.Reported )] = 0
 
+# Get corrected trimmer_ID (MabID)
+smartcounts$CorrectedMabID = sampleMetaData$trimmer_id[match(smartcounts$sample_name, sampleMetaData$sample_name)]
+
+# Add sequence data info:
+smartcounts = data.frame(smartcounts, plateMetaData[match(smartcounts$plate, plateMetaData$plate), c("SeqYear", "SeqMonth", "SeqDay")])
+
+# Add a guess about sample type based on number of dots in the name.
+smartcounts$SampleType = ''
+stidx = sapply(strsplit(smartcounts$CorrectedMabID, '.', fixed=T), length)
+smartcounts$SampleType[stidx == 1] = "oligoclonal"
+smartcounts$SampleType[stidx > 1] = "monoclonal"
+smartcounts$SampleType[grep("positive", smartcounts$CorrectedMabID, ignore.case=T)] = 'PositiveControl'
+smartcounts$SampleType[grep("negative|blank|empty|neagtive", smartcounts$CorrectedMabID, ignore.case=T)] = 'NegativeControl'
+
+# Add a count for the number of sequences annotated:
+## TODO: Figure out what to call "H" and "G" type heavy chains...
+## It appears that primer 10-REV-HC1 yields type "H" according to ANARCI. 
+## 10-REV-HC1 is supposed to amplify Gamma1,2, but example sequences from ANARCI labeled Gamma1,2 are labeled as "G", so it isn't clear to me which of the two targets the two primers amplify.
+## There are 5 types of heavy chain, https://en.wikipedia.org/wiki/Immunoglobulin_heavy_chain. Of the iGG class, IgG1 is most common (66%), IgG2 is second (23%): https://en.wikipedia.org/wiki/Immunoglobulin_G.
+
+tbann = table(annotated$Sample_Name, annotated$chain_type)
+idx = match(rownames(tbann), smartcounts$sample_name)
+
+smartcounts$LC.K.Called = 0
+smartcounts$LC.L.Called = 0
+smartcounts$HC.H.Called = 0
+smartcounts$HC.G.Called = 0
+if('K' %in% colnames(tbann)){smartcounts$LC.K.Called[idx] = tbann[,'K']}
+if('L' %in% colnames(tbann)){smartcounts$LC.L.Called[idx] = tbann[,'L']}
+if('H' %in% colnames(tbann)){smartcounts$HC.H.Called[idx] = tbann[,'H']}
+if('G' %in% colnames(tbann)){smartcounts$HC.G.Called[idx] = tbann[,'G']}
 
 save(smartcounts, annotated, file="smartcounts_annotated.RData")
 
@@ -112,63 +156,226 @@ save(smartcounts, annotated, file="smartcounts_annotated.RData")
 write.table(smartcounts, file="All_plates_read_counts.tsv", row.names=F, col.names=T, sep='\t')
 
 # Write controls:
-control_samples = smartcounts[grep('control|empty', ignore.case=T, smartcounts$trimmer_id), ]
+control_samples = smartcounts[smartcounts$SampleType %in% c("PositiveControl", "NegativeControl"), ]
 #control_samples = smartcounts[smartcounts$SMARTindex %in% c("88-SMARTindex", "96-SMARTindex"), ]
 write.table(control_samples, file="ALL_controls.tsv", row.names=F, col.names=T, sep='\t')
 
-## Failures can come in multiple flavors:
+# 
+# kable(demuxed) %>%
+#   kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+#         position="left", fixed_thead=T) %>%
+#   row_spec(0, angle = 0)
 ```
+
+***********
+
+### Summary statistics by funding period
+
+Funding periods
+    Year1 = July 1 2019 - June 30 2020
+    Year2 = July 1 2020 - June 30, 2021
+    Year3 = July 1 2021 - June 30, 2022
+
+Within each of the above date ranges, report a count of:
+    1) total number of monoclonal hybridomas sequenced
+    2) how many of these yielded only one heavy and one light chain sequence
+    3) how many of these had more than one heavy or light chain (or both)
+    4) total number of oligoclonal/parent hybridomas sequenced
+
+```{r s000.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+# Calculate samples processed by year and associated stats:
+ndup = smartcounts[!duplicated(smartcounts$sample_name), ]
+
+# Set up index for sample by funding period when the plate was sequenced
+yidx = rep('NA', nrow(ndup))
+yidx[ndup$SeqYear <= 2020 & ndup$SeqMonth <= 6] = "Year1"
+yidx[(ndup$SeqYear == 2020 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2021 & ndup$SeqMonth <= 6)] = "Year2"
+yidx[(ndup$SeqYear == 2021 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2022 & ndup$SeqMonth <= 6)] = "Year3"
+yidx[(ndup$SeqYear == 2022 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2023 & ndup$SeqMonth <= 6)] = "Year4"
+yidx[(ndup$SeqYear == 2023 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2024 & ndup$SeqMonth <= 6)] = "Year5"
+
+# Set up index for yield category
+# YieldCategory = rep("NA", nrow(ndup))
+# YieldCategory[ndup$LCs.Reported == 0 & ndup$HCs.Reported == 0] = 'LC=0 and HC=0' 
+# YieldCategory[ndup$LCs.Reported == 1 & ndup$HCs.Reported == 1] = 'LC=1 and HC=1' 
+# YieldCategory[ndup$LCs.Reported == 0 & ndup$HCs.Reported == 1] = 'LC=0 and HC=1' 
+# YieldCategory[ndup$LCs.Reported == 1 & ndup$HCs.Reported == 0] = 'LC=1 and HC=0' 
+# YieldCategory[ndup$LCs.Reported == 0 & ndup$HCs.Reported > 1] = 'LC=0 and HC>1' 
+# YieldCategory[ndup$LCs.Reported > 1 & ndup$HCs.Reported == 0] = 'LC>1 and HC=0' 
+# YieldCategory[(ndup$LCs.Reported > 0 & ndup$HCs.Reported > 0) & (ndup$LCs.Reported > 1 | ndup$HCs.Reported > 1)] = 'LC>1 or HC>1 (both > 0)'
+
+YieldCategory = rep("NA", nrow(ndup))
+YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 0] = 'LC=0 and HC=0' 
+YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 1] = 'LC=1 and HC=1' 
+YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 1] = 'LC=0 and HC=1' 
+YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 0] = 'LC=1 and HC=0' 
+YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called > 1] = 'LC=0 and HC>1' 
+YieldCategory[ndup$LC.K.Called > 1 & ndup$HC.H.Called == 0] = 'LC>1 and HC=0' 
+YieldCategory[(ndup$LC.K.Called > 0 & ndup$HC.H.Called > 0) & (ndup$LC.K.Called > 1 | ndup$HC.H.Called > 1)] = 'LC>1 or HC>1 (both > 0)'
+
+```
+
+
+Total plates sequenced per funding year:
+
+```{r t000.PlatesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+ndup2 = data.frame(ndup, yidx)[!duplicated(ndup$plate),]
+kable(table(ndup2$yidx)) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+
+```
+
+
+Total number of **monoclonal**, **oligoclonal**, and other types of samples sequenced per funding year.
+
+```{r t001.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+tb = table(ndup$SampleType, yidx)[c("monoclonal","oligoclonal","PositiveControl","NegativeControl"),]
+kable(tb) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
+
+#### Summarized sequences (ASVs) identified per sample for all funding years. 
+Values are number of samples that fall within each category.
+
+Note that these categories were generated using the number of sequences identifid in each sample where [ANARCI](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci/) could categorize the resulting sequence and predict domains.
+
+```{r t002.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+tb = table(YieldCategory, ndup$SampleType)[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
+
+kable(tb) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+
+```
+
+#### Year 1: Summarized sequences (ASVs) identified per sample
+
+```{r t003.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+tb = table(YieldCategory[yidx=='Year1'], ndup$SampleType[yidx=='Year1'])[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
+
+kable(tb) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
+#### Year 2: Summarized sequences (ASVs) identified per sample
+
+```{r t003.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+tb = table(YieldCategory[yidx=='Year2'], ndup$SampleType[yidx=='Year2'])[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
+
+kable(tb) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
+#### What is the concordance between ANARCI prediction and primers trimmed?
+Rows indicate the expected prediction based on which primers were identified, columns are ANARCI prediction. An ANARCI prediction of "-" means that no prediction was made.
+
+```{r t003.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+tb = table(annotated$Chain, annotated$chain_type)
+
+kable(tb) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
+
+## Basic statistics
+<!--
+
+
+## TODO make a comparison plot of light chain read numbers vs HC read numbers.
+    ## do this for aberrant vs non.
+    ## how consistent are aberrant reads?
+
+## Diana is going to make a spreadsheet with additional metadata
+
+ggplot(smartcounts, aes(x=smartcounts$ReadsWithPrimer, y=smartcounts$Overlapped, col=smartcounts$plate)) + 
+geom_point() + ylim(c(0,100)) + xlim(c(0,100))
+
+!-->
+
+
+### Reads per plate:
+
+```{r p000.ReadsPerPlate, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+df = smartcounts[!duplicated(smartcounts$plate), ]
+
+#tapply()
+
+ggplot(df, aes(x=plate, y=RawReads)) + 
+    geom_bar(stat="identity", color='black', fill='grey') + theme_bw() +
+    ggtitle("Total reads per plate") +
+    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10))
+
+```
+
+-------
+
+### Overall stats
+
+```{r readDemuxed, echo=FALSE}
+# TODO: This needs to be updated to handle all four different chain types
+#sc = smartcounts[smartcounts$plate != 'TRIMMER0004-1_P4', ]
+lc = smartcounts[smartcounts$Chain=='L', ]
+hc = smartcounts[smartcounts$Chain=='H', ]
+
+tmp = smartcounts[!duplicated(smartcounts$plate), ]
+
+demuxcounts = tapply(smartcounts$ReadsWithPrimer, INDEX=smartcounts$plate, sum)
+hcReads =tapply(hc$ReadsWithPrimer, INDEX=hc$plate, sum)
+lcReads =tapply(lc$ReadsWithPrimer, INDEX=lc$plate, sum)
+aberrantReads = tapply(smartcounts$Aberrant_LC_reads, INDEX=smartcounts$plate, sum)
+hcFewReads = tapply(X=hc$ReadsWithPrimer < 10, INDEX=hc$plate, FUN=sum)
+lcFewReads = tapply(X=lc$ReadsWithPrimer < 10, INDEX=lc$plate, FUN=sum)
+hcFewOverlapped = tapply(X=hc$Overlapped < 10, INDEX=hc$plate, FUN=sum)
+lcFewOverlapped = tapply(X=lc$Overlapped < 10, INDEX=lc$plate, FUN=sum)
+hcReported = tapply(X=hc$HCs.Reported>0, INDEX=hc$plate, FUN=sum, na.rm=T)
+lcReported = tapply(X=lc$LCs.Reported>0, INDEX=lc$plate, FUN=sum, na.rm=T)
+
+demuxed = data.frame(tmp[,c('plate','RawReads')], demuxcounts=demuxcounts[tmp$plate])
+demuxed$PCT.DMX = 100*demuxed$demuxcounts/demuxed$RawReads
+demuxed$hcReads = hcReads[tmp$plate]
+demuxed$lcReads = lcReads[tmp$plate]
+demuxed$aberrantReads = aberrantReads[tmp$plate]
+demuxed$PCT.Ab = 100 * demuxed$aberrantReads / demuxed$lcReads
+demuxed$hcFewReads = hcFewReads[tmp$plate]
+demuxed$lcFewReads = lcFewReads[tmp$plate]
+demuxed$hcFewOverlapped = hcFewOverlapped[tmp$plate]
+demuxed$lcFewOverlapped = lcFewOverlapped[tmp$plate]
+demuxed$hcReported = hcReported[tmp$plate]
+demuxed$lcReported = lcReported[tmp$plate]
+
+# ggplot(demuxed, aes(x=RawReads, y=demuxcounts, color=plate)) + 
+#     geom_point()
+#https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+kable(demuxed) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
+***********
+
 
 *************
 #### Samples that didn't produce an ASV in one or both chains:
 ```{r p000.failedSamplesTables1, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
-idx = smartcounts$LCs.Reported == 0 | smartcounts$HCs.Reported == 0
+idx = (smartcounts$LCs.Reported == 0 | smartcounts$HCs.Reported == 0 ) & smartcounts$SampleType != 'NegativeControl'
 noasv = smartcounts[idx, ]
 noasv = noasv[order(noasv$sample_name, noasv$Chain), ]
 # rownames(noasv) = noasv$sample_name
 
 write.table(noasv, file="Samples_with_at_least_one_dropout.tsv", sep='\t', row.names=F, col.names=T)
-
-
-
-```
-
-```{r p000.failedSamplesTables2, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
-#### Sample that produced few reads in heavy, light, and aberrant 
-### This code block isn't done and was part of some old filtering approach.
-# Get rid of the test plate:
-# sc = smartcounts[smartcounts$plate != 'TRIMMER0004-1_P4', ]
-
-# #f = sc[sc$LCs.Reported > 0 & f$HCs.Reported > 0,]
-
-# lc = sc[sc$Chain=='L', ]
-# hc = sc[sc$Chain=='H', ]
-
-# # Count reads per sample 
-# readsPerSample = tapply(sc$ReadsWithPrimer, INDEX=sc$sample_name, sum)
-# HCreadsPerSample = tapply(hc$ReadsWithPrimer, INDEX=hc$sample_name, sum)
-# LCreadsPerSample = tapply(lc$ReadsWithPrimer, INDEX=lc$sample_name, sum)
-# ABreadsPerSample = tapply(sc$Aberrant_LC_reads, INDEX=sc$sample_name, sum)
-
-# failed = which(readsPerSample<20, useNames=T)
-
-# f = sc[sc$sample_name %in% names(failed), ]
-
-# df = data.frame(Sample=names(failed), 
-#         HCreads = HCreadsPerSample[match(names(failed), names(HCreadsPerSample))],
-#         LCreads = HCreadsPerSample[match(names(failed), names(HCreadsPerSample))],
-
-#         )
-
-
-# gte10 = tapply(smartcounts$ReadsWithPrimer >= 10, INDEX=smartcounts$sample_name, sum)
-# idx = names(gte10[gte10==0])
-
-
-# kable(demuxed) %>%
-#   kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
-#         position="left", fixed_thead=T) %>%
-#   row_spec(0, angle = 0)
 
 ```
 
@@ -212,85 +419,6 @@ write.table(samples_without_overlaps, file="Samples_without_overlaps.tsv", row.n
 
 
 ```
-
-***********
-## Basic statistics
-<!--
-## TODO make a reads lost (ReadsWithPrimer - Overlapped) boxplot.
-
-## TODO make a pcOverlapped vs concentration
-
-
-## TODO make a comparison plot of light chain read numbers vs HC read numbers.
-    ## do this for aberrant vs non.
-    ## how consistent are aberrant reads?
-
-## Diana is going to make a spreadsheet with additional metadata
-
-ggplot(smartcounts, aes(x=smartcounts$ReadsWithPrimer, y=smartcounts$Overlapped, col=smartcounts$plate)) + 
-geom_point() + ylim(c(0,100)) + xlim(c(0,100))
-
-!-->
-
-
-### Reads per plate:
-
-```{r p000.ReadsPerPlate, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
-df = smartcounts[!duplicated(smartcounts$plate), ]
-
-#tapply()
-
-ggplot(df, aes(x=plate, y=RawReads)) + 
-    geom_bar(stat="identity", color='black', fill='grey') + theme_bw() +
-    ggtitle("Total reads per plate") +
-    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10))
-
-```
-***********
-
-### Overall stats
-
-```{r readDemuxed, echo=FALSE}
-#sc = smartcounts[smartcounts$plate != 'TRIMMER0004-1_P4', ]
-lc = smartcounts[smartcounts$Chain=='L', ]
-hc = smartcounts[smartcounts$Chain=='H', ]
-
-tmp = smartcounts[!duplicated(smartcounts$plate), ]
-
-demuxcounts = tapply(smartcounts$ReadsWithPrimer, INDEX=smartcounts$plate, sum)
-hcReads =tapply(hc$ReadsWithPrimer, INDEX=hc$plate, sum)
-lcReads =tapply(lc$ReadsWithPrimer, INDEX=lc$plate, sum)
-aberrantReads = tapply(smartcounts$Aberrant_LC_reads, INDEX=smartcounts$plate, sum)
-hcFewReads = tapply(X=hc$ReadsWithPrimer < 10, INDEX=hc$plate, FUN=sum)
-lcFewReads = tapply(X=lc$ReadsWithPrimer < 10, INDEX=lc$plate, FUN=sum)
-hcFewOverlapped = tapply(X=hc$Overlapped < 10, INDEX=hc$plate, FUN=sum)
-lcFewOverlapped = tapply(X=lc$Overlapped < 10, INDEX=lc$plate, FUN=sum)
-hcReported = tapply(X=hc$HCs.Reported>0, INDEX=hc$plate, FUN=sum, na.rm=T)
-lcReported = tapply(X=lc$LCs.Reported>0, INDEX=lc$plate, FUN=sum, na.rm=T)
-
-demuxed = data.frame(tmp[,c('plate','RawReads')], demuxcounts=demuxcounts[tmp$plate])
-demuxed$PCT.DMX = 100*demuxed$demuxcounts/demuxed$RawReads
-demuxed$hcReads = hcReads[tmp$plate]
-demuxed$lcReads = lcReads[tmp$plate]
-demuxed$aberrantReads = aberrantReads[tmp$plate]
-demuxed$PCT.Ab = 100 * demuxed$aberrantReads / demuxed$lcReads
-demuxed$hcFewReads = hcFewReads[tmp$plate]
-demuxed$lcFewReads = lcFewReads[tmp$plate]
-demuxed$hcFewOverlapped = hcFewOverlapped[tmp$plate]
-demuxed$lcFewOverlapped = lcFewOverlapped[tmp$plate]
-demuxed$hcReported = hcReported[tmp$plate]
-demuxed$lcReported = lcReported[tmp$plate]
-
-# ggplot(demuxed, aes(x=RawReads, y=demuxcounts, color=plate)) + 
-#     geom_point()
-#https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
-kable(demuxed) %>%
-  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
-        position="left", fixed_thead=T) %>%
-  row_spec(0, angle = 0)
-```
-
-***********
 
 <!---
 ### Dropouts
@@ -495,77 +623,6 @@ ggplot(asvcounts, aes(x=Plate, y=LCs.Reported)) +
 ```
 
 
-#### TRIMMER0004 comparison:
-Plate 4.1 (TRIMMER0004.1_P4) was prepared with an alternative PCR method in an attempt at producing more uniform amplicon counts across samples. Only 32 samples were prepped for 4.1, so only the matching 32 samples are included from 4.2. 
-
-
-```{r p002.bxp_pctPrimer_TRIMMER0004-1, echo=FALSE, fig.height=8, fig.width=16, fig.align="center"}
-
-p4.1 = rbind(smartcounts[smartcounts$plate == 'TRIMMER0004.1_P4' & smartcounts$Chain=='H', ][1:32, ],
-             smartcounts[smartcounts$plate == 'TRIMMER0004.1_P4' & smartcounts$Chain=='L', ][1:32, ])
-p4.2 = rbind(smartcounts[smartcounts$plate == 'TRIMMER0004.2_P4' & smartcounts$Chain=='H', ][1:32, ],
-             smartcounts[smartcounts$plate == 'TRIMMER0004.2_P4' & smartcounts$Chain=='L', ][1:32, ])
-
-p4.1$pctReadsWPrimer = 100 * p4.1$ReadsWithPrimer/sum(p4.1$ReadsWithPrimer)
-p4.2$pctReadsWPrimer = 100 * p4.2$ReadsWithPrimer/sum(p4.2$ReadsWithPrimer)
-
-p4.1$pctOverlapped = 100 * p4.1$Overlapped/sum(p4.1$Overlapped)
-p4.2$pctOverlapped = 100 * p4.2$Overlapped/sum(p4.2$Overlapped)
-
-
-
-df = rbind(p4.1, p4.2)
-
-ggplot(df, aes(x=plate, y=pctReadsWPrimer)) +
-    geom_boxplot(color="black", fill="grey") + theme_bw() + 
-    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
-    #scale_fill_manual(values=nice_colors)  +
-    ggtitle("Percent of reads with Primer+Index") +
-    geom_jitter(shape=16, position=position_jitter(0.2), color='lightgreen', alpha=0.5) +
-    facet_wrap(.~Chain)
-
-
-```
-
-
-```{r p002.bxp_pctOv_TRIMMER0004-1, echo=FALSE, fig.height=8, fig.width=16, fig.align="center"}
-
-ggplot(df, aes(x=plate, y=pctOverlapped)) +
-    geom_boxplot(color="black", fill="grey") + theme_bw() + 
-    theme(axis.text.x = element_text(angle = 90, face = "bold", size=10)) +
-    #scale_fill_manual(values=nice_colors)  +
-    ggtitle("Percent of reads with Primer+Index Overlapped") +
-    geom_jitter(shape=16, position=position_jitter(0.2), color='lightgreen', alpha=0.5) +
-    facet_wrap(.~Chain)
-
-```
-
-
-#### Plate 4-1 dropouts:
-```{r p002.4.1.table_dropouts, echo=FALSE}
-
-tb = table(p4.1$Chain, p4.1$Overlapped < 10)
-
-kable(tb) %>%
-  kable_styling("striped", full_width = F) %>%
-  row_spec(0, angle = 0)
-
-```
-
-#### Plate 4-2 dropouts:
-```{r p002.4.2.table_dropouts, echo=FALSE}
-
-tb = table(p4.2$Chain, p4.2$Overlapped < 10)
-
-kable(tb) %>%
-  kable_styling("striped", full_width = F) %>%
-  row_spec(0, angle = 0)
-
-```
-
-
-***********
-
 
 #### Other plots..
 ##### Light chain
@@ -651,19 +708,18 @@ pheatmap(df, color=c("red", "yellow", "green"),
 #### Duplicate ASVs
 
 
-
-##### HC 
-
 ```{r DuplicateHeavyChain,  echo=FALSE, fig.height=16, fig.width=10, fig.align="center"}
 hca = annotated[annotated$Chain == 'HC' & annotated$plate != 'TRIMMER0004-1_P4', ]
 df = data.frame(ASV=unique(hca$ASV[duplicated(hca$ASV)]))
 
 df$DuplicatedIn = sapply(df$ASV, function(x){paste(sort(hca$Sample_Name[hca$ASV == x]), collapse = ', ')})
 df$MabIDs = sapply(df$ASV, function(x){paste(sort(hca$MabID[hca$ASV == x]), collapse = ', ')})
-                                                       
-df$Count = sapply(strsplit(df$DuplicatedIn, ', '), length)
+df$ParentIDs = sapply(df$ASV, function(x){paste(sort(unique(sapply(strsplit(hca$MabID[hca$ASV == x], '.', fixed=T), '[', 1))), collapse = ', ')})
 
-df = df[order(df$Count, decreasing=T), ]
+df$MabCount = sapply(strsplit(df$DuplicatedIn, ', '), length)
+df$ParentCount = sapply(strsplit(df$ParentIDs, ', '), length)
+
+df = df[order(df$ParentCount, decreasing=T), ]
 
 write.table(df, file="DuplicatedHC_ASVs.tsv", row.names=F, sep='\t', quote=F)
 
@@ -676,10 +732,12 @@ df = data.frame(ASV=unique(lca$ASV[duplicated(lca$ASV)]))
 
 df$DuplicatedIn = sapply(df$ASV, function(x){paste(sort(lca$Sample_Name[lca$ASV == x]), collapse = ', ')})
 df$MabIDs = sapply(df$ASV, function(x){paste(sort(lca$MabID[lca$ASV == x]), collapse = ', ')})
-                                                       
-df$Count = sapply(strsplit(df$DuplicatedIn, ', '), length)
+df$ParentIDs = sapply(df$ASV, function(x){paste(sort(unique(sapply(strsplit(lca$MabID[lca$ASV == x], '.', fixed=T), '[', 1))), collapse = ', ')})
 
-df = df[order(df$Count, decreasing=T), ]
+df$MabCount = sapply(strsplit(df$DuplicatedIn, ', '), length)
+df$ParentCount = sapply(strsplit(df$ParentIDs, ', '), length)
+
+df = df[order(df$ParentCount, decreasing=T), ]
 
 write.table(df, file="DuplicatedLC_ASVs.tsv", row.names=F, sep='\t', quote=F)
 

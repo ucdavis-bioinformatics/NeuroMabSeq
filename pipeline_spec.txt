@@ -9,7 +9,7 @@ RawData Folder:
 Folder Structure:
     00-RawData - contains a copy of all plates that need to be processed (as well as some testing data etc).
     01-Processing - contains an analysis folder for each processed plate 
-    02-PostProcessing - contains across-runs analysis results
+    02-Reporting - contains across-runs analysis results
 
 
 Pipeline:
