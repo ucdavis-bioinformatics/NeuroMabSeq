@@ -267,7 +267,7 @@ kable(tb) %>%
 
 #### Year 2: Summarized sequences (ASVs) identified per sample
 
-```{r t003.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+```{r t004.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
 tb = table(YieldCategory[yidx=='Year2'], ndup$SampleType[yidx=='Year2'])[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
 
 kable(tb) %>%
@@ -279,7 +279,7 @@ kable(tb) %>%
 #### What is the concordance between ANARCI prediction and primers trimmed?
 Rows indicate the expected prediction based on which primers were identified, columns are ANARCI prediction. An ANARCI prediction of "-" means that no prediction was made.
 
-```{r t003.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+```{r t005.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
 tb = table(annotated$Chain, annotated$chain_type)
 
 kable(tb) %>%
