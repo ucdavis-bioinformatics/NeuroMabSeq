@@ -290,7 +290,7 @@ kable(tb) %>%
 
 **Oligoclonal samples:**
 
-```{r t002.1.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+```{r t002.2.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
 sidx = ndup$SampleType == 'oligoclonal'
 tb = table(ndup$YieldCategory[sidx], ndup$Category[sidx])
 
