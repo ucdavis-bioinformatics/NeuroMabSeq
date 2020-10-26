@@ -119,9 +119,13 @@ smartcounts$HCs.Reported[is.na(smartcounts$HCs.Reported )] = 0
 smartcounts$Original.trimmer_id = smartcounts$trimmer_id
 smartcounts$trimmer_id = sampleMetaData$trimmer_id[match(smartcounts$sample_name, sampleMetaData$sample_name)]
 
+# Add the sampleMetaData Category:
+smartcounts$Category = sampleMetaData$Category[match(smartcounts$sample_name, sampleMetaData$sample_name)]
+
 # Set correted trimmer_id (MabID) for annotated file:
 annotated$Original.MabID = annotated$MabID
 annotated$MabID = sampleMetaData$trimmer_id[match(annotated$Sample_Name, sampleMetaData$sample_name)]
+
 
 # Add sequence data info:
 smartcounts = data.frame(smartcounts, plateMetaData[match(smartcounts$plate, plateMetaData$plate), c("SeqYear", "SeqMonth", "SeqDay")])
@@ -199,7 +203,9 @@ yidx[(ndup$SeqYear == 2021 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2022 & ndup$S
 yidx[(ndup$SeqYear == 2022 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2023 & ndup$SeqMonth <= 6)] = "Year4"
 yidx[(ndup$SeqYear == 2023 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2024 & ndup$SeqMonth <= 6)] = "Year5"
 
-# Set up index for yield category
+ndup$yidx = yidx
+
+# Set up index for yield category for REPORTED sequences
 # YieldCategory = rep("NA", nrow(ndup))
 # YieldCategory[ndup$LCs.Reported == 0 & ndup$HCs.Reported == 0] = 'LC=0 and HC=0' 
 # YieldCategory[ndup$LCs.Reported == 1 & ndup$HCs.Reported == 1] = 'LC=1 and HC=1' 
@@ -209,6 +215,7 @@ yidx[(ndup$SeqYear == 2023 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2024 & ndup$S
 # YieldCategory[ndup$LCs.Reported > 1 & ndup$HCs.Reported == 0] = 'LC>1 and HC=0' 
 # YieldCategory[(ndup$LCs.Reported > 0 & ndup$HCs.Reported > 0) & (ndup$LCs.Reported > 1 | ndup$HCs.Reported > 1)] = 'LC>1 or HC>1 (both > 0)'
 
+# Set up index for yield category for ANNOTATED sequences
 YieldCategory = rep("NA", nrow(ndup))
 YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 0] = 'LC=0 and HC=0' 
 YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 1] = 'LC=1 and HC=1' 
@@ -217,6 +224,8 @@ YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 0] = 'LC=1 and HC=0'
 YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called > 1] = 'LC=0 and HC>1' 
 YieldCategory[ndup$LC.K.Called > 1 & ndup$HC.H.Called == 0] = 'LC>1 and HC=0' 
 YieldCategory[(ndup$LC.K.Called > 0 & ndup$HC.H.Called > 0) & (ndup$LC.K.Called > 1 | ndup$HC.H.Called > 1)] = 'LC>1 or HC>1 (both > 0)'
+
+ndup$YieldCategory = YieldCategory
 
 ```
 
@@ -232,11 +241,10 @@ kable(table(ndup2$yidx)) %>%
 
 ```
 
-
 Total number of **monoclonal**, **oligoclonal**, and other types of samples sequenced per funding year.
 
 ```{r t001.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
-tb = table(ndup$SampleType, yidx)[c("monoclonal","oligoclonal","PositiveControl","NegativeControl"),]
+tb = table(ndup$SampleType, ndup$yidx)[c("monoclonal","oligoclonal","PositiveControl","NegativeControl"),]
 kable(tb) %>%
   kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
         position="left", fixed_thead=T) %>%
@@ -250,7 +258,7 @@ Values are number of samples that fall within each category.
 Note that these categories were generated using the number of sequences identified in each sample where [ANARCI](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci/) could categorize the resulting sequence and predict domains.
 
 ```{r t002.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
-tb = table(YieldCategory, ndup$SampleType)[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
+tb = table(ndup$YieldCategory, ndup$SampleType)[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
 
 kable(tb) %>%
   kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
@@ -258,6 +266,51 @@ kable(tb) %>%
   row_spec(0, angle = 0)
 
 ```
+
+#### Summarized sequences by Sample Category
+
+Sample Categories include:
+
+1. NeuroMab mAbs
+2. Non-NeuroMab mAbs
+3. NeuroMab Alternative Subclones
+4. Lead oligoclonal Abs
+
+**Monoclonal samples:**
+
+```{r t002.1.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+sidx = ndup$SampleType == 'monoclonal'
+tb = table(ndup$YieldCategory[sidx], ndup$Category[sidx])
+
+kable(tb) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
+**Oligoclonal samples:**
+
+```{r t002.1.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+sidx = ndup$SampleType == 'oligoclonal'
+tb = table(ndup$YieldCategory[sidx], ndup$Category[sidx])
+
+kable(tb) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
+**Usable as is oligoclonal samples:**
+
+```{r t002.3.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+tb = ndup[ndup$SampleType == 'oligoclonal' & ndup$YieldCategory == 'LC=1 and HC=1',c("sample_name","trimmer_id", "Category", 'LCs.Reported', 'HCs.Reported', 'LC.K.Called',"HC.H.Called")]
+
+kable(tb) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+  row_spec(0, angle = 0)
+```
+
 
 #### Year 1: Summarized sequences (ASVs) identified per sample
 
