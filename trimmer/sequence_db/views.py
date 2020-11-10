@@ -344,7 +344,11 @@ def blat(request):
                     sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix)
                     for seq in sequences:
                         temp_file.write(get_header(seq, seq.chain))
-                        temp_file.write(sequence + '\n')
+                        if type=="dna":
+                            temp_file.write(seq.seq + '\n')
+                        else:
+                            temp_file.write(seq.aa + '\n')
+
                 call = "blat %s %s -t=%s -q=%s %s" % (search_prefix_file_name, file_name, type, type, psl)
             else:
                 call = "blat %s/static_data/%s.fa %s -t=%s -q=%s %s" % (prefix, type, file_name, type, type, psl)
