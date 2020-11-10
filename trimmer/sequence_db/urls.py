@@ -27,5 +27,6 @@ urlpatterns = [
     path('api/status_list/', views.APIStatusListView.as_view()),
     path('csv/status_list/', views.StatusCSVExportView.as_view()),
     path('accounts/profile/', views.main_page, name='Main Page'),
+    # path('plate_summary/', views.summary_plate_view, name='Plate Summary'),
 
 ]

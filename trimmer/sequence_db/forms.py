@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 class Blat(forms.Form):
     sequence = forms.CharField(max_length=1000, required=True, widget=forms.Textarea(attrs={"rows": 10, "cols": 100}))
     type = forms.ChoiceField(required=True, choices=(("dna", "DNA"), ("protein","Protein")), initial='DNA')
-
+    search_prefix = forms.CharField(max_length=20, required=False, label="mAb ID Filter")
 
 class GeneralFileForm(forms.Form):
     general_file = forms.FileField(required=True, validators=[validate_file_extension])

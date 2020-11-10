@@ -42,11 +42,39 @@ import urllib
 import json
 from .forms import *
 from django.utils.decorators import method_decorator
+from django.db.models import Count
+from .methods import *
+
 
 def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
+
+
+# def summary_plate_view(request):
+#     all = TrimmerSequence.objects.all().values('plate').annotate(total=Count('plate')).order_by('total')
+#     for item in all:
+#         print(item)
+#
+#     count_dict = {}
+#     seqs = TrimmerSequence.objects.all()
+#     for seq in seqs:
+#         if seq.plate in count_dict.keys():
+#             if seq.entry.mabid in count_dict[seq.plate].keys():# and seq.entry.show_on_web is True:
+#                 count_dict[seq.plate][seq.entry.mabid]+=1
+#             else: #if seq.entry.show_on_web is True:
+#                 count_dict[seq.plate][seq.entry.mabid]=1
+#         else:
+#             count_dict[seq.plate] = {}
+#     sum = 0
+#     for key in count_dict.keys():
+#         print(key + ' ' + str(len(count_dict[key].keys())))
+#         sum +=  len(count_dict[key].keys())
+#
+#     print("TOTAL MABIDS: " + str(sum))
+#
+
 
 class MyLoginView(auth_views.LoginView):
     # ratelimit_key = 'ip'
@@ -289,7 +317,8 @@ def blat(request):
 
             sequence = form.cleaned_data['sequence']
             type = form.cleaned_data['type']
-            context['form'] = Blat(initial={"sequence": sequence, "type":type})
+            search_prefix = form.cleaned_data['search_prefix']
+            context['form'] = Blat(initial={"sequence": sequence, "type":type, "search_prefix":search_prefix})
 
             # if not result['success']:
             #     return render(request, 'blat.html', context)
@@ -306,8 +335,19 @@ def blat(request):
                 temp_file.write(sequence)
             psl = '%s/static_data/%s.psl' % (prefix, rand_string)
 
-            # Run BLAT
-            call = "blat %s/static_data/%s.fa %s -t=%s -q=%s %s" % (prefix, type, file_name, type, type, psl)
+
+
+            # If prefix create a new files that will be used instead of the file with all entries
+            if search_prefix:
+                search_prefix_file_name = '%s/static_data/%s.fa' % (prefix, search_prefix)
+                with open(search_prefix_file_name, 'w') as temp_file:
+                    sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix)
+                    for seq in sequences:
+                        temp_file.write(get_header(seq, seq.chain))
+                        temp_file.write(sequence + '\n')
+                call = "blat %s %s -t=%s -q=%s %s" % (search_prefix_file_name, file_name, type, type, psl)
+            else:
+                call = "blat %s/static_data/%s.fa %s -t=%s -q=%s %s" % (prefix, type, file_name, type, type, psl)
             # print(call)
                 # os.popen(call).read()
 
@@ -339,15 +379,27 @@ def blat(request):
                     temp_dict['mabid'] = parse_id[1]
                     temp_dict['entry_pk'] = parse_id[2]
                     temp_dict['pk'] = parse_id[0]
-                    temp_dict['chain'] = parse_id[-2]
+                    temp_dict['chain'] = parse_id[-3]
+                    temp_dict['chain_id'] = parse_id[-1]
+                    temp_dict['plate'] = parse_id[-2]
                     all_results.append(temp_dict)
 
 
             context['queryset'] = list(sorted(all_results, key=lambda d: (d['score'], d['ident_pct']), reverse=True))
+
+            # Temp file cleanup for search prefix temp file and rand string file from query
+            if search_prefix:
+                call_sprm = 'rm %s %s' % (search_prefix_file_name, psl)
+
+                process = subprocess.Popen(call_sprm.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                out, err = process.communicate()
+                process.wait()
+
             call = 'rm %s %s' % (file_name, psl)
             process = subprocess.Popen(call.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = process.communicate()
             process.wait()
+
             return render(request, 'blat.html', context)
         else:
             context['errors'] = form.errors
