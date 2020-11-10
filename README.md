@@ -5,14 +5,17 @@
 ### TODO:
 - who should be long term superuser?
 - csv limit as well ?
-- fix static files
 - setup auto update scripts
     - `./update.sh`
     - need directory from Sam
 - auto renew encryption keys
-- get rid of the recaptcha for the blat search or see why having to do it multiple times? super user override. just get rid of it for now
-- 5 unrelated antibodies (light and heavy) (cross lane or plate contamination)
-- 
+- if no prediction do not show...
+- blat filter for name.. some are different category number so should filter 
+- K89/34 sould pull up the R as well so have another string query option (min identity score)
+- button on the clone to blast to this sort of thing
+# - list everything by the sequence identity 
+- slug sample links
+
 
 
 - clean up the entry view..
@@ -30,7 +33,6 @@
 - upload the whole plate? Pull duplicates first?
 - worth quantifying RNA, amplicons or new RNA for failures...
 - if RNA there then try different protocol > cDNA from everything
-- finish duplicates links
 
 
 ### Questions/Notes

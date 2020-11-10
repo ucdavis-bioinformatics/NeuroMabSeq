@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['neuromabseq.ucdavis.edu', '127.0.0.1', 'ec2-54-219-11-125.us-west-1.compute.amazonaws.com', '54.219.11.125']
 GOOGLE_RECAPTCHA_SECRET_KEY = '6LfwjbEZAAAAAJZeewrMFd8NEvzkSuk-kp1BfpKu'
 
+# my password: keithmitchell tr1mm3rl@b2020
 
 # Application definition
 

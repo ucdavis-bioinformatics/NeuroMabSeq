@@ -2,6 +2,8 @@
 ./manage.py shell < wipe_status_data.py
 rm mydatabase
 python manage.py migrate
-./manage.py shell < run_entry_reset.py
-./manage.py shell < run_status_reset.py
+# directory, update True/False (False will run a reset)
+./manage.py shell < run_update.py
+./manage.py shell < run_status_update.py
 ./manage.py shell < run_metadata_update.py
+./manage.py shell < generate_blat.py

@@ -38,24 +38,22 @@ def get_data_base_dir():
 ########################################################################################################################
 # BLAT  (see generate_blat.py and reset_db.sh and update_db.sh)
 ########################################################################################################################
-def get_header(chain, type, num):
-    return '>' + '_'.join([str(chain.id), chain.entry.mabid.replace(' ',':'), str(chain.entry.id), chain.entry.protein_target.replace(' ',':'), categories[chain.entry.category].replace(' ',':'), type, str(num)]) + '\n'
+def get_header(chain, type):
+    return '>' + '_'.join([str(chain.id), chain.entry.mabid.replace(' ',':'), str(chain.entry.id),
+                           chain.entry.protein_target.replace(' ',':'), categories[chain.entry.category].replace(' ',':'),
+                           type, str(chain.chain_id)]) + '\n'
 
 #TODO update this now that they are the same
 def get_list(heavy_chains, light_chains, type):
     seq_list = []
-    num = 1
     for item in heavy_chains:
         if getattr(item, type):
-            seq_list.append(get_header(item, 'Heavy', num))
+            seq_list.append(get_header(item, 'Heavy'))
             seq_list.append(getattr(item, type) + '\n')
-            num += 1
-    num = 1
     for item in light_chains:
         if getattr(item, type):
-            seq_list.append(get_header(item, 'Light', num))
+            seq_list.append(get_header(item, 'Light'))
             seq_list.append(getattr(item, type) + '\n')
-            num += 1
     return seq_list
 
 def generate_seq_fa():
@@ -107,7 +105,9 @@ def new_create_entries(entry_list, row, duplicate, sanger):
                                                                domain=row['domain'],
                                                                duplicate=duplicate,
                                                                sample_name = row['Sample_Name'],
-                                                               chain = chain_type
+                                                               chain = chain_type,
+                                                               chain_id = row['ChainID']
+
                                                             )
         else:
             create = TrimmerSequence.objects.create(entry=value,
@@ -120,7 +120,8 @@ def new_create_entries(entry_list, row, duplicate, sanger):
                                                            seq=row['ASV'],
                                                            duplicate=duplicate,
                                                            sample_name=row['Sample_Name'],
-                                                           chain = chain_type
+                                                           chain = chain_type,
+                                                           chain_id = row['ChainID']
 
             )
         create.save()
@@ -138,10 +139,10 @@ def new_create_entries(entry_list, row, duplicate, sanger):
 
 
 # this is called in the run_update.py script and the run_entry_reset.py
-def data_upload(update):
+def data_upload(update, dir):
     # update is false when reseting otherwise it is True
     # TODO function that get directory based on if AWS server or local or just pass diretory.
-    dir = "/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/data2/AnnotatedResults/"
+    dir += "/AnnotatedResults/"
     files = os.listdir(dir)
     files = [i for i in files if ".tsv" in i]
     files = [i for i in files if " " not in i]
@@ -207,18 +208,17 @@ def seq_count(entry, chain_type):
     return len(TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain=chain_type))
 
 
-def assign_order(seqs):
-    num = 1
+def assign_order(seqs, chain_type):
     for i in seqs:
-        i.asv_order = num
+        i.asv_order = int(i.chain_id.split(chain_type)[1])
         i.save()
 
 
 def update_order(entry):
-    light_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Light").order_by("-asv_support")
-    heavy_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Heavy").order_by("-asv_support")
-    assign_order(light_seqs)
-    assign_order(heavy_seqs)
+    light_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Light")
+    heavy_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Heavy")
+    assign_order(light_seqs, "LC")
+    assign_order(heavy_seqs, "HC")
 
 
 def get_light_and_heavy_per_entry():
@@ -257,8 +257,8 @@ def new_create_status(row, entry):
 
 
 # status upload. Works the same whether updating or not.
-def status_upload(update):
-    dir = "../data2/StatusReports/"
+def status_upload(update, dir):
+    dir += "/StatusReports/"
     files = os.listdir(dir)
     files = [i for i in files if ".tsv" in i]
     files = [i for i in files if " " not in i]

@@ -12,3 +12,5 @@
 .DS_Store
 data/*
 trimmer/trimmer/settings.py
+data2/*
+data3/*

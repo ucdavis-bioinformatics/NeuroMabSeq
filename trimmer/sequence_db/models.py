@@ -171,6 +171,7 @@ class TrimmerSequence(models.Model):
     sample_name = models.CharField(max_length=20, default='')
     chain = models.CharField(choices=(("Light", "Light"),("Heavy", "Heavy")), max_length=10)
     asv_order = models.IntegerField(blank=True, null=True)
+    chain_id = models.CharField(max_length=25, default='')
 
     @property
     def strip_domain(self):
