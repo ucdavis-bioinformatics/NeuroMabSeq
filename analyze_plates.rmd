@@ -11,8 +11,13 @@ knitr::opts_chunk$set(fig.width=14, fig.height=8, fig.path='Figs/',
                       echo=FALSE, warning=FALSE, message=FALSE)
 options(stringsAsFactors=F)
 
-nice_colors = c("#999999", "#E69F00", "#56B4E9","#e98756","#c08160","#5800e6", "#CDDC49",
-                "#C475D3", "#E94B30", "#233F57", "#FEE659", "#A1CFDD", "#F4755E", "#D6F6F7","#EB6D58", "#6898BF")
+# nice_colors = c("#999999", "#E69F00", "#56B4E9","#e98756","#c08160","#5800e6", "#CDDC49",
+#                 "#C475D3", "#E94B30", "#233F57", "#FEE659", "#A1CFDD", "#F4755E", "#D6F6F7","#EB6D58", "#6898BF")
+
+nice_colors = c("#a9a9a9", "#2f4f4f", "#556b2f", "#228b22", "#7f0000", "#808000", "#483d8b", "#9acd32", "#20b2aa", "#cd5c5c", "#00008b",
+                    "#daa520", "#7f007f", "#8fbc8f", "#ff0000", "#ff8c00", "#7cfc00", "#8a2be2", "#00ff7f", "#dc143c", "#00bfff", "#0000ff",
+                    "#ff7f50", "#ff00ff", "#1e90ff", "#f0e68c", "#ffff54", "#dda0dd", "#ff1493", "#7b68ee", "#afeeee", "#98fb98", "#7fffd4",
+                    "#ffe4c4", "#ffb6c1")
 
 ```
 
