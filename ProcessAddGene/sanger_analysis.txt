@@ -1,0 +1,11 @@
+# Processing the Sanger samples should be very easy now, just run the following:
+
+python3 01-scrape_addgene.py
+python3 03-annotate-results.py
+
+#rsync -vrt --no-p --no-g --chmod=ugo=rwX ./03-AnnotatedResults/*.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/AnnotatedResults/
+
+
+# Finally run a report validating the results against an old manually curated set:
+Rscript -e "rmarkdown::render('compare_AddGeneSeqs.RMD')"
+

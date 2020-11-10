@@ -1,0 +1,271 @@
+---
+title:  "AddGene web-scraping validation"
+author: "Sam Hunter"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_knit$set(root.dir = '/bio/CoreWork/2019.11.18-Trimmer-Hybridoma-Seq/2020-02-07-run-rerun_of_27-samples-SMARTPCR')
+library(kableExtra)
+library(ggplot2)
+library(stringr)
+library(msaR)
+library(DECIPHER)
+options(stringsAsFactors=F)
+
+```
+
+
+```{r readdata, echo=FALSE, results="hide"}
+# A quick little test to make sure that everything I pulled from Addgene matches the samples that
+# that were in the old file from the Trimmer lab.
+
+# Read in original sequences (from Trimmer file)
+orig = read.table("./backup/03-AnnotatedResults/Sanger_samples_Sequences.tsv", header=T, as.is=T, sep='\t')
+orig$ASV = gsub(' ', '', orig$ASV)  # get rid of any spaces
+
+new = read.table('03-AnnotatedResults/Sanger_samples_Sequences.tsv', header=T, as.is=T, sep='\t')
+new$ASV = gsub(' ', '', new$ASV)  # get rid of any spaces
+
+okey = paste(orig$Sample_Name, orig$Chain, sep='.')
+rownames(orig) = okey
+
+nkey = paste(new$Sample_Name, new$Chain, sep='.')
+rownames(new) = nkey
+```
+
+
+----------
+
+
+### First, are all of the old keys in the new dataset?
+
+#### List samples missing from the old dataset:
+
+```{r compare_OldVSNew, echo=FALSE}
+
+kable(orig[!(okey %in% nkey), c("Sample_Name", "plate", "MabID", "Chain")]) %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, angle = 0)
+```
+
+
+
+TODO: the Gs samples need to be added
+
+
+Something strang is going on with Psanger_128631 (L28/4R) in the old dataset. Addgene ID 149453 has this MabID on web site.
+It looks like 128631 also exists on the web page, but can't be searched for.
+
+#### ---> Addgene ID 128631 and 149453 have identical sequences
+
+```{r compareLC}
+orig$ASV[orig$Sample_Name == 'Psanger_128631' & orig$Chain=='LC'] == 
+new$ASV[new$Sample_Name == 'Psanger_149453' & new$Chain=='LC']
+```
+
+```{r compareHC}
+orig$ASV[orig$Sample_Name == 'Psanger_128631' & orig$Chain=='HC'] == 
+new$ASV[new$Sample_Name == 'Psanger_149453' & new$Chain=='HC']
+```
+
+\
+\
+
+
+----------
+
+\
+\
+
+### Second, are all of the AddGene sequences also in the orignal dataset?
+
+List samples missing from the old dataset that are present on AddGene:
+```{r compare_NewVSOld}
+kable(new[!(nkey %in% okey), c("Sample_Name", "plate", "MabID", "Chain")]) %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, angle = 0)
+
+```
+
+There are 22 new samples, this is expected because Belvin has sent 13 + 8 new samples in email, 
+and there is the 149453 sample that isn't accounted for.
+
+----------
+
+
+#### Third, check that sequences are identical for all matching samples:
+```{r compareSequences}
+commonk = intersect(nkey, okey)
+table(orig$ASV[match(commonk, okey)] == new$ASV[match(commonk, nkey)])
+```
+Unfortunately it looks like 7 sequences are not identical.
+
+Extract sequences that don't match, write to table:
+```{r makeMismatchTable, echo=FALSE}
+
+mismatch = commonk[!(orig$ASV[match(commonk, okey)] == new$ASV[match(commonk, nkey)])]
+
+mismatches = rbind(data.frame(Source='original', orig[mismatch,]), 
+                   data.frame(Source='addgene', new[mismatch,]))
+
+mismatches = mismatches[order(mismatches$Sample_Name, mismatches$Chain), ]
+
+kable(mismatches[, c("Source", "Sample_Name", "plate", "MabID", "Chain")]) %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, angle = 0)
+
+write.table(mismatches, file='addgene_spreadsheet_discrepancies.tsv', row.names=F, sep='\t')
+```
+
+
+### Create alingments for each pair this isn't identical:
+
+
+\
+\
+
+#### `r paste(mismatches$Sample_Name[1], mismatches$MabID[1], mismatches$Chain[1], sep='.')`
+
+\
+
+```{r plotalignment1.2, echo=FALSE}
+x = c(1,2)
+dna = DNAStringSet(mismatches$ASV[x])
+names(dna) = paste(mismatches$Sample_Name, mismatches$Source, sep='.')[x]
+alignedDNA = AlignSeqs(dna, verbose=F)
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, labelNameLength=175)
+
+```
+
+\
+\
+\
+\
+
+#### `r paste(mismatches$Sample_Name[3], mismatches$MabID[3], mismatches$Chain[3], sep='.')`
+
+\
+
+```{r plotalignment3.4, echo=FALSE}
+x = c(3,4)
+dna = DNAStringSet(mismatches$ASV[x])
+names(dna) = paste(mismatches$Sample_Name, mismatches$Source, sep='.')[x]
+alignedDNA = AlignSeqs(dna, verbose=F)
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, labelNameLength=175)
+
+```
+
+\
+\
+\
+\
+
+#### `r paste(mismatches$Sample_Name[5], mismatches$MabID[5], mismatches$Chain[5], sep='.')`
+
+\
+
+```{r plotalignment5.6, echo=FALSE}
+x = c(5,6)
+dna = DNAStringSet(mismatches$ASV[x])
+names(dna) = paste(mismatches$Sample_Name, mismatches$Source, sep='.')[x]
+alignedDNA = AlignSeqs(dna, verbose=F)
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, labelNameLength=175)
+
+```
+
+\
+\
+\
+\
+
+#### `r paste(mismatches$Sample_Name[7], mismatches$MabID[7], mismatches$Chain[7], sep='.')`
+
+\
+
+```{r plotalignment7.8, echo=FALSE}
+x = c(7,8)
+dna = DNAStringSet(mismatches$ASV[x])
+names(dna) = paste(mismatches$Sample_Name, mismatches$Source, sep='.')[x]
+alignedDNA = AlignSeqs(dna, verbose=F)
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, labelNameLength=175)
+
+```
+
+\
+\
+\
+\
+
+#### `r paste(mismatches$Sample_Name[9], mismatches$MabID[9], mismatches$Chain[9], sep='.')`
+
+\
+
+```{r plotalignment9.10, echo=FALSE}
+x = c(9,10)
+dna = DNAStringSet(mismatches$ASV[x])
+names(dna) = paste(mismatches$Sample_Name, mismatches$Source, sep='.')[x]
+alignedDNA = AlignSeqs(dna, verbose=F)
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, labelNameLength=175)
+
+```
+
+\
+\
+\
+\
+
+#### `r paste(mismatches$Sample_Name[11], mismatches$MabID[11], mismatches$Chain[11], sep='.')`
+
+\
+
+```{r plotalignment11.12, echo=FALSE}
+x = c(11,12)
+dna = DNAStringSet(mismatches$ASV[x])
+names(dna) = paste(mismatches$Sample_Name, mismatches$Source, sep='.')[x]
+alignedDNA = AlignSeqs(dna, verbose=F)
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, labelNameLength=175)
+
+```
+
+\
+\
+\
+\
+
+
+##### `r paste(mismatches$Sample_Name[13], mismatches$MabID[13], mismatches$Chain[13], sep='.')`
+
+\
+
+```{r plotalignment13.14, echo=FALSE}
+x = c(13,14)
+dna = DNAStringSet(mismatches$ASV[x])
+names(dna) = paste(mismatches$Sample_Name, mismatches$Source, sep='.')[x]
+alignedDNA = AlignSeqs(dna, verbose=F)
+msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, labelNameLength=175)
+# Rscript -e "rmarkdown::render('compare_AddGeneSeqs.RMD')"
+
+```
+
+\
+\
+\
+
+
+#### AA predictions:
+```{css}
+.main-container {
+    max-width: 100%;
+}
+```
+```{r compare_AA, echo=FALSE}
+df = mismatches[,c("Sample_Name", "Source", "MabID", "Chain", "AA")]
+df$AA = gsub("`", "|", df$AA)
+kable(df) %>%
+  kable_styling("striped", full_width = T) %>%
+  row_spec(0, angle = 0)
+```
+

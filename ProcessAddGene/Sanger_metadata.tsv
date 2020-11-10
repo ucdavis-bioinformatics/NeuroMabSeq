@@ -1,0 +1,128 @@
+sample_name	trimmer_id	PlateName	Category	ShowOnWeb	ProteinTarget
+Psanger_114473	N212/3R	Sanger_samples	6	T	TRIP8b (exon 4)
+Psanger_114474	N222/6R	Sanger_samples	6	T	Clcn4
+Psanger_114475	N196/16R	Sanger_samples	6	T	PARIS/ZNF746
+Psanger_114476	N278/19R	Sanger_samples	6	T	Synaptotagmin-3
+Psanger_114477	N268/19R	Sanger_samples	6	T	TRPML3/Mucolipin-3
+Psanger_114478	N413/67R	Sanger_samples	6	T	GABA(A)R, Epsilon
+Psanger_114479	N388A/10R	Sanger_samples	6	T	Ankyrin-R
+Psanger_114480	N323B/20R	Sanger_samples	6	T	TRPML3/Mucolipin-3
+Psanger_114481	N195A/16R	Sanger_samples	6	T	QKI-5
+Psanger_114482	N277/7R	Sanger_samples	6	T	Synaptotagmin-12
+Psanger_114483	N355/1R	Sanger_samples	6	T	GluA1/GluR1 glutamate receptor
+Psanger_114484	N346/9R	Sanger_samples	6	T	Stonin-2
+Psanger_114485	N348/82R	Sanger_samples	6	T	NSD3
+Psanger_114486	N353/13R	Sanger_samples	6	T	Flrt3
+Psanger_114487	N116/14R	Sanger_samples	6	T	Botch
+Psanger_114488	N331/19R	Sanger_samples	6	T	Dopamine D3 receptor
+Psanger_114490	N321C/49R	Sanger_samples	6	T	Kirrel3, short and long
+Psanger_114492	N86/38.1R	Sanger_samples	6	T	GFP
+Psanger_114493	N51/6.2R	Sanger_samples	6	T	NGL-3/LRRC4B
+Psanger_114494	N34/34.2R	Sanger_samples	6	T	VGlut3
+Psanger_114495	N359/28R	Sanger_samples	6	T	Foxi3
+Psanger_114496	N11/33R	Sanger_samples	6	T	KCNT2/Slo2.1/Slick K+ channel
+Psanger_114497	N7/18.1R	Sanger_samples	6	T	Cavbeta1 Ca2+ channel
+Psanger_114499	N356/23R	Sanger_samples	6	T	SVOP
+Psanger_114501	N29/29R	Sanger_samples	6	T	VGlut2
+Psanger_114502	L60/4R	Sanger_samples	6	T	Copper ATPase 1 (Menke's disease protein)
+Psanger_114503	N341/37R	Sanger_samples	6	T	LRRK1
+Psanger_114505	N168/6.3R	Sanger_samples	6	T	Navbeta4 Na+ channel
+Psanger_114506	N114/10.1R	Sanger_samples	6	T	HCN4
+Psanger_114507	N120A/9.1R	Sanger_samples	6	T	Neuregulin-HBD (Heparin binding domain, Type I/II)
+Psanger_114508	N59/36.1R	Sanger_samples	6	T	GluN2B/NR2B glutamate receptor
+Psanger_114509	N235/22R	Sanger_samples	6	T	Pan-FHF-A
+Psanger_114510	N326D/29R	Sanger_samples	6	T	REEP1/2
+Psanger_114511	N16B/8R	Sanger_samples	6	T	Kv3.1b K+ channel
+Psanger_114512	N70/28R	Sanger_samples	6	T	HCN1
+Psanger_114513	N85/18.1R	Sanger_samples	6	T	Malin
+Psanger_114514	N117/9.5R	Sanger_samples	6	T	Kv3.1b K+ channel
+Psanger_114515	N151/3.3R	Sanger_samples	6	T	GABA(A)R, Delta
+Psanger_114516	N150/21.3R	Sanger_samples	6	T	Doc2b
+Psanger_114517	N104/32.1R	Sanger_samples	6	T	SNAT1
+Psanger_114518	N110/29.4R	Sanger_samples	6	T	Neuroligin-3
+Psanger_114519	N133/21.2R	Sanger_samples	6	T	RGS14
+Psanger_114520	N178A/9.1R	Sanger_samples	6	T	Cav3.1 Ca2+ channel
+Psanger_114521	N147/6.1R	Sanger_samples	6	T	Pan-QKI
+Psanger_114523	N18/30.1R	Sanger_samples	6	T	PSD-93/Chapsyn-110
+Psanger_114525	N91/27.1R	Sanger_samples	6	T	FGF13/FHF2
+Psanger_114527	N135/37.2R	Sanger_samples	6	T	JIP-2/IB-2
+Psanger_114529	N127/31.1R	Sanger_samples	6	T	Pan-SAPAP
+Psanger_114530	N170A/1.1R	Sanger_samples	6	T	Neurexin-1-Beta
+Psanger_114533	N84/37.1R	Sanger_samples	6	T	Laforin
+Psanger_114536	N206B/9R	Sanger_samples	6	T	GFAP R416WT
+Psanger_114538	N94/17R	Sanger_samples	6	T	FGF12/FHF1
+Psanger_114539	N88/12.1R	Sanger_samples	6	T	MESD
+Psanger_114540	N149/25.1R	Sanger_samples	6	T	Olig1
+Psanger_114541	N2/16R	Sanger_samples	6	T	KCNU1/Slo3 maxi-K+ channel
+Psanger_114542	N164/6.1R	Sanger_samples	6	T	LRP4 (cytoplasmic)
+Psanger_114544	N81/37.1R	Sanger_samples	6	T	GABA(B)R2
+Psanger_114547	N153/5.1R	Sanger_samples	6	T	Mitofusin-2
+Psanger_114548	N52A/42.1R	Sanger_samples	6	T	Mortalin/GRP75
+Psanger_114549	N96/55.3R	Sanger_samples	6	T	GABA(A)R, Beta1
+Psanger_114550	N93A/49.2R	Sanger_samples	6	T	GABA(B)R1
+Psanger_114551	N171/17.4R	Sanger_samples	6	T	INPP4b
+Psanger_114552	N419/40R	Sanger_samples	6	T	Pan-Nav1 Na+ channel
+Psanger_114553	N419/78R	Sanger_samples	6	T	Pan-Nav1 Na+ channel
+Psanger_114554	N97A/31R	Sanger_samples	6	T	Nlgn1
+Psanger_114555	N230/21R	Sanger_samples	6	T	MMACHC
+Psanger_114556	N289/16R	Sanger_samples	6	T	SUR1
+Psanger_114557	N212/17R	Sanger_samples	6	T	SUR1
+Psanger_114558	N269/73R	Sanger_samples	6	T	Synaptotagmin-10
+Psanger_114559	N76/3R	Sanger_samples	6	T	Ataxin-1, 11NQ
+Psanger_114560	N176A/35.1R	Sanger_samples	6	T	S100A5
+Psanger_114561	N182/17.1R	Sanger_samples	6	T	QKI-6
+Psanger_114562	N244/5R	Sanger_samples	6	T	SynCAM4
+Psanger_114563	N291C/22R	Sanger_samples	6	T	TRIP8b (exon 1a/5)
+Psanger_128612	D3/71R	Sanger_samples	6	T	Kv2.1 K+ Channel
+Psanger_128613	K13/31R	Sanger_samples	6	T	Kv1.4 K+ Channel
+Psanger_128614	K14/16R	Sanger_samples	6	T	Kv1.2 K+ Channel
+Psanger_128615	K17/70R	Sanger_samples	6	T	Kvbeta2/KCNAB2 K+ Channel
+Psanger_128616	K20/78R	Sanger_samples	6	T	Kv1.1 K+ Channel
+Psanger_128617	K25/73R	Sanger_samples	6	T	Pan-Kvbeta K+ Channel
+Psanger_128618	K28/43R	Sanger_samples	6	T	PSD-95
+Psanger_128619	K36/15R	Sanger_samples	6	T	Kv1.1 K+ Channel (External)
+Psanger_128620	K39/25R	Sanger_samples	6	T	Kv2.1 K+ Channel (External)
+Psanger_128621	K51/1R	Sanger_samples	6	T	SH3GL1/Endophilin A2
+Psanger_128622	K57/1R	Sanger_samples	6	T	Kv4.2 K+ Channel (External)
+Psanger_128623	K58/35R	Sanger_samples	6	T	Pan-Nav Channel
+Psanger_128624	K64/15R	Sanger_samples	6	T	SAP97
+Psanger_128625	K66/38R	Sanger_samples	6	T	CASPR/Neurexin IV
+Psanger_128626	K74/71R	Sanger_samples	6	T	Nav1.1 Na+ channel
+Psanger_128627	K75/41R	Sanger_samples	6	T	Kv4.3 K+ Channel
+Psanger_128628	K89/34R	Sanger_samples	6	T	Kv2.1 K+ Channel
+Psanger_128629	K91/36R	Sanger_samples	6	T	WAVE1/SCAR
+Psanger_128630	L20/8R	Sanger_samples	6	T	PICK1
+Psanger_128632	L42/17R	Sanger_samples	6	T	SynDIG1/Tmem90b
+Psanger_128633	L43/40R	Sanger_samples	6	T	DLX1
+Psanger_128634	L6/23R	Sanger_samples	6	T	Slo1/BKAlpha maxi-K+ channel
+Psanger_128635	N106/43R	Sanger_samples	6	T	Ankyrin-G (staining)
+Psanger_128636	N205B/22R	Sanger_samples	6	T	LRRTM4
+Psanger_128637	N23B/49R	Sanger_samples	6	T	Pan-Shank
+Psanger_128638	N28/9R	Sanger_samples	6	T	VGlut1
+Psanger_128639	N351/23R	Sanger_samples	6	T	Versican
+Psanger_128640	N388A/60R	Sanger_samples	6	T	Pan-Ankyrin
+Psanger_128641	N76/8R	Sanger_samples	6	T	Ataxin-1, 11NQ
+Psanger_140063	L61/14R	Sanger_samples	6	T	Kv2.1 K+ channel pS603
+Psanger_140064	N3/26R	Sanger_samples	6	T	KCNT1/Slo2.2/Slack K+ channel
+Psanger_140065	L5/1R	Sanger_samples	6	T	SCG10/Stathmin-2
+Psanger_140066	K72/8R	Sanger_samples	6	T	Co-Rest/RCOR1
+Psanger_140068	K19/36R	Sanger_samples	6	T	Kv1.6 K+ channel
+Psanger_140069	K7/45R	Sanger_samples	6	T	Kv1.5 K+ channel
+Psanger_140070	K9/40R	Sanger_samples	6	T	Kvbeta1.1/KCNAB1 K+ channel
+Psanger_140071	L8/15R	Sanger_samples	6	T	Snapin/SNAPAP
+Psanger_140072	N111/24R	Sanger_samples	6	T	Mitofusin-1
+Psanger_140073	N121A/31R	Sanger_samples	6	T	Pannexin-2
+Psanger_140074	N124B/38R	Sanger_samples	6	T	Kir2.2 K+ channel
+Psanger_140075	N129A/6R	Sanger_samples	6	T	Mad3
+Psanger_140076	N295B/66R	Sanger_samples	6	T	Arl13b
+Psanger_140077	N328B/37R	Sanger_samples	6	T	ZNF423
+Psanger_140078	N69/46R	Sanger_samples	6	T	Shank3
+Psanger_140079	N83/48R	Sanger_samples	6	T	GIT2
+Psanger_140081	N98/7R	Sanger_samples	6	T	Neuroligin-4*
+Psanger_149451	N279B/27R	Sanger_samples	6	T	GluK5/Grik5/KA2 kainate receptor
+Psanger_149452	N320/48R	Sanger_samples	6	T	Kirrel3, short isoform 3
+Psanger_149453	L28/4R	Sanger_samples	6	T	Kv4.2 K+ channel
+Psanger_149454	L18A/3R	Sanger_samples	6	T	BK beta4 K+ channel
+Psanger_149455	L51/82R	Sanger_samples	6	T	MMP9 matrix metalloproteinase-9 precursor
+Psanger_149456	N415/24R	Sanger_samples	6	T	GABA(A)R, Alpha5
+Psanger_149458	N8B/1R	Sanger_samples	6	T	Cavbeta2 Ca2+ channel
