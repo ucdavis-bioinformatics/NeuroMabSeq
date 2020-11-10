@@ -168,8 +168,8 @@ def main_page(request):
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['number_entries'] = len(all_entries)
-    context['number_light'] = len(TrimmerSequence.objects.filter(duplicate=False, entry__show_on_web=True, chain="Light"))
-    context['number_heavy'] = len(TrimmerSequence.objects.filter(duplicate=False, entry__show_on_web=True, chain="Heavy"))
+    context['number_light'] = len(TrimmerSequence.objects.filter(duplicate=False, entry__show_on_web=True, chain="Light").exclude(aa='-'))
+    context['number_heavy'] = len(TrimmerSequence.objects.filter(duplicate=False, entry__show_on_web=True, chain="Heavy").exclude(aa='-'))
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
 
@@ -294,7 +294,7 @@ def multikeysort(items, columns):
             return 0
     return sorted(items, cmp=comparer)
 
-def blat(request):
+def blat(request,query_seq):
     context = {}
     context['queryset'] = None
     if request.method == 'POST':
@@ -411,7 +411,11 @@ def blat(request):
             return render(request, 'blat.html', context)
 
     else:
-        context['form'] = Blat()
+        if query_seq == "None":
+            context['form'] = Blat()
+        else:
+            context['form'] = Blat(initial={"sequence": query_seq})
+
     return render(request, 'blat.html', context)
 
 #
@@ -584,9 +588,9 @@ class TrimmerEntryDetailView(DetailView):
             context['pk2'] = self.kwargs['pk2']
         except:
             context['pk2'] = 0
-        context['light'] = TrimmerSequence.objects.filter(entry=context['entry'], duplicate=False, chain="Light").order_by('asv_order')
+        context['light'] = TrimmerSequence.objects.filter(entry=context['entry'], duplicate=False, chain="Light").exclude(aa='-').order_by('asv_order')
         # context['light_duplicates'] = TrimmerLight.objects.filter(entry=context['entry'], duplicate=True)
-        context['heavy'] = TrimmerSequence.objects.filter(entry=context['entry'], duplicate=False, chain="Heavy").order_by('asv_order')
+        context['heavy'] = TrimmerSequence.objects.filter(entry=context['entry'], duplicate=False, chain="Heavy").exclude(aa='-').order_by('asv_order')
         # context['heavy_duplicates'] = TrimmerHeavy.objects.filter(entry=context['entry'], duplicate=True)
         #context['graph'] = GetAsvGraph()
         #context['graph_pct'] = GetPctGraph()
@@ -651,7 +655,7 @@ def query_dict_to_string(querydict):
 
 def SequenceListView(request):
     context = {}
-    all_entries = TrimmerSequence.objects.filter(entry__show_on_web=True)
+    all_entries = TrimmerSequence.objects.filter(entry__show_on_web=True).exclude(aa='-')
     context['filter'] = TrimmerSequenceFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs[:200]
     context['querystring'] = query_dict_to_string(request.GET)
@@ -660,7 +664,7 @@ def SequenceListView(request):
 
 def fasta_file_response(request):
     context = {}
-    all_entries = TrimmerSequence.objects.filter(entry__show_on_web=True)
+    all_entries = TrimmerSequence.objects.filter(entry__show_on_web=True).exclude(aa='-')
     context['filter'] = TrimmerSequenceFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs[:200]
     filename = "neuromabseq_export.fa"

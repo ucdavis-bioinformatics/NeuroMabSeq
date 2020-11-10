@@ -125,6 +125,8 @@ function toggle_it(itemID){
                             <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('light{{forloop.counter}}b');toggle_it('light{{forloop.counter}}c');toggle_it('light{{forloop.counter}}d')">
                               <span class="glyphicon glyphicon-plus-sign"></span> Amino Acid Information
                             </a>
+                            <a href="/blat/{{item.seq}}" class="btn btn-info"> Blat Sequence
+                            </a>
 
 <!--                               <table  id="light{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">-->
 
@@ -252,6 +254,8 @@ function toggle_it(itemID){
                             </a>
                             <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('{{forloop.counter}}b');toggle_it('{{forloop.counter}}c');toggle_it('{{forloop.counter}}d')">
                               <span class="glyphicon glyphicon-plus-sign"></span> Amino Acid Information
+                            </a>
+                            <a href="/blat/{{item.seq}}" class="btn btn-info"> Blat Sequence
                             </a>
 
 <!--                               <table  id="{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">-->

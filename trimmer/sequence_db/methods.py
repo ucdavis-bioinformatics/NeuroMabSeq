@@ -39,38 +39,65 @@ def get_data_base_dir():
 # BLAT  (see generate_blat.py and reset_db.sh and update_db.sh)
 ########################################################################################################################
 def get_header(chain, type):
-    return '>' + '_'.join([str(chain.id), chain.entry.mabid.replace(' ',':'), str(chain.entry.id),
+    try:
+        return '>' + '_'.join([str(chain.id), chain.entry.mabid.replace(' ',':'), str(chain.entry.id),
                            chain.entry.protein_target.replace(' ',':'), categories[chain.entry.category].replace(' ',':'),
                            type, str(chain.chain_id)]) + '\n'
+    except:
+        cwd = os.getcwd()
+        prefix = '/'.join(cwd.split('/')[:-1])
+        if "ubuntu" in prefix:
+            pass
+        else:
+            print(chain.__dict__)
+        return None
+
 
 #TODO update this now that they are the same
 def get_list(heavy_chains, light_chains, type):
     seq_list = []
     for item in heavy_chains:
         if getattr(item, type):
-            seq_list.append(get_header(item, 'Heavy'))
-            seq_list.append(getattr(item, type) + '\n')
+            if get_header(item, 'Heavy'):
+                seq_list.append(get_header(item, 'Heavy'))
+                seq_list.append(getattr(item, type) + '\n')
     for item in light_chains:
         if getattr(item, type):
-            seq_list.append(get_header(item, 'Light'))
-            seq_list.append(getattr(item, type) + '\n')
+            if get_header(item, 'Light'):
+                seq_list.append(get_header(item, 'Light'))
+                seq_list.append(getattr(item, type) + '\n')
     return seq_list
 
 def generate_seq_fa():
-    all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Heavy")
-    all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Light")
+    all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Heavy").exclude(aa='-')
+    all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Light").exclude(aa='-')
     seq_list = get_list(all_heavy_chains, all_light_chains, 'seq')
     with open('../static_data/dna.fa','w') as dna_fa_out:
         for item in seq_list:
             dna_fa_out.write(item)
 
 def generate_aa_fa():
-    all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Heavy")
-    all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Light")
+    all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Heavy").exclude(aa='-')
+    all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Light").exclude(aa='-')
     aa_list = get_list(all_heavy_chains, all_light_chains, 'strip_aa')
     with open('../static_data/protein.fa','w') as dna_fa_out:
         for item in aa_list:
             dna_fa_out.write(item)
+
+########################################################################################################################
+# FAQ
+########################################################################################################################
+def generate_faq():
+    with open("/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/static_data/faq/faq.tsv") as faq_file:
+        for line in faq_file:
+            line = line.replace('\n', '')
+            line = line.split('\t')
+            if line[2] == "Definition":
+                is_def = True
+            else:
+                is_def = False
+            new_faq = FAQ.objects.create(message=line[1], question=line[0], is_definition=is_def)
+            new_faq.save()
 
 
 ########################################################################################################################
