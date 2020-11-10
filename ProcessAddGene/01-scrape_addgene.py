@@ -29,6 +29,7 @@ def parse_mab(url, num, mabid):
                     'SMARTindex':'None',
                     'MabID':mabid,
                     'Chain':'HC',
+                    'ChainID':'Psanger_' + num + ".HC1",
                     'ASVcount':1,
                     'PctSupport':100,
                     'TotalReads':1,
@@ -40,6 +41,7 @@ def parse_mab(url, num, mabid):
                     'SMARTindex':'None',
                     'MabID':mabid,
                     'Chain':'LC',
+                    'ChainID':'Psanger_' + num + ".LC1",
                     'ASVcount':1,
                     'PctSupport':100,
                     'TotalReads':1,
@@ -50,7 +52,7 @@ def parse_mab(url, num, mabid):
  
 ### Create output files ###
 sequencesF = open('./02-Results/Sanger_samples_Sequences.tsv', 'w')
-sequencesFieldnames = ['Sample_Name','plate','SMARTindex','MabID','Chain','ASVcount','PctSupport','TotalReads','Sequencing','ASV','DuplicatedIn']
+sequencesFieldnames = ['Sample_Name','plate','SMARTindex','MabID','Chain','ChainID','ASVcount','PctSupport','TotalReads','Sequencing','ASV','DuplicatedIn']
 seqWriter = csv.DictWriter(sequencesF, fieldnames=sequencesFieldnames, delimiter='\t')
 seqWriter.writeheader()
 
@@ -72,6 +74,7 @@ soup = BeautifulSoup(page.content, 'html.parser')
 tbl = soup.find('table')
 
 # Parse the table, extract data elements, get the sequences, write to files:
+print("Starting web scraping...")
 i = 0
 for rec in tbl.find_all('tr'):
     if i == 0:
@@ -95,6 +98,8 @@ for rec in tbl.find_all('tr'):
                 seqWriter.writerow(chain)       
     i += 1
 
+print(F"Web scraping complete, pulled {i} records.")
+print("Adding GS sequences...")
 # Finally, read in the GS sequences (these were sequenced via Sanger, but are not in AddGene):
 for rec in csv.DictReader(open("Sanger_GS_sequences.tsv", 'r'), delimiter='\t'):
     #print(rec)
@@ -105,5 +110,5 @@ sequencesF.close()
 mdataF.close()
 
 
-print(F"Processed {i} records.")
+print("Processing complete.")
 

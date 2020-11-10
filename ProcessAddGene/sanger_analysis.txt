@@ -5,6 +5,7 @@ python3 03-annotate-results.py
 
 #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./03-AnnotatedResults/*.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/AnnotatedResults/
 
+rsync -avz -e 'ssh -i samlogin.pem' ./03-AnnotatedResults/*.tsv shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/AnnotatedResults
 
 # Finally run a report validating the results against an old manually curated set:
 Rscript -e "rmarkdown::render('compare_AddGeneSeqs.RMD')"
