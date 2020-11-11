@@ -317,8 +317,8 @@ def blat(request,query_seq):
 
             sequence = form.cleaned_data['sequence']
             type = form.cleaned_data['type']
-            search_prefix = form.cleaned_data['search_prefix']
-            context['form'] = Blat(initial={"sequence": sequence, "type":type, "search_prefix":search_prefix})
+            search_prefix = form.cleaned_data['search_prefix'].replace('/','_')
+            context['form'] = Blat(initial={"sequence": sequence, "type":type, "search_prefix":search_prefix.replace('_','/')})
 
             # if not result['success']:
             #     return render(request, 'blat.html', context)
@@ -341,7 +341,7 @@ def blat(request,query_seq):
             if search_prefix:
                 search_prefix_file_name = '%s/static_data/%s.fa' % (prefix, search_prefix)
                 with open(search_prefix_file_name, 'w') as temp_file:
-                    sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix)
+                    sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix.replace('_','/'))
                     for seq in sequences:
                         temp_file.write(get_header(seq, seq.chain))
                         if type=="dna":

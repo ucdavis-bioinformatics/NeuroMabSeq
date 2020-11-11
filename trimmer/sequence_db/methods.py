@@ -242,8 +242,8 @@ def assign_order(seqs, chain_type):
 
 
 def update_order(entry):
-    light_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Light")
-    heavy_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Heavy")
+    light_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Light").exclude(aa='-')
+    heavy_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Heavy").exclude(aa='-')
     assign_order(light_seqs, "LC")
     assign_order(heavy_seqs, "HC")
 
