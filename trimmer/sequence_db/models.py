@@ -116,7 +116,7 @@ class TrimmerEntry(models.Model):
     sample_name = models.CharField(max_length=20)
     id = models.AutoField(primary_key=True)
     mabid = models.CharField(max_length=50, default='')
-    show_on_web = models.BooleanField(default=True)
+    show_on_web = models.BooleanField(default=False)
     category = models.IntegerField(blank=True, null=True)
     protein_target = models.CharField(max_length=100, blank=True, null=True)
     light_count = models.IntegerField(blank=True, null=True)
