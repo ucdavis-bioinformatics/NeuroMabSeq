@@ -32,7 +32,7 @@ for plate in ss:
     os.system(f'ln -s {os.path.abspath("./NeuroMabSeq/lc_primers.fasta")} ./{s}/')
     os.system(f'ln -s {os.path.abspath("./NeuroMabSeq/01-build_hts.py")} ./{s}/')
     os.system(f'ln -s {os.path.abspath("./NeuroMabSeq/aberrant_LC.fasta")} ./{s}/')
-    os.system(f'cp ./NeuroMabSeq/01-PrimerTrimReport/report.RMD ./{s}/01-PrimerTrimReport/{s}_report.RMD')
+    os.system(f'cp ./NeuroMabSeq/01-PrimerTrimReport/report.RMD ./{s}/01-PrimerTrimReport/{plate["plate"]}_report.RMD')
     os.system(f'ln -s {os.path.abspath("./NeuroMabSeq/SMARTindex_well.tsv")} ./{s}/02-Results/')
     os.system(f'cp ./NeuroMabSeq/02-Results/02-Hybridoma-DADA2-analysis.RMD ./{s}/02-Results/')
     os.system(f'ln -s {os.path.abspath("./NeuroMabSeq/03-annotate-results.py")} ./{s}/')
