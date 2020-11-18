@@ -5,7 +5,7 @@ import csv
 from glob import glob
 
 # Constants:
-ncpu = 96
+ncpu = 47
 
 # Read in SampleSheet:
 ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
