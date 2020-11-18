@@ -27,8 +27,8 @@ options(stringsAsFactors=F)
 outp = './'
 #sampleIDs = read.table("../samplesheet.tsv", header=T, as.is=T, sep='\t')
 
-#submission = 'b51b81e9ee80'
-#plate = "TRIMMER0005_P5"
+# submission = '9468dd86bf48'
+# plate = "TRIMMER0004.2_P4"
 
 ## Load sample data from submission system:
 # sampleData = read.table(paste("https://submissions.dnatech.ucdavis.edu/server/api/submissions/", 
@@ -58,13 +58,12 @@ path = "../01-PrimerTrim/"
 list.files(path, pattern = "*_SE.fastq.gz")
 
 # Get list of files
-hcfiles = sort(list.files(path, pattern="*_10-REV-HC1_SE.fastq.gz", full.names=T))
-lcfiles = sort(list.files(path, pattern="*_6-REV-LC_SE.fastq.gz", full.names=T))
+hcfiles = sort(list.files(path, pattern="*_HCprimers_SE.fastq.gz", full.names=T))
+lcfiles = sort(list.files(path, pattern="*_LCprimers_SE.fastq.gz", full.names=T))
 
 # Get SMARTPCR index identifier:
-hcindexes = str_remove(basename(hcfiles), "_10-REV-HC1_SE.fastq.gz")
-lcindexes = str_remove(basename(lcfiles), "_6-REV-LC_SE.fastq.gz")
-
+hcindexes = str_remove(basename(hcfiles), "_HCprimers_SE.fastq.gz")
+lcindexes = str_remove(basename(lcfiles), "_LCprimers_SE.fastq.gz")
 
 ```
 
@@ -289,15 +288,19 @@ msaR(alignedDNA, menu=F, height=100, overviewbox = F, conservation=T, )
 ```{r summary table}
 ## Build Status Table for all samples:
 status.out = data.frame(sampleData,
-                  LCs.Reported = as.vector(table(LC.out$MabID)[sampleData$trimmer_id]),
-                  HCs.Reported = as.vector(table(HC.out$MabID)[sampleData$trimmer_id])
+                  LCs.Reported = as.vector(table(LC.out$Sample_Name)[sampleData$sample_name]),
+                  HCs.Reported = as.vector(table(HC.out$Sample_Name)[sampleData$sample_name])
 )
+
+status.out$HCs.Reported[is.na(status.out$HCs.Reported)] = 0
+status.out$LCs.Reported[is.na(status.out$LCs.Reported)] = 0
+
 readr::write_tsv(status.out, paste0(outp, plate, "_", "SampleStatus.tsv"))
 
 kable(status.out) %>%
-  kable_styling("striped", full_width = F) %>%
-  row_spec(0, angle = 0)
-
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
+        row_spec(0, angle = 0)
 ```
 
 

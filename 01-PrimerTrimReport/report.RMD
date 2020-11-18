@@ -18,80 +18,49 @@ library(kableExtra)
 
 
 ################## Functions #############
-
-hts_Primers = function(obj){
-    rv = unlist( obj[['Fragment']][c('in', 'out')] )
-    names(rv) = c("RawReads", "ReadsWithPrimer")
-    return(rv)
-}
-
-hts_SeqScreener = function(obj){
-    rv = unlist( obj[['Fragment']][c('in', 'out')]  )
-    rv = c(rv, obj$Paired_end$hits)
-    names(rv) = c("ReadsToFilter", "PassedAberrantFilter", "Aberrant_LC_reads")
-    return(rv)
-}
-
-hts_QWindowTrim = function(obj){
-    rv =  unlist( obj[['Fragment']][c('in', 'out')]  )
-    names(rv) = c("Untrimmed", "Qtrimmed")
-    return(rv)
-}
-
-hts_Overlapper = function(obj){
-    PE_in = obj$Paired_end$`in`
-    Overlapped = obj$Fragment$short_inserts + obj$Fragment$medium_inserts
-    return(c(PE_in=PE_in, Overlapped=Overlapped))
-}
-
-
+# Extract specific pieces of data from a set of log files:
 parse_set = function(pattern, path){
   df = NA
   samples = c()
   for(f in dir(path=path, pattern=pattern)){
     s = str_replace(f, '.log', '')
     samples = c(samples, s)
-    result = fromJSON(file.path(path,f))
-    tool = names(result)
-    names(tool) = str_replace(names(result), '_[:digit:]*$', '')
-    sdata = c(  hts_Primers(result[[tool['hts_Primers']]]), 
-        hts_SeqScreener(result[[tool['hts_SeqScreener']]]),
-        hts_QWindowTrim(result[[tool['hts_QWindowTrim']]]),
-        hts_Overlapper(result[[tool['hts_Overlapper']]])
-    )
+    results = fromJSON(file.path(path,f))
+    rownames(results$Fragment) = results$Program_details$program
+
+    #Set up primerData 
+    primerData = results$Fragment[1,'primers_counts'][[1]]
+    primerCounts = list(
+        Ga12HC = primerData[primerData[,1] == 'p5primer1' & primerData[,2] == 'Ga12HC.10_REV_CHI',3],
+        Ga3HC = primerData[,3][primerData[,1] == 'p5primer1' & primerData[,2] == 'Ga3.10for_mIGH3'],
+        LaLC = primerData[,3][primerData[,1] == 'p5primer1' & primerData[,2] == 'LaLC.R-mIGL'],
+        KaLC = primerData[,3][primerData[,1] == 'p5primer1' & primerData[,2] == 'KaLC.6_REV_LC'])
+    primerCounts = unlist(lapply(primerCounts, function(x) if(length(x) == 0) 0 else as.numeric(x)))
+
+    sdata = c(
+        RawReads = as.numeric(results$Fragment[1,'in']), 
+        ReadsWithPrimer = as.numeric(results$Fragment[1,'out']),
+        primerCounts,
+        ReadsToFilter = as.numeric(results$Fragment[3,"in"]),
+        PassedAberrantFilter = as.numeric(results$Fragment[3,"out"]),
+        Aberrant_LC_reads = as.numeric(results$Paired_end[3,'hits']),
+        ReadsToOverlap = as.numeric(results$Fragment[5,'in']),
+        ShortInsert = as.numeric(results$Fragment[5,'inserts'][['short']]),
+        MediumInserts = as.numeric(results$Fragment[5, 'inserts'][['medium']]),
+        LongInserts = as.numeric(results$Fragment[5, 'inserts'][['long']]),
+        Overlapped = as.numeric(results$Single_end[5,'out']),
+        LengthFiltered = as.numeric(results$Single_end[6,'out']))
+
     if(is.null(dim(df))){ 
         df = data.frame(sdata) } else {
             df = cbind(df, sdata)
         }
   }
   colnames(df) = samples
+  df = t(df)
   return(df)
 }
 
-
-# A function to extract information from JSON files with only hts_SeqScreener and hts_Overlapper
-parse_dbcA_set = function(pattern, path){
-  df = NA
-  primerGroups = c()
-  for(f in dir(path=path, pattern=pattern)){
-    primerGroup = gsub('.log', '', gsub("^.*_.*_", '', f))
-    primerGroups = c(primerGroups, primerGroup)
-    result = fromJSON(file.path(path,f))
-    tool = names(result)
-    names(tool) = str_replace(names(result), '_[:digit:]*$', '')
-    sdata = c(
-        hts_Primers(result[[tool['hts_Primers']]]),
-        #hts_SeqScreener(result[[tool['hts_SeqScreener']]]),
-        hts_Overlapper(result[[tool['hts_Overlapper']]])
-    )
-    if(is.null(dim(df))){ 
-        df = data.frame(sdata) } else {
-            df = cbind(df, sdata)
-        }
-  }
-  colnames(df) = primerGroups
-  return(df)
-}
 
 ##################
 
@@ -101,24 +70,27 @@ parse_dbcA_set = function(pattern, path){
 Analysis for samples prepared with SMART-PCR + (10-REV-HC1 or 6-REV-LC or mIGHG or mIGK) primers:
 
 1. Demultiplexed with bcl2fastq using Illumina barcodes into pools.
-2. Pooled reads were processed through HTStream
-    + Demultiplex based on SMART-PCR primer + oligo sequence and trim primers (perfect match, anchored primers). 
-    + Overlap paired reads, discard any product < 400bp and only keep reads that overlap.
+1. Samples pooled by plate where then processed through HTStream:
+    +  Demultiplex and orient paired reads based on SMART-PCR primer + oligo sequence and trim primers (perfect match, anchored primers). 
+    +  Discard any read containing an "N"
+    +  Count reads matching the aberrant LC sequence
+    +  Trim bases from reads with -q 10
+    +  Overlap reads
+    +  Filter any reads less than 385bp in length
 
 
 ## Heavy Chain:
 
 ```{r Heavy Chain Results, echo=FALSE}
 path = "../01-PrimerTrim/"
-pattern = ".*10-REV-HC1.log"
-p10RevHc1 = parse_set(pattern, path)
-colnames(p10RevHc1) = sapply(strsplit(gsub("1_Short_primers_", '', colnames(p10RevHc1)), '_'), '[', 1)
-#kable(p10RevHc1)
-t.p10RevHc1 = t(p10RevHc1)[,c("RawReads", "ReadsWithPrimer", "Aberrant_LC_reads", "Qtrimmed", "Overlapped")]
-#t.p10RevHc1 = t.p10RevHc1[t.p10RevHc1[,"ReadsWithPrimer"] > 0, ]
+pattern = ".*_HCprimers.log"
+hcReadStats = parse_set(pattern, path)
+#colnames(p10RevHc1) = sapply(strsplit(gsub("1_Short_primers_", '', colnames(p10RevHc1)), '_'), '[', 1)
+rownames(hcReadStats) = gsub("_HCprimers", '', rownames(hcReadStats))
 
-kable(t.p10RevHc1) %>%
-  kable_styling("striped", full_width = F) %>%
+kable(hcReadStats) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
   row_spec(0, angle = 0)
 ```
 
@@ -129,22 +101,20 @@ kable(t.p10RevHc1) %>%
 
 ```{r Light Chain Results, echo=FALSE}
 path = "../01-PrimerTrim/"
-pattern = ".*6-REV-LC.log"
-p6RevLC = parse_set(pattern, path)
-colnames(p6RevLC) = sapply(strsplit(gsub("1_Short_primers_", '', colnames(p6RevLC)), '_'), '[', 1)
-#kable(p6RevLC)
-t.p6RevLC = t(p6RevLC)[,c("RawReads", "ReadsWithPrimer", "Aberrant_LC_reads", "Qtrimmed", "Overlapped")]
-# t.p6RevLC = t.p6RevLC[t.p6RevLC[,'ReadsWithPrimer']>0, ]
+pattern = ".*_LCprimers.log"
+lcReadStats = parse_set(pattern, path)
+rownames(lcReadStats) = gsub("_LCprimers", '', rownames(lcReadStats))
 
-kable(t.p6RevLC) %>%
-  kable_styling("striped", full_width = F) %>%
+kable(lcReadStats) %>%
+  kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
+        position="left", fixed_thead=T) %>%
   row_spec(0, angle = 0)
 
 ```
 
 ```{r writecsv, echo=FALSE}
-df = data.frame(rbind(data.frame(plate=plate, Chain='H', SMARTindex=rownames(t.p10RevHc1), t.p10RevHc1), 
-                data.frame(plate=plate, Chain='L', SMARTindex=rownames(t.p6RevLC), t.p6RevLC)))
+df = data.frame(rbind(data.frame(plate=plate, Chain='H', SMARTindex=rownames(hcReadStats), hcReadStats), 
+                data.frame(plate=plate, Chain='L', SMARTindex=rownames(lcReadStats), lcReadStats)))
 write.table(file='demux_stats.tsv', df,  row.names=F, col.names=T, sep='\t')
 
 ```
