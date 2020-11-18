@@ -51,7 +51,7 @@ for plate in ss:
         outf.write("\n# Build a report of cleaning:\n")
         cmd = f"module load R/3.6.1;"
         cmd += f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
-        cmd += f"rmarkdown::render('./01-PrimerTrimReport/{plate["plate"]}_report.RMD')\"\n"
+        cmd += f"rmarkdown::render('./01-PrimerTrimReport/{plate['plate']}_report.RMD')\"\n"
         outf.write(cmd)
     
     # Create scripts for processing pipeline
