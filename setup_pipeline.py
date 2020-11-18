@@ -36,7 +36,7 @@ for plate in ss:
     os.system(f'ln -s {os.path.abspath("./NeuroMabSeq/SMARTindex_well.tsv")} ./{s}/02-Results/')
     os.system(f'cp ./NeuroMabSeq/02-Results/02-Hybridoma-DADA2-analysis.RMD ./{s}/02-Results/')
     os.system(f'ln -s {os.path.abspath("./NeuroMabSeq/03-annotate-results.py")} ./{s}/')
-    os.system('ln -s os.path.abspath("./NeuroMabSeq/' + plate['Primers'] + f' ./{s}/')
+    os.system('ln -s ' + os.path.abspath(f"./NeuroMabSeq/{plate['Primers']}") + f' ./{s}/')
     os.system(f'ln -s {os.path.abspath("samlogin.pem")} ./{s}/')
   
     # Setup cleaning:
