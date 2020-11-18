@@ -42,7 +42,7 @@ for plate in ss:
     # Setup cleaning:
     with(open(f"./{s}/00-run_cleaning.sh", 'w')) as outf:
         outf.write("\n#Build HTStream script\n")
-        cmd = f"python 01-build_hts.py {r1} {r2} {plate['Primers']} 01-runHTS.sh\n"
+        cmd = f"python3 01-build_hts.py {r1} {r2} {plate['Primers']} 01-runHTS.sh\n"
         outf.write(cmd)
         outf.write("\n#Run HTStream script\n")
         cmd = f"parallel -j {ncpu} < 01-runHTS.sh\n"
