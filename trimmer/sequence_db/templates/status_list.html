@@ -84,6 +84,7 @@ td.wrapok {
               'ajax': '/api/status_list/?format=datatables' + '&failure=' + failure + '&sample_name=' + sample_name  + '&search=' + search + '&concentration=' + concentration + '&volume=' + volume,
               'columns': [
                   {'data': 'entry', 'sortable': false},
+                  {'data': 'entry', 'sortable': false},
                   {'data': 'sample_name', 'sortable': false},
                   {'data': 'plate_location', 'sortable': false},
                   {'data': 'volume', 'sortable': false},
@@ -174,6 +175,8 @@ td.wrapok {
           <thead>
             <tr align="left">
               <th align="left" >mabid</th>
+              <th align="left" >category</th>
+
               <th align="left" >Sample Name</th>
               <th align="left" >Plate Location</th>
               <th align="left" >Volume</th>

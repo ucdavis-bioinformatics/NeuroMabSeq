@@ -616,7 +616,7 @@ def TrimmerEntryListView(request):
 
 
 
-@staff_member_required
+#@staff_member_required
 def TrimmerStatusListView(request):
     context = {}
 
@@ -722,9 +722,9 @@ class APIStatusListView(generics.ListAPIView):
     paginate_by = 10000
     paginate_by_param ='page_size' # Allow client to override, using `?page_size=xxx`.
 
-    filterset_fields = ['entry__mabid', 'sample_name', 'plate_location', 'volume', 'concentration', 'comments',
+    filterset_fields = ['entry__mabid', 'entry__category', 'sample_name', 'plate_location', 'volume', 'concentration', 'comments',
                         'failure', 'inline_index_name', 'inline_index', 'LCs_reported', 'HCs_reported']
-    search_fields = ['entry__mabid', 'sample_name', 'plate_location', 'volume', 'concentration', 'comments',
+    search_fields = ['entry__mabid',  'entry__category','sample_name', 'plate_location', 'volume', 'concentration', 'comments',
                         'failure', 'inline_index_name', 'inline_index', 'LCs_reported', 'HCs_reported']
     ordering_fields = '__all__'
 
