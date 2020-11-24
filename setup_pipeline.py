@@ -103,7 +103,7 @@ for plate in ss:
 
     #runProcessingf.write(f"echo {plate['plate']}\n")
     #runProcessingf.write(f"cd {os.path.abspath(s)}\n")
-    runProcessingf.write(f'bash {os.path.abspath(s)}/01_run_processing.sh\n')
+    runProcessingf.write(f'bash {os.path.abspath(s)}/01-run_processing.sh\n')
     #runProcessingf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")
 
     #slurmf.write(f"srun -t 1:0:0 -c {ncpu} -n 1 --mem 16000 --partition production -J {plate['plate']} --output slurmout " + f"./{s}/run_pipeline.sh\n")
