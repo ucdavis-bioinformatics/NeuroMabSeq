@@ -32,10 +32,12 @@ Pipeline:
         -Find some other way to only process new plates automatically.
             -This might be as simple as checking for 03-AnnotatedResults/{plate}_Sequences.tsv
     
-2) Use run_sequential.sh to run each plate on one server. 
-    Alternatively run the ./01-Processing/TRIMMER00NN/run_pipeline.sh script for any one plate.
+2) Run cleaning:
+    bash run_HTS.sh
 
-
-3) Generate an across-plate report:
+3) Run processing:
+    parallel < run_processing.sh
+    
+4) Generate an across-plate report:
     module load R/3.6.3
     Rscript -e "rmarkdown::render('./02-Reporting/analyze_plates.rmd')"

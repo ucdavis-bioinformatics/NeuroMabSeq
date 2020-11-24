@@ -168,7 +168,7 @@ zeroMatrix = function(m){
       }
   }
   
-  # Within each sample, compute an alignment and collapse ASV counts for sequences that are very similar.
+  # Within each sample, compute an alignment and zero ASV counts for sequences that are very similar.
   for(i in 1:nrow(m.zeroed)){
       #seqcounts = m.zeroed[i,m.zeroed[i,]>0]
       seqcounts = m.zeroed[i,]

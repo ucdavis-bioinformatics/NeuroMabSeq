@@ -16,6 +16,9 @@ ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
 runHTSf = open("run_HTS.sh", 'w')  # run HTS, this should be run sequentially
 runProcessingf = open("run_processing.sh", 'w')  # Run processing, can be run in parallel
 
+# Update the SampleSheet on the server:
+os.system("rsync -avz -e 'ssh -i samlogin.pem' ./NeuroMabSeq/SampleSheet.txt shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/")
+
 # Setup plates:
 for plate in ss:
     r1 = glob(f"./00-RawData/{plate['filePrefix']}*_R1_*")
@@ -41,11 +44,12 @@ for plate in ss:
   
     # Setup cleaning:
     with(open(f"./{s}/00-run_cleaning.sh", 'w')) as outf:
+        outf.write("tar \n")
         outf.write("\n#Build HTStream script\n")
-        cmd = f"python3 01-build_hts.py {r1} {r2} {plate['Primers']} 01-runHTS.sh\n"
+        cmd = f"python3 01-build_hts.py {r1} {r2} {plate['Primers']} 00-runHTS.sh\n"
         outf.write(cmd)
         outf.write("\n#Run HTStream script\n")
-        cmd = f"parallel -j {ncpu} < 01-runHTS.sh\n"
+        cmd = f"parallel -j {ncpu} < 00-runHTS.sh\n"
         outf.write(cmd)
         # Build a report of cleaning:
         outf.write("\n# Build a report of cleaning:\n")
@@ -57,46 +61,50 @@ for plate in ss:
     # Create scripts for processing pipeline
     with(open(f"./{s}/01-run_processing.sh", 'w')) as outf:
         outf.write("#Setup\n")
-        cmd = "aklog\n"
-        outf.write(cmd)
-        cmd = "module load R/3.6.1\n"
-        outf.write(cmd)
-        cmd = "module load hmmer/3.1b2\n"
-        outf.write(cmd)
-        cmd = "source /share/biocore/projects/Trimmer_James_UCD/2019.11.18-Trimmer-Hybridoma-Seq/ANARCI-venv/bin/activate\n"
-        outf.write(cmd)
+        outf.write(f"echo {plate['plate']}\n")
+        outf.write(f"cd {os.path.abspath(s)}\n")
+        outf.write("source /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/TrimmerConda/bin/activate\n")
+        #cmd = "aklog\n"
+        #outf.write(cmd)
+        #cmd = "module load R/3.6.1\n"
+        #outf.write(cmd)
+        #cmd = "module load hmmer/3.1b2\n"
+        #outf.write(cmd)
+        #cmd = "source /share/biocore/projects/Trimmer_James_UCD/2019.11.18-Trimmer-Hybridoma-Seq/ANARCI-venv/bin/activate\n"
+        #outf.write(cmd)
         # Build ASVs:
         outf.write("\n# Build ASVs:\n")
-        cmd = "module load R/3.6.1;"
+        #cmd = "module load R/3.6.1;"
         cmd += f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
         cmd += f"rmarkdown::render('./02-Results/02-Hybridoma-DADA2-analysis.RMD')\"\n"
         outf.write(cmd)
         # Use ANARCI to annotate results:
         outf.write("\n# Use ANARCI to annotate results:\n")
-        cmd = "source /share/biocore/projects/Trimmer_James_UCD/2019.11.18-Trimmer-Hybridoma-Seq/ANARCI-venv/bin/activate;"
+        #cmd = "source /share/biocore/projects/Trimmer_James_UCD/2019.11.18-Trimmer-Hybridoma-Seq/ANARCI-venv/bin/activate;"
         cmd += "python3 03-annotate-results.py\n"
         outf.write(cmd)
+        outf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")
         # Finally, upload results:
-        outf.write("\n# Upload results:\n")
-        dest = 'shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/'
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./03-AnnotatedResults/*.tsv {dest}AnnotatedResults\n"
-        outf.write(cmd)
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/*_SampleStatus.tsv {dest}StatusReports\n"
-        outf.write(cmd)
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./01-PrimerTrimReport/{s}_report.html {dest}HTML_Reports/{plate['plate']}_PrimerTrimReport.html\n"
-        outf.write(cmd)
-        cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/02-Hybridoma-DADA2-analysis.html {dest}HTML_Reports/{plate['plate']}_report.html\n"
-        outf.write(cmd)
+        #outf.write("\n# Upload results:\n")
+        #dest = 'shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/'
+        #cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./03-AnnotatedResults/*.tsv {dest}AnnotatedResults\n"
+        #outf.write(cmd)
+        #cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/*_SampleStatus.tsv {dest}StatusReports\n"
+        #outf.write(cmd)
+        #cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./01-PrimerTrimReport/{s}_report.html {dest}HTML_Reports/{plate['plate']}_PrimerTrimReport.html\n"
+        #outf.write(cmd)
+        #cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/02-Hybridoma-DADA2-analysis.html {dest}HTML_Reports/{plate['plate']}_report.html\n"
+        #outf.write(cmd)
 
     runHTSf.write(f"echo {plate['plate']}\n")
     runHTSf.write(f"cd {os.path.abspath(s)}\n")
     runHTSf.write('bash ./00-run_cleaning.sh\n')
     runHTSf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")
 
-    runProcessingf.write(f"echo {plate['plate']}\n")
-    runProcessingf.write(f"cd {os.path.abspath(s)}\n")
-    runProcessingf.write('bash ./01_run_processing.sh\n')
-    runProcessingf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")
+    #runProcessingf.write(f"echo {plate['plate']}\n")
+    #runProcessingf.write(f"cd {os.path.abspath(s)}\n")
+    runProcessingf.write(f'bash {os.path.abspath(s)}/01_run_processing.sh\n')
+    #runProcessingf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")
 
     #slurmf.write(f"srun -t 1:0:0 -c {ncpu} -n 1 --mem 16000 --partition production -J {plate['plate']} --output slurmout " + f"./{s}/run_pipeline.sh\n")
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./03-AnnotatedResults/*.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/AnnotatedResults/
