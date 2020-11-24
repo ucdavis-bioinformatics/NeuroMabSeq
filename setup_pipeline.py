@@ -81,7 +81,7 @@ for plate in ss:
         # Use ANARCI to annotate results:
         outf.write("\n# Use ANARCI to annotate results:\n")
         #cmd = "source /share/biocore/projects/Trimmer_James_UCD/2019.11.18-Trimmer-Hybridoma-Seq/ANARCI-venv/bin/activate;"
-        cmd += "python3 03-annotate-results.py\n"
+        cmd = "python3 03-annotate-results.py\n"
         outf.write(cmd)
         outf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")
         # Finally, upload results:
