@@ -19,6 +19,10 @@ runProcessingf = open("run_processing.sh", 'w')  # Run processing, can be run in
 # Update the SampleSheet on the server:
 os.system("rsync -avz -e 'ssh -i samlogin.pem' ./NeuroMabSeq/SampleSheet.txt shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/")
 
+# Setup all-plate reporting/aggregation:
+os.system(f'mkdir -p 02-Reporting')
+os.system(f'cp ./NeuroMabSeq/analyze_plates.rmd ./02-Reporting/')
+
 # Setup plates:
 for plate in ss:
     r1 = glob(f"./00-RawData/{plate['filePrefix']}*_R1_*")
@@ -74,7 +78,7 @@ for plate in ss:
         #outf.write(cmd)
         # Build ASVs:
         outf.write("\n# Build ASVs:\n")
-        #cmd = "module load R/3.6.1;"
+        cmd = "module load R/3.6.1;"
         cmd += f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
         cmd += f"rmarkdown::render('./02-Results/02-Hybridoma-DADA2-analysis.RMD')\"\n"
         outf.write(cmd)

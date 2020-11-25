@@ -38,6 +38,6 @@ Pipeline:
 3) Run processing:
     parallel < run_processing.sh
     
-4) Generate an across-plate report:
+4) Aggregate samples and generate an across-plate report:
     module load R/3.6.3
     Rscript -e "rmarkdown::render('./02-Reporting/analyze_plates.rmd')"

@@ -45,8 +45,8 @@ library(pheatmap)
 
 # Load plate data, both demux_stats AND SampleStatus:
 
-dscols = c("plate","Chain","SMARTindex","RawReads","ReadsWithPrimer","Aberrant_LC_reads",
-           "Qtrimmed","Overlapped","folder")
+dscols = c("plate","Chain","SMARTindex","RawReads","ReadsWithPrimer","Ga12HC","Ga3HC","LaLC","KaLC",
+           "Aberrant_LC_reads","ShortInsert","MediumInserts","LongInserts","Overlapped","LengthFiltered","folder")
 rscols = c("sample_name","plate_location","trimmer_id","volume","concentration",
            "comments","amplicon_concentration","lib_concentration","failure",
            "inline_index_name","inline_index","LCs.Reported","HCs.Reported") 
@@ -56,35 +56,30 @@ index_well = read.table("../NeuroMabSeq/SMARTindex_well.tsv", header=T, as.is=T)
 sampleMetaData = read.table("../NeuroMabSeq/metadata/alldata_master.tsv", header=T, as.is=T, sep='\t', comment.char='', quote='')
 plateMetaData = read.table("../NeuroMabSeq/SampleSheet.txt", header=T, as.is=T, sep='\t')
 
-smartcounts = data.frame()
+smartcounts = data.frame()  
 annotated = data.frame()
 asvcounts = data.frame()
-for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
+#for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
+for(plate in plateMetaData$plate){
     cat(paste0(plate,'\n'))
     #Load demux stats. There are two entires per well:
     ds = read.table(paste0('../01-Processing/', plate, '/01-PrimerTrimReport/demux_stats.tsv'), as.is=T, header=T, sep='\t')
     ds$folder = plate
     ds$plate_location = index_well$well[match(ds$SMARTindex, index_well$index_name)]
 
-    #Load SampleStatus. There is one entry per well:
+    #Load DADA2 SampleStatus. There is one entry per well:
     rsf = dir(paste0("../01-Processing/", plate, '/02-Results/'), pattern="*_SampleStatus.tsv", full.names=T)[1]
     rs = read.table(rsf, as.is=T, sep='\t', header=T)
-
-    # if(plate == 'TRIMMER0005'){
-    #     rs$inline_index_name = rs$index_name
-    # }
 
     # Some plates have slightly different annotation and column names:
     if(!("lib_concentration" %in% colnames(rs))){
         rs$lib_concentration = NA
     }
 
-    #Break if there are problems with import:
-    #stopifnot(ds$SMARTindex %in% rs$inline_index_name)
-    #combined = data.frame(ds[,dscols], rs[match(ds$SMARTindex, rs$inline_index_name), rscols])
+    # Create a combined set that is demultiplexed + DADA2 results
     combined = data.frame(ds[,dscols], rs[match(ds$plate_location, rs$plate_location), rscols])
     
-    # smartcounts has two entries per well, one for H and one for L
+    # smartcounts has multiple entries per well, one for H and one for L in "normal" cases
     smartcounts = rbind(smartcounts, combined)
 
     #Load Annotated Results:
@@ -110,15 +105,42 @@ for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
     df[is.na(df)] = 0
     asvcounts = rbind(asvcounts, df)
 }
-smartcounts_backup = smartcounts
+
+#smartcounts_backup = smartcounts
+
+### # Attach updated metadata and filter sequences that could not be annotated ###
+if(any(!(annotated$Sample_Name %in% sampleMetaData$sample_name))){
+    cat("ERROR: Annotated results have Sample_Names that are missing from metadata file.")
+}
+annotated$MabID = sampleMetaData$trimmer_id[match(annotated$Sample_Name, sampleMetaData$sample_name)]
+annotated$Category = sampleMetaData$Category[match(annotated$Sample_Name, sampleMetaData$sample_name)]
+annotated$ShowOnWeb = sampleMetaData$ShowOnWeb[match(annotated$Sample_Name, sampleMetaData$sample_name)]
+annotated$ProteinTarget = sampleMetaData$ProteinTarget[match(annotated$Sample_Name, sampleMetaData$sample_name)]
+
+# Write out filtered Annotated sequences for Web Page.
+annotated.filtered = annotated[annotated$chain_type != '-', ]
+write.table(annotated.filtered, row.names=F, col.names=T, sep='\t', quote=F, 
+    file=paste0(format(Sys.time(), "%Y-%m-%d"), "-Aggregated_Sequences.tsv"))
+######
 
 
 # Calculate some statistics for plotting:
 smartcounts$pctReadsWPrimer = 100 * smartcounts$ReadsWithPrimer/(smartcounts$RawReads + 1)
 smartcounts$pctOverlapped = 100 * smartcounts$Overlapped/(smartcounts$ReadsWithPrimer + 1)
+smartcounts$pctLengthFiltered = 100 * smartcounts$LengthFiltered/(smartcounts$ReadsWithPrimer + 1)
 smartcounts$NonAberrantReads = smartcounts$ReadsWithPrimer - smartcounts$Aberrant_LC_reads
+
+# Replace NAs
 smartcounts$LCs.Reported[is.na(smartcounts$LCs.Reported )] = 0
 smartcounts$HCs.Reported[is.na(smartcounts$HCs.Reported )] = 0
+
+# Calculate reads Annotated:
+tmp = as.data.frame.matrix(table(annotated.filtered$Sample_Name, annotated.filtered$Chain))
+idx = match(smartcounts$sample_name, rownames(tmp))
+smartcounts$LCs.Annotated = tmp$LC[idx]
+smartcounts$LCs.Annotated[is.na(smartcounts$LCs.Annotated)] = 0
+smartcounts$HCs.Annotated = tmp$HC[idx]
+smartcounts$HCs.Annotated[is.na(smartcounts$HCs.Annotated)] = 0
 
 # Get corrected trimmer_id (MabID)
 smartcounts$Original.trimmer_id = smartcounts$trimmer_id
@@ -126,11 +148,6 @@ smartcounts$trimmer_id = sampleMetaData$trimmer_id[match(smartcounts$sample_name
 
 # Add the sampleMetaData Category:
 smartcounts$Category = sampleMetaData$Category[match(smartcounts$sample_name, sampleMetaData$sample_name)]
-
-# Set correted trimmer_id (MabID) for annotated file:
-annotated$Original.MabID = annotated$MabID
-annotated$MabID = sampleMetaData$trimmer_id[match(annotated$Sample_Name, sampleMetaData$sample_name)]
-
 
 # Add sequence data info:
 smartcounts = data.frame(smartcounts, plateMetaData[match(smartcounts$plate, plateMetaData$plate), c("SeqYear", "SeqMonth", "SeqDay")])
@@ -149,6 +166,8 @@ smartcounts$SampleType[grep("negative|blank|empty|neagtive", smartcounts$trimmer
 ## 10-REV-HC1 is supposed to amplify Gamma1,2, but example sequences from ANARCI labeled Gamma1,2 are labeled as "G", so it isn't clear to me which of the two targets the two primers amplify.
 ## There are 5 types of heavy chain, https://en.wikipedia.org/wiki/Immunoglobulin_heavy_chain. Of the iGG class, IgG1 is most common (66%), IgG2 is second (23%): https://en.wikipedia.org/wiki/Immunoglobulin_G.
 
+## 2020-11-25: It doesn't seem to matter which primer amplifies the heavy chain, ANARCI always reports a type "H", and never a type "G"
+
 tbann = table(annotated$Sample_Name, annotated$chain_type)
 idx = match(rownames(tbann), smartcounts$sample_name)
 
@@ -163,11 +182,13 @@ if('G' %in% colnames(tbann)){smartcounts$HC.G.Called[idx] = tbann[,'G']}
 
 save(smartcounts, annotated, file="smartcounts_annotated.RData")
 
+# smartcounts[smartcounts$Chain=='H' & smartcounts$Ga3HC > smartcounts$Ga12HC, 
+#         c("sample_name","Ga12HC","Ga3HC","LaLC","KaLC","LCs.Reported","HCs.Reported","LC.K.Called","LC.L.Called","HC.H.Called","HC.G.Called")]
 
 # Write some tables of failed samples using different criteria:
 
 # Write all samples:
-write.table(smartcounts, file="All_plates_read_counts.tsv", row.names=F, col.names=T, sep='\t')
+write.table(smartcounts, file="All_plates_read_counts_statistics.tsv", row.names=F, col.names=T, sep='\t')
 
 # Write controls:
 control_samples = smartcounts[smartcounts$SampleType %in% c("PositiveControl", "NegativeControl"), ]
@@ -192,11 +213,12 @@ Funding periods
 
 Within each of the above date ranges, report a count of:
     1) total number of monoclonal hybridomas sequenced
-    2) how many of these yielded only one heavy and one light chain sequence
+    2) how many of these yielded only one heavy and one light chain sequence (as annotated by ANARCI)
     3) how many of these had more than one heavy or light chain (or both)
     4) total number of oligoclonal/parent hybridomas sequenced
 
 ```{r s000.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
+### Setup some summary data for the next few tables
 # Calculate samples processed by year and associated stats:
 ndup = smartcounts[!duplicated(smartcounts$sample_name), ]
 
@@ -221,14 +243,25 @@ ndup$yidx = yidx
 # YieldCategory[(ndup$LCs.Reported > 0 & ndup$HCs.Reported > 0) & (ndup$LCs.Reported > 1 | ndup$HCs.Reported > 1)] = 'LC>1 or HC>1 (both > 0)'
 
 # Set up index for yield category for ANNOTATED sequences
+# YieldCategory = rep("NA", nrow(ndup))
+# YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 0] = 'LC=0 and HC=0' 
+# YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 1] = 'LC=1 and HC=1' 
+# YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 1] = 'LC=0 and HC=1' 
+# YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 0] = 'LC=1 and HC=0' 
+# YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called > 1] = 'LC=0 and HC>1' 
+# YieldCategory[ndup$LC.K.Called > 1 & ndup$HC.H.Called == 0] = 'LC>1 and HC=0' 
+# YieldCategory[(ndup$LC.K.Called > 0 & ndup$HC.H.Called > 0) & (ndup$LC.K.Called > 1 | ndup$HC.H.Called > 1)] = 'LC>1 or HC>1 (both > 0)'
+
+# Set up index for yield category for ANNOTATED sequences
 YieldCategory = rep("NA", nrow(ndup))
-YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 0] = 'LC=0 and HC=0' 
-YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 1] = 'LC=1 and HC=1' 
-YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 1] = 'LC=0 and HC=1' 
-YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 0] = 'LC=1 and HC=0' 
-YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called > 1] = 'LC=0 and HC>1' 
-YieldCategory[ndup$LC.K.Called > 1 & ndup$HC.H.Called == 0] = 'LC>1 and HC=0' 
-YieldCategory[(ndup$LC.K.Called > 0 & ndup$HC.H.Called > 0) & (ndup$LC.K.Called > 1 | ndup$HC.H.Called > 1)] = 'LC>1 or HC>1 (both > 0)'
+YieldCategory[ndup$LCs.Annotated == 0 & ndup$HCs.Annotated == 0] = 'LC=0 and HC=0' 
+YieldCategory[ndup$LCs.Annotated == 1 & ndup$HCs.Annotated == 1] = 'LC=1 and HC=1' 
+YieldCategory[ndup$LCs.Annotated == 0 & ndup$HCs.Annotated == 1] = 'LC=0 and HC=1' 
+YieldCategory[ndup$LCs.Annotated == 1 & ndup$HCs.Annotated == 0] = 'LC=1 and HC=0' 
+YieldCategory[ndup$LCs.Annotated == 0 & ndup$HCs.Annotated > 1] = 'LC=0 and HC>1' 
+YieldCategory[ndup$LCs.Annotated > 1 & ndup$HCs.Annotated == 0] = 'LC>1 and HC=0' 
+YieldCategory[(ndup$LCs.Annotated > 0 & ndup$HCs.Annotated > 0) & (ndup$LCs.Annotated > 1 | ndup$HCs.Annotated > 1)] = 'LC>1 or HC>1 (both > 0)'
+
 
 ndup$YieldCategory = YieldCategory
 
@@ -261,6 +294,7 @@ kable(tb) %>%
 Values are number of samples that fall within each category.
 
 Note that these categories were generated using the number of sequences identified in each sample where [ANARCI](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci/) could categorize the resulting sequence and predict domains.
+
 
 ```{r t002.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
 tb = table(ndup$YieldCategory, ndup$SampleType)[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
@@ -306,9 +340,10 @@ kable(tb) %>%
 ```
 
 **Usable as is oligoclonal samples:**
+These are samples that were originally flagged as likely to be oligoclonal, but produced only a single HC and LC, suggesting that they are probably monoclonal.
 
 ```{r t002.3.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
-tb = ndup[ndup$SampleType == 'oligoclonal' & ndup$YieldCategory == 'LC=1 and HC=1',c("sample_name","trimmer_id", "Category", 'LCs.Reported', 'HCs.Reported', 'LC.K.Called',"HC.H.Called")]
+tb = ndup[ndup$SampleType == 'oligoclonal' & ndup$YieldCategory == 'LC=1 and HC=1',c("sample_name","trimmer_id", "Category", 'LCs.Annotated', 'HCs.Annotated', 'LC.K.Called',"HC.H.Called")]
 
 kable(tb) %>%
   kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
@@ -331,7 +366,11 @@ kable(tb) %>%
 #### Year 2: Summarized sequences (ASVs) identified per sample
 
 ```{r t004.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
-tb = table(YieldCategory[yidx=='Year2'], ndup$SampleType[yidx=='Year2'])[c("LC=0 and HC=0","LC=0 and HC=1", "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
+tb = as.data.frame.matrix(table(YieldCategory[yidx=='Year2'], ndup$SampleType[yidx=='Year2']))[c("LC=0 and HC=0","LC=0 and HC=1", 
+        "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)"), c("monoclonal","oligoclonal","PositiveControl","NegativeControl")]
+rownames(tb) = c("LC=0 and HC=0","LC=0 and HC=1", 
+        "LC=1 and HC=0", "LC=0 and HC>1", "LC>1 and HC=0", "LC=1 and HC=1", "LC>1 or HC>1 (both > 0)")
+tb[is.na(tb)] = 0
 
 kable(tb) %>%
   kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
