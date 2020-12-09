@@ -21,7 +21,7 @@ os.system('mkdir -p 01-PrimerTrim')
 
 outf = open(cmdf, 'w')
 
-htspath = "../../HTStream/"
+htspath = "../../TrimmerConda/bin/"
 
 i=0
 for l in open(primerf, 'r'):

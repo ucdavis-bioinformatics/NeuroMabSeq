@@ -16,7 +16,7 @@ Folder Structure:
 
 
 Pipeline:
-    SampleSheet.txt is a 7 column Comma Separated Values file that defines the plates, primers used, and when sequencing was done (for reporting). Only plates in this sheet will be processed.
+    SampleSheet.tsv is a 7 column Tab Separated Values file that defines the plates, primers used, and when sequencing was done (for reporting). Only plates in this sheet will be processed.
     Columns are:
         filePrefix - prefix for the fastq files - formatting varies depending on DNA Tech Core naming
         plate: consistent naming (TRIMMER00NN_PNN) for output plates and associated tables.
@@ -39,17 +39,18 @@ Pipeline:
 
 
 # 0) Activate the Conda environment, R and gcc modules, and set RLib:
-module load R/4.0.1
+module load R/3.6.3
 module load gcc/8.2.0
-export R_LIBS_SITE=/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib
+export R_LIBS_SITE=/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.3
 source TrimmerConda/bin/activate
 
 # 1) Setup the pipeline, note that symlinks will fail for plates that have already been processed 
 python3 NeuroMabSeq/setup_pipeline.py
 
     
-# 2) Run cleaning:
-bash run_HTS.sh
+# 2) Run cleaning, uncomment for all plates:
+#bash run_All_HTS.sh
+bash run_New_HTS.sh
 
 # 3) Run processing:
 parallel -j 10 < run_processing.sh
