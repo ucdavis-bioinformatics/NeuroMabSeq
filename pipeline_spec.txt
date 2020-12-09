@@ -41,7 +41,6 @@ Pipeline:
 # 0) Activate the Conda environment, R and gcc modules, and set RLib:
 module load R/3.6.1
 #module load gcc/8.2.0
-export R_LIBS_SITE=/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1
 source TrimmerConda/bin/activate
 
 # 1) Setup the pipeline, note that symlinks will fail for plates that have already been processed 

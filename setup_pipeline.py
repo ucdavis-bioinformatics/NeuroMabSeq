@@ -53,7 +53,6 @@ for plate in ss:
   
     # Setup cleaning:
     with(open(f"./{s}/00-run_cleaning.sh", 'w')) as outf:
-        outf.write("tar \n")
         outf.write("\n#Build HTStream script\n")
         cmd = f"python3 01-build_hts.py {r1} {r2} {plate['Primers']} 00-runHTS.sh\n"
         outf.write(cmd)
@@ -63,8 +62,8 @@ for plate in ss:
         # Build a report of cleaning:
         outf.write("\n# Build a report of cleaning:\n")
         #cmd = f"module load R/3.6.1;"
-        cmd += f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
-        cmd += ".libPaths('./share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1');"
+        cmd = f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
+        cmd += ".libPaths('/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1');"
         cmd += f"rmarkdown::render('./01-PrimerTrimReport/{plate['plate']}_report.RMD')\"\n"
         outf.write(cmd)
     
@@ -73,7 +72,7 @@ for plate in ss:
         outf.write("#Setup\n")
         outf.write(f"echo {plate['plate']}\n")
         outf.write(f"cd {os.path.abspath(s)}\n")
-        outf.write("source /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/TrimmerConda/bin/activate\n")
+        #outf.write("source /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/TrimmerConda/bin/activate\n")
         #cmd = "aklog\n"
         #outf.write(cmd)
         #cmd = "module load R/3.6.1\n"
@@ -85,8 +84,8 @@ for plate in ss:
         # Build ASVs:
         outf.write("\n# Build ASVs:\n")
         #cmd = "module load R/3.6.1;"
-        cmd += f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
-        cmd += ".libPaths('./share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1');"
+        cmd = f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
+        cmd += ".libPaths('/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1');"
         cmd += f"rmarkdown::render('./02-Results/02-Hybridoma-DADA2-analysis.RMD')\"\n"
         outf.write(cmd)
         # Use ANARCI to annotate results:
