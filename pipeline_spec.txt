@@ -12,10 +12,11 @@ Folder Structure:
     02-Reporting - contains across-runs analysis results and aggregated file file.
     ProcessAddGene - contains scripts for downloading and annotating AddGene sequences
     NeuroMabSeq - contains a clone of the NeuroMabSeq repo, with pipeline checkout.
+    TrimmerConda - contains ANARCI and some Python modules as well as HTStream v1.3.3
 
 
 Pipeline:
-    SampleSheet.txt is a 7 column file that defines the plates, primers used, and when sequencing was done (for reporting). 
+    SampleSheet.txt is a 7 column Comma Separated Values file that defines the plates, primers used, and when sequencing was done (for reporting). Only plates in this sheet will be processed.
     Columns are:
         filePrefix - prefix for the fastq files - formatting varies depending on DNA Tech Core naming
         plate: consistent naming (TRIMMER00NN_PNN) for output plates and associated tables.
@@ -30,14 +31,18 @@ Pipeline:
 # Pre-Reqs:
 1) COPY new data from /share/illumina/miseq/<run folder>/*.fastq.gz to 
     /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/00-RawData
-2) Update the NeuroMabSeq/SampleSheet.txt to add the appropriate prefix, TRIMMER00NN_PNN, and submission system links.
+
+2) Update the NeuroMabSeq/SampleSheet.txt to add the appropriate prefix, TRIMMER00NN_PNN, and submission system ID.
     Commit and push changes.
+    cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/NeuroMabSeq
+    git pull
 
 
-# 0) Activate the Conda environment:
+# 0) Activate the Conda environment, R and gcc modules, and set RLib:
 module load R/4.0.1
-source TrimmerConda/bin/activate
+module load gcc/8.2.0
 export R_LIBS_SITE=/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib
+source TrimmerConda/bin/activate
 
 # 1) Setup the pipeline, note that symlinks will fail for plates that have already been processed 
 python3 NeuroMabSeq/setup_pipeline.py

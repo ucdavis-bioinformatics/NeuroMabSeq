@@ -16,7 +16,7 @@ ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
 runAllHTSf = open("run_All_HTS.sh", 'w')  # run HTS, this should be run sequentially
 runNewHTSf = open("run_New_HTS.sh", 'w')  # run HTS, this should be run sequentially
 
-runProcessingf = open("run_All_processing.sh", 'w')  # Run processing, can be run in parallel
+runAllProcessingf = open("run_All_processing.sh", 'w')  # Run processing, can be run in parallel
 runNewProcessingf = open("run_New_processing.sh", 'w')  # Run processing, can be run in parallel
 
 # Update the SampleSheet on the server:
@@ -114,7 +114,7 @@ for plate in ss:
         runNewHTSf.write(cmd)
 
     # Write processing commands:
-    cmd = f'bash {os.path.abspath(s)}/01-run_processing.sh\n\n'
+    cmd = f'bash {os.path.abspath(s)}/01-run_processing.sh\n'
     runAllProcessingf.write(cmd)
     if not os.path.exists(os.path.abspath(os.path.join(s, '03-AnnotatedResults', plate['plate'] + '_Sequences.tsv'))):
         runNewProcessingf.write(cmd)
