@@ -62,8 +62,9 @@ for plate in ss:
         outf.write(cmd)
         # Build a report of cleaning:
         outf.write("\n# Build a report of cleaning:\n")
-        cmd = f"module load R/3.6.1;"
+        #cmd = f"module load R/3.6.1;"
         cmd += f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
+        cmd += ".libPaths('./share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1');"
         cmd += f"rmarkdown::render('./01-PrimerTrimReport/{plate['plate']}_report.RMD')\"\n"
         outf.write(cmd)
     
@@ -83,8 +84,9 @@ for plate in ss:
         #outf.write(cmd)
         # Build ASVs:
         outf.write("\n# Build ASVs:\n")
-        cmd = "module load R/3.6.1;"
+        #cmd = "module load R/3.6.1;"
         cmd += f"Rscript -e \"plate='{plate['plate']}';submission='{plate['submissionID']}';"
+        cmd += ".libPaths('./share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1');"
         cmd += f"rmarkdown::render('./02-Results/02-Hybridoma-DADA2-analysis.RMD')\"\n"
         outf.write(cmd)
         # Use ANARCI to annotate results:
