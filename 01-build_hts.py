@@ -42,6 +42,6 @@ for l in open(primerf, 'r'):
         cmd += f"{htspath}hts_SeqScreener -C -r -x .01 -k 21 -s aberrant_LC.fasta -A {logf} | "
         cmd += f"{htspath}hts_QWindowTrim -l -q 10 -A {logf} | "
         cmd += f"{htspath}hts_Overlapper -A {logf} | " 
-        cmd += f"{htspath}hts_LengthFilter -m 385 -A {logf} -f {prefix}\n"
+        cmd += f"{htspath}hts_LengthFilter -m 385 -A {logf} -F -f {prefix}\n"
         outf.write(cmd)
 outf.close()
