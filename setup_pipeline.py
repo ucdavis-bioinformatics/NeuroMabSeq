@@ -8,7 +8,7 @@ from glob import glob
 ncpu = 30
 
 # Read in SampleSheet:
-ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
+ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.tsv", 'r'), delimiter='\t')
 
 # Submit jobs for all pipelines:
 #slurmf = open("submit_slurm.sh", 'w')
@@ -29,6 +29,7 @@ os.system(f'cp ./NeuroMabSeq/analyze_plates.rmd ./02-Reporting/')
 
 # Setup plates:
 for plate in ss:
+    print(plate['plate'])
     r1 = glob(f"./00-RawData/{plate['filePrefix']}*_R1_*")
     assert len(r1) == 1, f"ERROR: plate['filePrefix'] matches more than one file."
     r1 = r1[0]
