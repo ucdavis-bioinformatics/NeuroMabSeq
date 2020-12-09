@@ -5,7 +5,7 @@ import csv
 from glob import glob
 
 # Constants:
-ncpu = 47
+ncpu = 30
 
 # Read in SampleSheet:
 ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
@@ -13,11 +13,15 @@ ss = csv.DictReader(open("./NeuroMabSeq/SampleSheet.txt", 'r'), delimiter='\t')
 # Submit jobs for all pipelines:
 #slurmf = open("submit_slurm.sh", 'w')
 #runf = open("run_sequential.sh", 'w')
-runHTSf = open("run_HTS.sh", 'w')  # run HTS, this should be run sequentially
-runProcessingf = open("run_processing.sh", 'w')  # Run processing, can be run in parallel
+runAllHTSf = open("run_All_HTS.sh", 'w')  # run HTS, this should be run sequentially
+runNewHTSf = open("run_New_HTS.sh", 'w')  # run HTS, this should be run sequentially
+
+runProcessingf = open("run_All_processing.sh", 'w')  # Run processing, can be run in parallel
+runNewProcessingf = open("run_New_processing.sh", 'w')  # Run processing, can be run in parallel
 
 # Update the SampleSheet on the server:
-os.system("rsync -avz -e 'ssh -i samlogin.pem' ./NeuroMabSeq/SampleSheet.txt shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/")
+runAllProcessingf.write("rsync -avz -e 'ssh -i samlogin.pem' ./NeuroMabSeq/SampleSheet.txt shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/\n")
+runNewProcessingf.write("rsync -avz -e 'ssh -i samlogin.pem' ./NeuroMabSeq/SampleSheet.txt shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/\n")
 
 # Setup all-plate reporting/aggregation:
 os.system(f'mkdir -p 02-Reporting')
@@ -100,14 +104,23 @@ for plate in ss:
         #cmd = f"rsync -avz -e 'ssh -i samlogin.pem' ./02-Results/02-Hybridoma-DADA2-analysis.html {dest}HTML_Reports/{plate['plate']}_report.html\n"
         #outf.write(cmd)
 
-    runHTSf.write(f"echo {plate['plate']}\n")
-    runHTSf.write(f"cd {os.path.abspath(s)}\n")
-    runHTSf.write('bash ./00-run_cleaning.sh\n')
-    runHTSf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")
+    # Write cleaning commands:
+    cmd = f"echo {plate['plate']}\n"
+    cmd += f"cd {os.path.abspath(s)}\n"
+    cmd += 'bash ./00-run_cleaning.sh\n'
+    cmd += "cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n"
+    runAllHTSf.write(cmd)
+    if not os.path.exists(os.path.abspath(os.path.join(s, '03-AnnotatedResults', plate['plate'] + '_Sequences.tsv'))):
+        runNewHTSf.write(cmd)
+
+    # Write processing commands:
+    cmd = f'bash {os.path.abspath(s)}/01-run_processing.sh\n\n'
+    runAllProcessingf.write(cmd)
+    if not os.path.exists(os.path.abspath(os.path.join(s, '03-AnnotatedResults', plate['plate'] + '_Sequences.tsv'))):
+        runNewProcessingf.write(cmd)
 
     #runProcessingf.write(f"echo {plate['plate']}\n")
     #runProcessingf.write(f"cd {os.path.abspath(s)}\n")
-    runProcessingf.write(f'bash {os.path.abspath(s)}/01-run_processing.sh\n')
     #runProcessingf.write("cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing\n\n")
 
     #slurmf.write(f"srun -t 1:0:0 -c {ncpu} -n 1 --mem 16000 --partition production -J {plate['plate']} --output slurmout " + f"./{s}/run_pipeline.sh\n")
@@ -115,4 +128,9 @@ for plate in ss:
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./02-Results/*_SampleStatus.tsv bioshare@bioshare.bioinformatics.ucdavis.edu:/3ksenvfdffie3aj/StatusReports/
     #rsync -vrt --no-p --no-g --chmod=ugo=rwX ./02-Results/02-Hybridoma-DADA2-analysis.html  bioshare@bioshare.bioinformatics.ucdavis.edu:'/3ksenvfdffie3aj/HTML_Reports/'$plate'_report.html'
     #ssh -i ~/.ssh/samlogin.pem shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com
-#slurmf.close()
+    #slurmf.close()
+
+runAllHTSf.close()
+runNewHTSf.close()
+runAllProcessingf.close()
+runNewProcessingf.close()
