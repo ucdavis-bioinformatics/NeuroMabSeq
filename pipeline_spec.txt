@@ -15,17 +15,18 @@ Folder Structure:
     TrimmerConda - contains ANARCI and some Python modules as well as HTStream v1.3.3
     metadata - contains Belvin's metadata spreadsheets. The most recent should be saved as a TSV and symlinked to "alldata_master.tsv"
 
+Key Files:
+    TSO_demux_primers.csv - Contains a list of sample-specific primers, there should be 2x96 of these.
 
-Pipeline:
     SampleSheet.tsv is a 7 column Tab Separated Values file that defines the plates, primers used, and when sequencing was done (for reporting). Only plates in this sheet will be processed.
-    Columns are:
-        filePrefix - prefix for the fastq files - formatting varies depending on DNA Tech Core naming
-        plate: consistent naming (TRIMMER00NN_PNN) for output plates and associated tables.
-        submissionID: contains the ID the submission system uses, this should be 12 random digits
-        Primers: contains the name of the primer definition to use for demultiplexing and trimming.
-        SeqYear: Year plate was sequenced
-        SeqMonth: Month plate was sequenced
-        SeqDay: Day plate was sequenced
+        Columns are:
+            filePrefix - prefix for the fastq files - formatting varies depending on DNA Tech Core naming
+            plate: consistent naming (TRIMMER00NN_PNN) for output plates and associated tables.
+            submissionID: contains the ID the submission system uses, this should be 12 random digits
+            Primers: contains the name of the primer definition to use for demultiplexing and trimming.
+            SeqYear: Year plate was sequenced
+            SeqMonth: Month plate was sequenced
+            SeqDay: Day plate was sequenced
 
 ############ Running the pipeline #############
 
@@ -39,31 +40,35 @@ Pipeline:
     git pull
 
 
-# 0) Activate the Conda environment, R and gcc modules, and set RLib:
-module load R/3.6.1
-#module load gcc/8.2.0
-source TrimmerConda/bin/activate
-export R_LIBS_SITE="/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1"
-cp ./NeuroMabSeq/analyze_plates.rmd ./02-Reporting/
+3) Activate the Conda environment, R and gcc modules, and set RLib:
+    cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing
+    module load R/3.6.1
+    #module load gcc/8.2.0
+    source TrimmerConda/bin/activate
+    export R_LIBS_SITE="/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1"
+    cp ./NeuroMabSeq/analyze_plates.rmd ./02-Reporting/
 
-# 1) Setup the pipeline, note that symlinks will fail for plates that have already been processed 
-python3 NeuroMabSeq/setup_pipeline.py
+4) Setup the pipeline, note that symlinks will fail for plates that have already been processed 
+    cd /share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing
+    python3 NeuroMabSeq/setup_pipeline.py
 
     
-# 2) Run cleaning, uncomment for all plates:
-#bash run_All_HTS.sh
-bash run_New_HTS.sh
+5) Run cleaning with HTStream, uncomment for all plates:
+    #bash run_All_HTS.sh
+    bash run_New_HTS.sh
 
-# 3) Run processing:
-parallel -j 10 < run_New_processing.sh
+6) Run DADA2 and ANACRI processing:
+
+    parallel -j 10 < run_New_processing.sh
 
 
-# 4) Aggregate samples and generate an across-plate report:
+7) Aggregate samples and generate an across-plate report:
     module load R/3.6.3
-    Rscript -e "rmarkdown::render('./02-Reporting/analyze_plates.rmd')"
+    Rscript -e ".libPaths('/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1');rmarkdown::render('./02-Reporting/analyze_plates.rmd')"
 
 
-# 5) Rsync combined results file to server:
-rsync -vz -e 'ssh -i samlogin.pem' ./02-Reporting/*-Aggregated_Sequences.tsv shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/AnnotatedResults/
+8) Rsync combined results file to server:
+    rsync -vz -e 'ssh -i samlogin.pem' ./02-Reporting/*-Aggregated_Sequences.tsv shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/AnnotatedResults/
 
 
+9) Provide the contents of the 02-Reporting folder to Trimmer lab for followup analysis

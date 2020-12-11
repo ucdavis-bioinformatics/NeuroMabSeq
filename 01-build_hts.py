@@ -37,7 +37,6 @@ for l in open(primerf, 'r'):
         prefix = './01-PrimerTrim/' + sample
         cmd =  f"nice -n1 {htspath}hts_Primers -d 0 -l 0 -e 0 -r 2 -x -P {l2[header.index('TSOBarcode')]}"
         cmd += f" -Q {l2[header.index('TargetSpecificPrimers')]} -1 {r1} -2  {r2} -L {logf} | "
-        #cmd += f"{htspath}hts_Primers -d 4 -l 0 -e 0 -r 1 -P {l2[header.index('TSOAdapter')]} -A {logf} | "
         cmd += f"{htspath}hts_NTrimmer -e -A {logf} | "
         cmd += f"{htspath}hts_SeqScreener -C -r -x .01 -k 21 -s aberrant_LC.fasta -A {logf} | "
         cmd += f"{htspath}hts_QWindowTrim -l -q 10 -A {logf} | "
