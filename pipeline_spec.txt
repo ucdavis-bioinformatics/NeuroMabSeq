@@ -13,6 +13,7 @@ Folder Structure:
     ProcessAddGene - contains scripts for downloading and annotating AddGene sequences
     NeuroMabSeq - contains a clone of the NeuroMabSeq repo, with pipeline checkout.
     TrimmerConda - contains ANARCI and some Python modules as well as HTStream v1.3.3
+    metadata - contains Belvin's metadata spreadsheets. The most recent should be saved as a TSV and symlinked to "alldata_master.tsv"
 
 
 Pipeline:
@@ -42,6 +43,8 @@ Pipeline:
 module load R/3.6.1
 #module load gcc/8.2.0
 source TrimmerConda/bin/activate
+export R_LIBS_SITE="/share/biocore/projects/Trimmer_James_UCD/Hybridoma-Seq-Processing/Rlib.3.6.1"
+cp ./NeuroMabSeq/analyze_plates.rmd ./02-Reporting/
 
 # 1) Setup the pipeline, note that symlinks will fail for plates that have already been processed 
 python3 NeuroMabSeq/setup_pipeline.py
@@ -52,11 +55,15 @@ python3 NeuroMabSeq/setup_pipeline.py
 bash run_New_HTS.sh
 
 # 3) Run processing:
-parallel -j 10 < run_processing.sh
+parallel -j 10 < run_New_processing.sh
 
 
 # 4) Aggregate samples and generate an across-plate report:
     module load R/3.6.3
     Rscript -e "rmarkdown::render('./02-Reporting/analyze_plates.rmd')"
 
+
 # 5) Rsync combined results file to server:
+rsync -vz -e 'ssh -i samlogin.pem' ./02-Reporting/*-Aggregated_Sequences.tsv shunter@ec2-54-177-200-140.us-west-1.compute.amazonaws.com:/home/shunter/data/AnnotatedResults/
+
+

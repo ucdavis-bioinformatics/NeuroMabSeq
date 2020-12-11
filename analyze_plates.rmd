@@ -36,17 +36,18 @@ options(stringsAsFactors=F)
 library(pheatmap)
 ```
 
-
 ### NOTE: only the plates in the following list are included in this report.
-
 
 ```{r Load Data, echo=FALSE}
 ### Setup File and Sample Names
 
 # Load plate data, both demux_stats AND SampleStatus:
 
+# Columns for demultplex stats data frame
 dscols = c("plate","Chain","SMARTindex","RawReads","ReadsWithPrimer","Ga12HC","Ga3HC","LaLC","KaLC",
            "Aberrant_LC_reads","ShortInsert","MediumInserts","LongInserts","Overlapped","LengthFiltered","folder")
+
+# Columns for DADA2 results file 
 rscols = c("sample_name","plate_location","trimmer_id","volume","concentration",
            "comments","amplicon_concentration","lib_concentration","failure",
            "inline_index_name","inline_index","LCs.Reported","HCs.Reported") 
@@ -54,12 +55,18 @@ rscols = c("sample_name","plate_location","trimmer_id","volume","concentration",
 index_well = read.table("../NeuroMabSeq/SMARTindex_well.tsv", header=T, as.is=T)
 
 sampleMetaData = read.table("../NeuroMabSeq/metadata/alldata_master.tsv", header=T, as.is=T, sep='\t', comment.char='', quote='')
-plateMetaData = read.table("../NeuroMabSeq/SampleSheet.txt", header=T, as.is=T, sep='\t')
+plateMetaData = read.table("../NeuroMabSeq/SampleSheet.tsv", header=T, as.is=T, sep='\t')
 
-smartcounts = data.frame()  
-annotated = data.frame()
-asvcounts = data.frame()
-#for(plate in dir("../01-Processing/", pattern='^TRIMMER0')){
+# Load Sanger data:
+SangerData = read.table('../NeuroMabSeq/ProcessAddGene/03-AnnotatedResults/Sanger_samples_Sequences.tsv', header=T, as.is=T, sep='\t')
+
+# Load R&D Data:
+RDData = read.table("../NeuroMabSeq/RandDResults/TRIMMER0000_PRnD_Sequences.tsv", header=T, as.is=T, sep='\t')
+
+# Load and combine data from all of the plates:
+smartcounts = data.frame()  # Contains results for every well
+annotated = data.frame()  # Contains results from ANARCI.
+asvcounts = data.frame()  # Contains counts and stats for ASVs per sample
 for(plate in plateMetaData$plate){
     cat(paste0(plate,'\n'))
     #Load demux stats. There are two entires per well:
@@ -106,9 +113,15 @@ for(plate in plateMetaData$plate){
     asvcounts = rbind(asvcounts, df)
 }
 
-#smartcounts_backup = smartcounts
+smartcounts_backup = smartcounts
+annotated_backup = annotated
+asvcounts_backup = asvcounts
 
-### # Attach updated metadata and filter sequences that could not be annotated ###
+# Attach Sanger and RandD samples to annotated:
+annotated = rbind(annotated, SangerData)
+annotated = rbind(annotated, RDData)
+
+#### Update metadata ###
 if(any(!(annotated$Sample_Name %in% sampleMetaData$sample_name))){
     cat("ERROR: Annotated results have Sample_Names that are missing from metadata file.")
 }
@@ -117,11 +130,20 @@ annotated$Category = sampleMetaData$Category[match(annotated$Sample_Name, sample
 annotated$ShowOnWeb = sampleMetaData$ShowOnWeb[match(annotated$Sample_Name, sampleMetaData$sample_name)]
 annotated$ProteinTarget = sampleMetaData$ProteinTarget[match(annotated$Sample_Name, sampleMetaData$sample_name)]
 
-# Write out filtered Annotated sequences for Web Page.
+
+# Filter sequences that could not be annotated and write out Filtered, Annotated sequences for Web Page.
 annotated.filtered = annotated[annotated$chain_type != '-', ]
 write.table(annotated.filtered, row.names=F, col.names=T, sep='\t', quote=F, 
     file=paste0(format(Sys.time(), "%Y-%m-%d"), "-Aggregated_Sequences.tsv"))
 ######
+
+
+
+########## Setup smartcount for reporting/plotting ###########
+
+# Replace NAs, these get 0 count on the plate and have no row in input
+smartcounts$LCs.Reported[is.na(smartcounts$LCs.Reported )] = 0
+smartcounts$HCs.Reported[is.na(smartcounts$HCs.Reported )] = 0
 
 
 # Calculate some statistics for plotting:
@@ -130,11 +152,8 @@ smartcounts$pctOverlapped = 100 * smartcounts$Overlapped/(smartcounts$ReadsWithP
 smartcounts$pctLengthFiltered = 100 * smartcounts$LengthFiltered/(smartcounts$ReadsWithPrimer + 1)
 smartcounts$NonAberrantReads = smartcounts$ReadsWithPrimer - smartcounts$Aberrant_LC_reads
 
-# Replace NAs
-smartcounts$LCs.Reported[is.na(smartcounts$LCs.Reported )] = 0
-smartcounts$HCs.Reported[is.na(smartcounts$HCs.Reported )] = 0
 
-# Calculate reads Annotated:
+# Add columns for sequences annotated by ANARCI:
 tmp = as.data.frame.matrix(table(annotated.filtered$Sample_Name, annotated.filtered$Chain))
 idx = match(smartcounts$sample_name, rownames(tmp))
 smartcounts$LCs.Annotated = tmp$LC[idx]
@@ -142,14 +161,15 @@ smartcounts$LCs.Annotated[is.na(smartcounts$LCs.Annotated)] = 0
 smartcounts$HCs.Annotated = tmp$HC[idx]
 smartcounts$HCs.Annotated[is.na(smartcounts$HCs.Annotated)] = 0
 
-# Get corrected trimmer_id (MabID)
+# Set corrected trimmer_id (MabID) in smartcounts
 smartcounts$Original.trimmer_id = smartcounts$trimmer_id
 smartcounts$trimmer_id = sampleMetaData$trimmer_id[match(smartcounts$sample_name, sampleMetaData$sample_name)]
 
 # Add the sampleMetaData Category:
 smartcounts$Category = sampleMetaData$Category[match(smartcounts$sample_name, sampleMetaData$sample_name)]
+smartcounts$Category[is.na(smartcounts$Category)] = 0  # 0 is not techinicaly a category, just a filler here
 
-# Add sequence data info:
+# Add sequence Date info for fiscal year reports:
 smartcounts = data.frame(smartcounts, plateMetaData[match(smartcounts$plate, plateMetaData$plate), c("SeqYear", "SeqMonth", "SeqDay")])
 
 # Add a guess about sample type based on number of dots in the name.
@@ -168,19 +188,23 @@ smartcounts$SampleType[grep("negative|blank|empty|neagtive", smartcounts$trimmer
 
 ## 2020-11-25: It doesn't seem to matter which primer amplifies the heavy chain, ANARCI always reports a type "H", and never a type "G"
 
+# tbann has a count for each sample_name of the number of -, H, K, L calls. It contains information for Sanger and R&D samples, but smartcounts does not.
+
 tbann = table(annotated$Sample_Name, annotated$chain_type)
-idx = match(rownames(tbann), smartcounts$sample_name)
+tbann = tbann[rownames(tbann) %in% smartcounts$sample_name,]
+idx = match(smartcounts$sample_name, rownames(tbann))
 
 smartcounts$LC.K.Called = 0
 smartcounts$LC.L.Called = 0
 smartcounts$HC.H.Called = 0
 smartcounts$HC.G.Called = 0
-if('K' %in% colnames(tbann)){smartcounts$LC.K.Called[idx] = tbann[,'K']}
-if('L' %in% colnames(tbann)){smartcounts$LC.L.Called[idx] = tbann[,'L']}
-if('H' %in% colnames(tbann)){smartcounts$HC.H.Called[idx] = tbann[,'H']}
-if('G' %in% colnames(tbann)){smartcounts$HC.G.Called[idx] = tbann[,'G']}
+if('K' %in% colnames(tbann)){smartcounts$LC.K.Called = tbann[idx,'K']}
+if('L' %in% colnames(tbann)){smartcounts$LC.L.Called = tbann[idx,'L']}
+if('H' %in% colnames(tbann)){smartcounts$HC.H.Called = tbann[idx,'H']}
+if('G' %in% colnames(tbann)){smartcounts$HC.G.Called = tbann[idx,'G']}
 
 save(smartcounts, annotated, file="smartcounts_annotated.RData")
+
 
 # smartcounts[smartcounts$Chain=='H' & smartcounts$Ga3HC > smartcounts$Ga12HC, 
 #         c("sample_name","Ga12HC","Ga3HC","LaLC","KaLC","LCs.Reported","HCs.Reported","LC.K.Called","LC.L.Called","HC.H.Called","HC.G.Called")]
@@ -192,14 +216,8 @@ write.table(smartcounts, file="All_plates_read_counts_statistics.tsv", row.names
 
 # Write controls:
 control_samples = smartcounts[smartcounts$SampleType %in% c("PositiveControl", "NegativeControl"), ]
-#control_samples = smartcounts[smartcounts$SMARTindex %in% c("88-SMARTindex", "96-SMARTindex"), ]
 write.table(control_samples, file="ALL_controls.tsv", row.names=F, col.names=T, sep='\t')
 
-# 
-# kable(demuxed) %>%
-#   kable_styling(bootstrap_options = c("hover", "striped"), full_width = F, 
-#         position="left", fixed_thead=T) %>%
-#   row_spec(0, angle = 0)
 ```
 
 ***********
@@ -232,26 +250,6 @@ yidx[(ndup$SeqYear == 2023 & ndup$SeqMonth > 6) | (ndup$SeqYear == 2024 & ndup$S
 
 ndup$yidx = yidx
 
-# Set up index for yield category for REPORTED sequences
-# YieldCategory = rep("NA", nrow(ndup))
-# YieldCategory[ndup$LCs.Reported == 0 & ndup$HCs.Reported == 0] = 'LC=0 and HC=0' 
-# YieldCategory[ndup$LCs.Reported == 1 & ndup$HCs.Reported == 1] = 'LC=1 and HC=1' 
-# YieldCategory[ndup$LCs.Reported == 0 & ndup$HCs.Reported == 1] = 'LC=0 and HC=1' 
-# YieldCategory[ndup$LCs.Reported == 1 & ndup$HCs.Reported == 0] = 'LC=1 and HC=0' 
-# YieldCategory[ndup$LCs.Reported == 0 & ndup$HCs.Reported > 1] = 'LC=0 and HC>1' 
-# YieldCategory[ndup$LCs.Reported > 1 & ndup$HCs.Reported == 0] = 'LC>1 and HC=0' 
-# YieldCategory[(ndup$LCs.Reported > 0 & ndup$HCs.Reported > 0) & (ndup$LCs.Reported > 1 | ndup$HCs.Reported > 1)] = 'LC>1 or HC>1 (both > 0)'
-
-# Set up index for yield category for ANNOTATED sequences
-# YieldCategory = rep("NA", nrow(ndup))
-# YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 0] = 'LC=0 and HC=0' 
-# YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 1] = 'LC=1 and HC=1' 
-# YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called == 1] = 'LC=0 and HC=1' 
-# YieldCategory[ndup$LC.K.Called == 1 & ndup$HC.H.Called == 0] = 'LC=1 and HC=0' 
-# YieldCategory[ndup$LC.K.Called == 0 & ndup$HC.H.Called > 1] = 'LC=0 and HC>1' 
-# YieldCategory[ndup$LC.K.Called > 1 & ndup$HC.H.Called == 0] = 'LC>1 and HC=0' 
-# YieldCategory[(ndup$LC.K.Called > 0 & ndup$HC.H.Called > 0) & (ndup$LC.K.Called > 1 | ndup$HC.H.Called > 1)] = 'LC>1 or HC>1 (both > 0)'
-
 # Set up index for yield category for ANNOTATED sequences
 YieldCategory = rep("NA", nrow(ndup))
 YieldCategory[ndup$LCs.Annotated == 0 & ndup$HCs.Annotated == 0] = 'LC=0 and HC=0' 
@@ -279,7 +277,7 @@ kable(table(ndup2$yidx)) %>%
 
 ```
 
-Total number of **monoclonal**, **oligoclonal**, and other types of samples sequenced per funding year.
+Total number of **monoclonal**, **oligoclonal**, and control samples sequenced per funding year.
 
 ```{r t001.SamplesPerFunding, echo=FALSE, fig.height=8, fig.width=15, fig.align="center"}
 tb = table(ndup$SampleType, ndup$yidx)[c("monoclonal","oligoclonal","PositiveControl","NegativeControl"),]
