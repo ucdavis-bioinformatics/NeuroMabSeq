@@ -470,7 +470,7 @@ kable(demuxed) %>%
 *************
 #### Samples that didn't produce an ASV in one or both chains:
 ```{r p000.failedSamplesTables1, echo=FALSE, fig.height=8, fig.width=10, fig.align="center"}
-idx = (smartcounts$LCs.Reported == 0 | smartcounts$HCs.Reported == 0 ) & smartcounts$SampleType != 'NegativeControl'
+idx = (smartcounts$LCs.Annotated == 0 | smartcounts$HCs.Annotated == 0 ) & smartcounts$SampleType != 'NegativeControl'
 noasv = smartcounts[idx, ]
 noasv = noasv[order(noasv$sample_name, noasv$Chain), ]
 # rownames(noasv) = noasv$sample_name
