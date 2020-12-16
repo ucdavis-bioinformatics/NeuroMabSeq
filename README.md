@@ -15,6 +15,11 @@
 - button on the clone to blast to this sort of thing
 # - list everything by the sequence identity 
 - slug sample links
+- update the table to seperate by parental and monoclonal
+  (based on categories - neuromab mab, non neuromab mbas)
+  top row is all TOTAL
+  monoclonal
+  oligoclonal samples vs all other categories basically (include commercially sequuenced)
 
 
 

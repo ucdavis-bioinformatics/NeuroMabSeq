@@ -82,20 +82,32 @@ table, th, td {
             <br>
               <table style="table-layout: fixed; width: 100%; font-size:21px">
                   <tr>
-                    <th>Total Mouse mAb Sequence Entries in Database:</th>
-                    <th>Total Mouse Heavy Chain Sequences:</th>
-                    <th>Total Mouse Light Chain Sequences</th>
+                    <th></th>
+                    <th>mAb Sequence Entries in Database:</th>
+                    <th>Mouse Heavy Chain Sequences:</th>
+                    <th>Mouse Light Chain Sequences</th>
 <!--                    <th>Plate</th>-->
 <!--                    <th>Percent Support</th>-->
                   </tr>
                   <tr>
-                      <td style="word-wrap: break-word">{{number_entries}}</td>
-                      <td>{{number_light}}</td>
-                      <td>{{number_heavy}}</td>
-<!--                      <td>{{item.SMARTindex}}</td>-->
-<!--                      <td>{{item.plate}}</td>-->
-<!--                      <td>{{item.pctsupport}}</td>-->
+                      <td>Monoclonal:</td>
+                      <td style="word-wrap: break-word">{{monoclonal_number_entries}}</td>
+                      <td>{{monoclonal_number_light}}</td>
+                      <td>{{monoclonal_number_heavy}}</td>
                   </tr>
+                  <tr>
+                      <td>Lead Oligoclonal:</td>
+                      <td style="word-wrap: break-word">{{parental_number_entries}}</td>
+                      <td>{{parental_number_light}}</td>
+                      <td>{{parental_number_heavy}}</td>
+                  </tr>
+                  <tr>
+                      <td>Total:</td>
+                      <td style="word-wrap: break-word">{{total_number_entries}}</td>
+                      <td>{{total_number_light}}</td>
+                      <td>{{total_number_heavy}}</td>
+                  </tr>
+
               </table>
 <!--      <ul class="w3-ul w3-border w3-white w3-text-grey">-->
 <!--        <li align="left" id="teaching" class="w3-padding"><font size="4"><b>TEACHING </b></font>-->

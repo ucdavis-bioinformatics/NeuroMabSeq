@@ -112,7 +112,7 @@ def new_create_entries(entry_list, row, duplicate, sanger):
             chain_type = 'Light'
         else:
             chain_type = 'Heavy'
-        if row['e-value'] != '-':
+        if row['e.value'] != '-':
             create =TrimmerSequence.objects.create(entry=value,
                                                                SMARTindex=row['SMARTindex'],
                                                                pct_support=row['PctSupport'],
@@ -121,7 +121,7 @@ def new_create_entries(entry_list, row, duplicate, sanger):
                                                                seq_platform=row['Sequencing'],
                                                                plate=row['plate'],
                                                                seq=row['ASV'],
-                                                               e_value=row['e-value'],
+                                                               e_value=row['e.value'],
                                                                score=row['score'],
                                                                seq_start_index=row['seqstart_index'],
                                                                seq_stop_index=row['seqend_index'],
@@ -169,10 +169,10 @@ def new_create_entries(entry_list, row, duplicate, sanger):
 def data_upload(update, dir):
     # update is false when reseting otherwise it is True
     # TODO function that get directory based on if AWS server or local or just pass diretory.
-    dir += "/AnnotatedResults/"
+    dir += "/"
     files = os.listdir(dir)
     files = [i for i in files if ".tsv" in i]
-    files = [i for i in files if " " not in i]
+    #files = [i for i in files if " " not in i]
 
     for file in files:
 

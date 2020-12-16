@@ -44,6 +44,7 @@ from .forms import *
 from django.utils.decorators import method_decorator
 from django.db.models import Count
 from .methods import *
+from django.db.models import Q
 
 
 def get_random_string(length):
@@ -164,12 +165,21 @@ def MyLogout(request):
 def main_page(request):
     html = 'home.html'
     context = {}
-    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = TrimmerEntry.objects.filter(show_on_web=True)
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
-    context['number_entries'] = len(all_entries)
-    context['number_light'] = len(TrimmerSequence.objects.filter(duplicate=False, entry__show_on_web=True, chain="Light").exclude(aa='-'))
-    context['number_heavy'] = len(TrimmerSequence.objects.filter(duplicate=False, entry__show_on_web=True, chain="Heavy").exclude(aa='-'))
+    context['total_number_entries'] = len(all_entries)
+    context['total_number_light'] = len(TrimmerSequence.objects.filter(chain="Light"))
+    context['total_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy"))
+
+    context['monoclonal_number_entries'] = len(all_entries.filter(~Q(category=4)))
+    context['monoclonal_number_light'] = len(TrimmerSequence.objects.filter(chain="Light").exclude(entry__category=4))
+    context['monoclonal_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy").exclude(entry__category=4))
+
+    context['parental_number_entries'] = len(all_entries.filter(category=4))
+    context['parental_number_light'] = len(TrimmerSequence.objects.filter(chain="Light", entry__category=4))
+    context['parental_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy", entry__category=4))
+
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
 
