@@ -20,7 +20,13 @@
   top row is all TOTAL
   monoclonal
   oligoclonal samples vs all other categories basically (include commercially sequuenced)
+- 6180 : filter plate AP1 and showonweb=TRUE dropouts file..
 
+
+- Look into dropouts
+- mixedRNA and cell samples and 67...
+- for some monoclonal still have 
+- maybe work on the login stuff some more
 
 
 - clean up the entry view..
