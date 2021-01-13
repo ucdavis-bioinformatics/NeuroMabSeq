@@ -339,7 +339,7 @@ def new_metadata_upload(filename=None):
     # print(mapping)
     if filename == None:
         dir = "../static_data/"
-        files = os.listdir(dir)
+        files = sorted(os.listdir(dir))
         files = [dir + i for i in files if ".tsv" in i]
 
     else:
