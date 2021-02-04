@@ -371,3 +371,5 @@ def new_metadata_upload(filename=None):
 
 def metadata_file_process(context, filename):
     new_metadata_upload(filename=filename)
+    generate_aa_fa()
+    generate_seq_fa()

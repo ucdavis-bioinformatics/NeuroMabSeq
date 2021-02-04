@@ -1,9 +1,0 @@
-sample_name	trimmer_id	PlateName	SeqYear	Dropout? Missing	Dropout resolution	Category	ShowOnWeb	ProteinTarget	ChangeDate	ChangeReason
-P11_A1	positivecontrol1_N263/31.1	plate11	Year1	n/a-n/a			F		20210108	Missing seq but used as positive control so converted entry to show, corrected "sample_name" and rehid
-P9_A1	N52A/42.1	plate9	Year1	n/a-n/a		1	T	Mortalin/GRP75	20210108	Missing seq but used as positive control so converted entry to show
-Psanger_Gs4	L111/118.3	Sanger_samples		n/a-n/a		7	T	SST	20201119	Changed "sample_name" as per Gs key, corrected sample name
-Psanger_Gs7	L114/3.3	Sanger_samples		n/a-n/a		7	T	Parvalbumin	20201119	Changed "sample_name" as per Gs key, corrected sample name
-Psanger_Gs10	L114/81.7.1	Sanger_samples		n/a-n/a		7	T	Parvalbumin	20201119	Changed "sample_name" as per Gs key, corrected sample name
-Psanger_Gs13	L122/6.2	Sanger_samples		n/a-n/a		7	T	Calretinin	20201119	Changed "sample_name" as per Gs key, corrected sample name
-Psanger_Gs16	N263/31.1	Sanger_samples		n/a-n/a		7	T	Cav1.2 Ca2+ channel	20201119	Changed "sample_name" as per Gs key, corrected sample name
-Psanger_Gs19	N486/32.1	Sanger_samples		n/a-n/a		7	T	cFos	20201119	Changed "sample_name" as per Gs key, corrected sample name
