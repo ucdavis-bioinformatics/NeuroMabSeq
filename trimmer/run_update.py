@@ -8,7 +8,7 @@ import sys
 #directory = sys.argv[1]
 
 is_update = False
-directory = "/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/data3"
+directory = "/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/data3/AnnotatedResults"
 
 
 data_upload(is_update, directory) # True for update
