@@ -49,22 +49,6 @@
 ### Questions/Notes
 - what is the deal with this mabid
 - what is going on here: Omitting the empty string in them for now.
-    ```
-    Invalid fasta format: sequence size == 0 for element 2878_N293/60.1_1254_Histone:H3-dimethyl-Arg8_Non-NeuroMab:mAbs_Heavy_2505
-    Invalid fasta format: sequence size == 0 for element 2891_N295A/9.1_1267_Arl13b_Non-NeuroMab:mAbs_Heavy_2524
-    Invalid fasta format: sequence size == 0 for element 2958_N295A/9.1_1267_Arl13b_Non-NeuroMab:mAbs_Heavy_2525
-    Invalid fasta format: sequence size == 0 for element 2910_N295A/38.1_1286_Arl13b_Non-NeuroMab:mAbs_Heavy_2546
-    Invalid fasta format: sequence size == 0 for element 2954_N295A/38.1_1286_Arl13b_Non-NeuroMab:mAbs_Heavy_2547
-    Invalid fasta format: sequence size == 0 for element 2959_N295A/38.1_1286_Arl13b_Non-NeuroMab:mAbs_Heavy_2548
-    Invalid fasta format: sequence size == 0 for element 3731_L122/143_1793_Calretinin_Lead:oligoclonal:Abs_Heavy_3377
-    Invalid fasta format: sequence size == 0 for element 3879_L122/143_1793_Calretinin_Lead:oligoclonal:Abs_Heavy_3378
-    Invalid fasta format: sequence size == 0 for element 3748_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3400
-    Invalid fasta format: sequence size == 0 for element 3853_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3401
-    Invalid fasta format: sequence size == 0 for element 3854_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3402
-    Invalid fasta format: sequence size == 0 for element 3880_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3403
-    Invalid fasta format: sequence size == 0 for element 3881_N34/29_1807_VGlut3_Lead:oligoclonal:Abs_Heavy_3404
-    Invalid fasta format: sequence size == 0 for element 4203_N108/27.1_1934_SNAT2_Non-NeuroMab:mAbs_Heavy_3703
-    ```
 - 5 subclones of the same parent should be identical?
 - create some stats for the subclone groupings? API with sequence->phylogeneitc tree?
 - check with cutoff from sam, p5
@@ -136,12 +120,16 @@
 5. Cert setup: `https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx`
 6. Adding users: `https://aws.amazon.com/premiumsupport/knowledge-center/new-user-accounts-linux-instance/` (just steps)
 7. Custom fasta renderer: `https://www.django-rest-framework.org/api-guide/renderers/#custom-renderers`
+
+
+
+
 #### This will fix 99% of problems unless someone pushes something funny to the repo!!!!
 ```  # from the Neuromabseq directory
 
 sudo pkill gunicorn   
 git fetch --all
-git reset --hard origin/website
+git reset --hard origin/website_2.0
 cd trimmer
 python manage.py migrate
 sudo systemctl restart gunicorn
@@ -165,18 +153,5 @@ python manage.py migrate
 ./manage.py shell < run_update.py
 ./manage.py shell < run_status_update.py
 ./manage.py shell < run_metadata_update.py
-```
-sudo pkill gunicorn   
-git fetch --all
-git reset --hard origin/website_2.0
-cd trimmer
-python manage.py migrate
-sudo systemctl restart gunicorn
-sudo systemctl restart nginx
-psudo python manage.py collectstatic
-
-
-```
-python manage.py dbshell
-mysql> ALTER TABLE <table_name> AUTO_INCREMENT = 1;
+./manage.py shell < run_metadata_update.py
 ```
