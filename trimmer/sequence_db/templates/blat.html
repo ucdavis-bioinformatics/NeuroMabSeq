@@ -128,6 +128,7 @@ $(document).ready(function() {
                     <th>Score</th>
                     <th>Mab ID</th>
                     <th>Chain Type</th>
+                    <th>Clonality</th>
                     <th>See Entry</th>
 
                 </tr>
@@ -143,6 +144,7 @@ $(document).ready(function() {
                   {% else %}
                     <td></td>
                   {% endif %}
+                  <td>{{item.clonality}}</td>
                   {% if item.pk %}
                   <td>
                     <a href="/new_entry/{{item.entry_pk}}/{{item.pk}}">

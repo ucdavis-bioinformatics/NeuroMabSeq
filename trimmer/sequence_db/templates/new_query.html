@@ -61,12 +61,13 @@ td.wrapok {
     var mabid = url.searchParams.get("name_choice");
     var cat = url.searchParams.get("category_choice");
     var target = url.searchParams.get("target_choice");
+    var clonality = url.searchParams.get("clonality");
     var ordering = url.searchParams.get("ordering");
     var search = url.searchParams.get("search");
+
     if (mabid==null){
         var mabid = ''
     }
-
 
     if (cat==null){
         var cat = ''
@@ -74,6 +75,10 @@ td.wrapok {
 
     if (target==null){
         var target = ''
+    }
+
+    if (clonality==null){
+        var clonality = 'Monoclonal'
     }
 
     if (ordering==null){
@@ -91,10 +96,11 @@ td.wrapok {
               "sortable": false,
               "scrollX": true,
               'serverSide': true,
-              'ajax': '/api/entry_list/?format=datatables' + '&mabid=' + mabid + '&category=' + cat + '&protein_target=' + target + '&ordering=' + ordering + '&search=' + search,
+              'ajax': '/api/entry_list/?format=datatables' + '&mabid=' + mabid + '&category=' + cat + '&protein_target=' + target + '&clonality=' + clonality + '&ordering=' + ordering + '&search=' + search,
               'columns': [
                   {'data': 'mabid', 'sortable': false},
                   {'data': 'get_category', 'sortable': false},
+                  {'data': 'clonality', 'sortable': false},
                   {'data': 'get_protein_target', 'sortable': false},
                   {'data': 'light_count', 'sortable': false},
                   {'data': 'heavy_count', 'sortable': false},
@@ -132,6 +138,13 @@ td.wrapok {
             </strong>
             For info on categories click<a href="/faq"> HERE</a>
           {% render_field filter.form.category_choice class="form-control" %}
+        </div>
+
+        <div class="form-group col-sm-5 col-sm-3">
+            <strong>Clonality choice:
+            </strong>
+            For info on categories click<a href="/faq"> HERE</a>
+          {% render_field filter.form.clonality class="form-control" %}
         </div>
         <div class="form-group col-sm-5 col-sm-3">
             <strong>Choose Display Order:</strong>
@@ -177,6 +190,7 @@ td.wrapok {
             <tr align="left">
               <th align="left" >mAb ID</th>
               <th align="left" >Category</th>
+              <th align="left" >Clonality</th>
               <th align="left" >Protein Target</th>
               <th align="left" ># Light Chain Sequences</th>
               <th align="left" ># Heavy Chain Sequences</th>

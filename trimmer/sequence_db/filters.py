@@ -77,6 +77,10 @@ class TrimmerEntryFilter(django_filters.FilterSet):
     # name = django_filters.CharFilter(field_name='mabid', lookup_expr='icontains')
     name_choice = django_filters.ChoiceFilter(field_name='mabid', choices=get_mab_ids())
     category_choice = django_filters.ChoiceFilter(field_name='category', choices=get_categories())
+    clonality = django_filters.ChoiceFilter(field_name='clonality',
+                                            choices=(("Monoclonal","Monoclonal"),
+                                                     ("Oligoclonal","Oligoclonal")),
+                                            initial="Monoclonal")
     target_choice = django_filters.ChoiceFilter(field_name='protein_target', choices=get_targets())
     ordering = django_filters.OrderingFilter(choices=(('mabid', 'MabID Ascending'), ('-mabid', 'MabID Descending'),
                                                       ('protein_target', 'Target Ascending'), ('-protein_target', 'Target Descending'),

@@ -42,5 +42,6 @@ dependencies:
     - scipy==1.4.1
     - six==1.14.0
     - soupsieve==1.9.5
+    - django-property-filter-1.1.1
 prefix: /Users/keithmitchell/opt/anaconda3/envs/trimmer_lab
 

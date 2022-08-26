@@ -40,10 +40,16 @@ def get_data_base_dir():
 ########################################################################################################################
 def get_header(chain, type):
     try:
-        return '>' + '_'.join([str(chain.id), chain.entry.mabid.replace(' ',':'), str(chain.entry.id),
-                           chain.entry.protein_target.replace(' ',':'), categories[chain.entry.category].replace(' ',':'),
-                           type, str(chain.chain_id)]) + '\n'
-    except:
+        result = '>' + '_'.join([str(chain.id),
+                               chain.entry.mabid.replace(' ',':'),
+                               str(chain.entry.id),
+                               chain.entry.protein_target.replace(' ',':'),
+                               categories[chain.entry.category].replace(' ',':'),
+                               type,
+                               str(chain.chain_id),
+                               str(chain.entry.clonality)]) + '\n'
+        return result
+    except Exception as error:
         cwd = os.getcwd()
         prefix = '/'.join(cwd.split('/')[:-1])
         if "ubuntu" in prefix:
@@ -114,28 +120,27 @@ def new_create_entries(entry_list, row, duplicate, sanger):
             chain_type = 'Heavy'
         if row['e.value'] != '-':
             create =TrimmerSequence.objects.create(entry=value,
-                                                               SMARTindex=row['SMARTindex'],
-                                                               pct_support=row['PctSupport'],
-                                                               asv_support=row['ASVcount'],
-                                                               total_reads=row['TotalReads'],
-                                                               seq_platform=row['Sequencing'],
-                                                               plate=row['plate'],
-                                                               seq=row['ASV'],
-                                                               e_value=row['e.value'],
-                                                               score=row['score'],
-                                                               seq_start_index=row['seqstart_index'],
-                                                               seq_stop_index=row['seqend_index'],
-                                                               scheme=row['scheme'],
-                                                               frame=row['frame'],
-                                                               aa=row['AA'],
-                                                               numbering=row['numbering'],
-                                                               domain=row['domain'],
-                                                               duplicate=duplicate,
-                                                               sample_name = row['Sample_Name'],
-                                                               chain = chain_type,
-                                                               chain_id = row['ChainID']
-
-                                                            )
+                                                   SMARTindex=row['SMARTindex'],
+                                                   pct_support=row['PctSupport'],
+                                                   asv_support=row['ASVcount'],
+                                                   total_reads=row['TotalReads'],
+                                                   seq_platform=row['Sequencing'],
+                                                   plate=row['plate'],
+                                                   seq=row['ASV'],
+                                                   e_value=row['e.value'],
+                                                   score=row['score'],
+                                                   seq_start_index=row['seqstart_index'],
+                                                   seq_stop_index=row['seqend_index'],
+                                                   scheme=row['scheme'],
+                                                   frame=row['frame'],
+                                                   aa=row['AA'],
+                                                   numbering=row['numbering'],
+                                                   domain=row['domain'],
+                                                   duplicate=duplicate,
+                                                   sample_name = row['Sample_Name'],
+                                                   chain = chain_type,
+                                                   chain_id = row['ChainID']
+                                                )
         else:
             create = TrimmerSequence.objects.create(entry=value,
                                                            SMARTindex=row['SMARTindex'],
@@ -325,6 +330,10 @@ def new_update_entry(entry, row):
         message = Messages.objects.create(message=string)
         message.save()
     entry.category = row['Category'] if str(row['Category']) != 'nan' else None
+    if entry.category in [4, 5]:
+        entry.clonality = "Oligoclonal"
+    else:
+        entry.clonality = "Monoclonal"
     entry.protein_target = row['ProteinTarget']
     entry.show_on_web = False if row['ShowOnWeb'] == 'F' else True
     entry.mabid = row['trimmer_id']

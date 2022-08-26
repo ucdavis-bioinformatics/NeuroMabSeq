@@ -172,13 +172,13 @@ def main_page(request):
     context['total_number_light'] = len(TrimmerSequence.objects.filter(chain="Light"))
     context['total_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy"))
 
-    context['monoclonal_number_entries'] = len(all_entries.filter(~Q(category=4)))
-    context['monoclonal_number_light'] = len(TrimmerSequence.objects.filter(chain="Light").exclude(entry__category=4))
-    context['monoclonal_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy").exclude(entry__category=4))
+    context['monoclonal_number_entries'] = len(all_entries.filter(~Q(category__in=[4,5])))
+    context['monoclonal_number_light'] = len(TrimmerSequence.objects.filter(chain="Light").exclude(entry__category__in=[4,5]))
+    context['monoclonal_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy").exclude(entry__category__in=[4,5]))
 
-    context['parental_number_entries'] = len(all_entries.filter(category=4))
-    context['parental_number_light'] = len(TrimmerSequence.objects.filter(chain="Light", entry__category=4))
-    context['parental_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy", entry__category=4))
+    context['parental_number_entries'] = len(all_entries.filter(category__in=[4,5]))
+    context['parental_number_light'] = len(TrimmerSequence.objects.filter(chain="Light", entry__category__in=[4,5]))
+    context['parental_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy", entry__category__in=[4,5]))
 
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
@@ -326,6 +326,7 @@ def blat(request,query_seq):
             ''' End reCAPTCHA validation '''
 
             sequence = form.cleaned_data['sequence']
+            #category_types = form.cleaned_data["category"]
             type = form.cleaned_data['type']
             search_prefix = form.cleaned_data['search_prefix'].replace('/','_')
             context['form'] = Blat(initial={"sequence": sequence, "type":type, "search_prefix":search_prefix.replace('_','/')})
@@ -346,19 +347,22 @@ def blat(request,query_seq):
             psl = '%s/static_data/%s.psl' % (prefix, rand_string)
 
 
-
             # If prefix create a new files that will be used instead of the file with all entries
             if search_prefix:
                 search_prefix_file_name = '%s/static_data/%s.fa' % (prefix, search_prefix)
                 with open(search_prefix_file_name, 'w') as temp_file:
-                    sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix.replace('_','/'))
+                    if form.cleaned_data["clonality"]:
+                        sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix.replace('_','/'),
+                                                               clonality=form.cleaned_data["clonality"])
+                    else:
+                        sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix.replace('_', '/'))
                     for seq in sequences:
+                        testing = get_header(seq, seq.chain)
                         temp_file.write(get_header(seq, seq.chain))
                         if type=="dna":
                             temp_file.write(seq.seq + '\n')
                         else:
                             temp_file.write(seq.aa + '\n')
-
                 call = "blat %s %s -t=%s -q=%s %s" % (search_prefix_file_name, file_name, type, type, psl)
             else:
                 call = "blat %s/static_data/%s.fa %s -t=%s -q=%s %s" % (prefix, type, file_name, type, type, psl)
@@ -390,13 +394,16 @@ def blat(request,query_seq):
                 for i in qresult:
                     temp_dict = dict(**i._items[0].__dict__, **i._items[0]._items[0].__dict__)
                     parse_id = temp_dict['_hit_id'].replace(':'," ").split('_')
+                    temp_dict['pk'] = parse_id[0]
                     temp_dict['mabid'] = parse_id[1]
                     temp_dict['entry_pk'] = parse_id[2]
-                    temp_dict['pk'] = parse_id[0]
-                    temp_dict['chain'] = parse_id[-3]
-                    temp_dict['chain_id'] = parse_id[-1]
-                    temp_dict['plate'] = parse_id[-2]
-                    all_results.append(temp_dict)
+                    temp_dict['chain'] = parse_id[5]
+                    #temp_dict['plate'] = parse_id[4]
+                    temp_dict['chain_id'] = parse_id[7]
+                    temp_dict['clonality'] = parse_id[8]
+                    if temp_dict["clonality"] and temp_dict["clonality"] == form.cleaned_data["clonality"]:
+                        all_results.append(temp_dict)
+                #print(parse_id)
 
 
             context['queryset'] = list(sorted(all_results, key=lambda d: (d['score'], d['ident_pct']), reverse=True))
@@ -710,7 +717,15 @@ class APIEntryListView(generics.ListAPIView):
     queryset = queryset.exclude(mabid__contains='negative')
     serializer_class = TrimmerEntrySerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
-    filterset_fields = ['mabid', 'category', 'protein_target']
+    filterset_fields = ["category", "mabid", "protein_target", "clonality"]
+    # property_fields = [
+    #     ('clonality', DjangoFilterBackend, ['exact']),
+    # ]
+    # filterset_fields = {
+    #     'category': ["in","exact"], # icontains ,exact, gte, lte, in
+    #     'mabid': ["exact",],
+    #     'protein_target': ["exact",],
+    # }
     search_fields = ['mabid', 'protein_target']
     ordering_fields = '__all__'
 

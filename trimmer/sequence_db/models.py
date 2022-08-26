@@ -28,6 +28,25 @@ color_dict = {
 
 }
 
+n_to_aa = {
+        'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
+        'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
+        'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
+        'AGC':'S', 'AGT':'S', 'AGA':'R', 'AGG':'R',
+        'CTA':'L', 'CTC':'L', 'CTG':'L', 'CTT':'L',
+        'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCT':'P',
+        'CAC':'H', 'CAT':'H', 'CAA':'Q', 'CAG':'Q',
+        'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R',
+        'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V',
+        'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A',
+        'GAC':'D', 'GAT':'D', 'GAA':'E', 'GAG':'E',
+        'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G',
+        'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
+        'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
+        'TAC':'Y', 'TAT':'Y', 'TAA':'Stop', 'TAG':'Stop',
+        'TGC':'C', 'TGT':'C', 'TGA':'Stop', 'TGG':'W',
+    }
+
 region_dict = {'HF': '#00FFFF', 'CDR': '#CCFF99'}
 
 
@@ -121,6 +140,9 @@ class TrimmerEntry(models.Model):
     protein_target = models.CharField(max_length=100, blank=True, null=True)
     light_count = models.IntegerField(blank=True, null=True)
     heavy_count = models.IntegerField(blank=True, null=True)
+    clonality = models.CharField(choices=(('Monoclonal','Monoclonal'),
+                                          ('Oligoclonal','Oligoclonal')), max_length=12, default="")
+
 
     @property
     def get_category(self):
@@ -143,9 +165,30 @@ class TrimmerEntry(models.Model):
     def get_url(self):
         return 'new_entry/' + str(self.pk)
 
+    # @property
+    # def clonality(self):
+    #     if self.entry.category in [4,5]:
+    #         return "Oligoclonal"
+    #     else:
+    #         return "Monoclonal"
+
     def __str__(self):
         return '%s' % (self.mabid)
 
+
+def translate_seq(
+        seq: str,
+        aa: str,
+):
+    aa_comp = []
+    for i in range(0,len(aa)):
+        if n_to_aa[seq[i*3:i*3+3]] == "Stop":
+            break
+        else:
+            aa_comp.append(n_to_aa[seq[i*3:i*3+3]])
+    #print(aa)
+    #print(''.join(aa_comp))
+    return ''.join(aa_comp) == aa
 
 
 class TrimmerSequence(models.Model):
@@ -215,6 +258,28 @@ class TrimmerSequence(models.Model):
         return self.seq_platform == 'Sanger'
 
 
+    @property
+    def vector_sequence(self):
+        find_dom_in_aa = self.strip_aa.find(self.strip_domain.replace("-",""))
+        end_spot = len(self.strip_domain.replace("-","")) + find_dom_in_aa
+
+        # make sure always aaa at the end and 6 nts being stripped at the end
+        # check each of the ORF spots
+        # TODO make this just an iteration of whole thing
+        if translate_seq(seq=self.seq[find_dom_in_aa*3-2:end_spot*3-2], aa=self.strip_domain.replace("-","")):
+            return self.seq[find_dom_in_aa*3-2:end_spot*3-2]
+        elif translate_seq(seq=self.seq[find_dom_in_aa*3-1:end_spot*3-1], aa=self.strip_domain.replace("-","")):
+            return self.seq[find_dom_in_aa*3-1:end_spot*3-1]
+        elif translate_seq(seq=self.seq[find_dom_in_aa*3:end_spot*3], aa=self.strip_domain.replace("-","")):
+            return self.seq[find_dom_in_aa*3:end_spot*3]
+        elif translate_seq(seq=self.seq[find_dom_in_aa*3+1:end_spot*3+1], aa=self.strip_domain.replace("-","")):
+            return self.seq[find_dom_in_aa*3+1:end_spot*3+1]
+        elif translate_seq(seq=self.seq[find_dom_in_aa*3+2:end_spot*3+2], aa=self.strip_domain.replace("-","")):
+            return self.seq[find_dom_in_aa*3+2:end_spot*3+2]
+        elif translate_seq(seq=self.seq[find_dom_in_aa*3+3:end_spot*3+3], aa=self.strip_domain.replace("-","")):
+            return self.seq[find_dom_in_aa*3+3:end_spot*3+3]
+        elif translate_seq(seq=self.seq[find_dom_in_aa*3+4:end_spot*3+4], aa=self.strip_domain.replace("-","")):
+            return self.seq[find_dom_in_aa*3+4:end_spot*3+4]
 #
 # class TrimmerHeavy(models.Model):
 #     id = models.AutoField(primary_key=True)
