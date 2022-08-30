@@ -266,20 +266,9 @@ class TrimmerSequence(models.Model):
         # make sure always aaa at the end and 6 nts being stripped at the end
         # check each of the ORF spots
         # TODO make this just an iteration of whole thing
-        if translate_seq(seq=self.seq[find_dom_in_aa*3-2:end_spot*3-2], aa=self.strip_domain.replace("-","")):
-            return self.seq[find_dom_in_aa*3-2:end_spot*3-2]
-        elif translate_seq(seq=self.seq[find_dom_in_aa*3-1:end_spot*3-1], aa=self.strip_domain.replace("-","")):
-            return self.seq[find_dom_in_aa*3-1:end_spot*3-1]
-        elif translate_seq(seq=self.seq[find_dom_in_aa*3:end_spot*3], aa=self.strip_domain.replace("-","")):
-            return self.seq[find_dom_in_aa*3:end_spot*3]
-        elif translate_seq(seq=self.seq[find_dom_in_aa*3+1:end_spot*3+1], aa=self.strip_domain.replace("-","")):
-            return self.seq[find_dom_in_aa*3+1:end_spot*3+1]
-        elif translate_seq(seq=self.seq[find_dom_in_aa*3+2:end_spot*3+2], aa=self.strip_domain.replace("-","")):
-            return self.seq[find_dom_in_aa*3+2:end_spot*3+2]
-        elif translate_seq(seq=self.seq[find_dom_in_aa*3+3:end_spot*3+3], aa=self.strip_domain.replace("-","")):
-            return self.seq[find_dom_in_aa*3+3:end_spot*3+3]
-        elif translate_seq(seq=self.seq[find_dom_in_aa*3+4:end_spot*3+4], aa=self.strip_domain.replace("-","")):
-            return self.seq[find_dom_in_aa*3+4:end_spot*3+4]
+        for i in range(-3,6):
+            if translate_seq(seq=self.seq[find_dom_in_aa*3+i:end_spot*3+i], aa=self.strip_domain.replace("-","")):
+                return self.seq[find_dom_in_aa*3+i:end_spot*3+i]
 #
 # class TrimmerHeavy(models.Model):
 #     id = models.AutoField(primary_key=True)
