@@ -42,3 +42,27 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+
+
+class LISAForm(forms.Form):
+    pos_control1 = forms.ChoiceField(required=True, choices=(("A1", "A1"),
+                                                     ("A12", "A12"),
+                                                     ("H1", "H1"),
+                                                     ("H12", "H12")), initial='A1')
+
+    pos_control2 = forms.ChoiceField(required=True, choices=(("A1", "A1"),
+                                                     ("A12", "A12"),
+                                                     ("H1", "H1"),
+                                                     ("H12", "H12")), initial='A1')
+
+    neg_control1 = forms.ChoiceField(required=True, choices=(("A1", "A1"),
+                                                     ("A12", "A12"),
+                                                     ("H1", "H1"),
+                                                     ("H12", "H12")), initial='H1')
+
+    neg_control2 = forms.ChoiceField(required=True, choices=(("A1", "A1"),
+                                                     ("A12", "A12"),
+                                                     ("H1", "H1"),
+                                                     ("H12", "H12")), initial='H12')
+    elisa_reduced_xml = forms.FileField(required=True)
+    flisa_raw_xml = forms.FileField(required=True)

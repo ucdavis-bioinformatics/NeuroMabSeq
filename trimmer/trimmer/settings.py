@@ -33,6 +33,8 @@ GOOGLE_RECAPTCHA_SECRET_KEY = '6LfwjbEZAAAAAJZeewrMFd8NEvzkSuk-kp1BfpKu'
 # Application definition
 
 INSTALLED_APPS = [
+    'trimmer',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +48,6 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_datatables',
     'crispy_forms',
-
 ]
 
 GOOGLE_RECAPTCHA_SECRET_KEY = '6LfwjbEZAAAAAJZeewrMFd8NEvzkSuk-kp1BfpKu'

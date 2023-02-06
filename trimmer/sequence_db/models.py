@@ -143,6 +143,9 @@ class TrimmerEntry(models.Model):
     clonality = models.CharField(choices=(('Monoclonal','Monoclonal'),
                                           ('Oligoclonal','Oligoclonal')), max_length=12, default="")
 
+    @property
+    def get_count(self):
+        return TrimmerEntry.objects.filter(mabid=self.mabid).count()
 
     @property
     def get_category(self):
@@ -217,6 +220,15 @@ class TrimmerSequence(models.Model):
     chain_id = models.CharField(max_length=25, default='')
 
     @property
+    def heavy_duplicates(self):
+        return TrimmerSequence.objects.filter(entry__pk=self.pk, duplicate=True, chain="Heavy").order_by('asv_support')
+
+    @property
+    def light_duplicates(self):
+        return TrimmerSequence.objects.filter(entry__pk=self.pk, duplicate=True, chain="Heavy").order_by('asv_support')
+
+
+    @property
     def strip_domain(self):
         try:
             return self.domain.replace(',', '')
@@ -260,16 +272,22 @@ class TrimmerSequence(models.Model):
 
     @property
     def vector_sequence(self):
-        find_dom_in_aa = self.strip_aa.find(self.strip_domain.replace("-",""))
-        end_spot = len(self.strip_domain.replace("-","")) + find_dom_in_aa
+        try:
+            find_dom_in_aa = self.strip_aa.find(self.strip_domain.replace("-",""))
+            end_spot = len(self.strip_domain.replace("-","")) + find_dom_in_aa
 
-        # make sure always aaa at the end and 6 nts being stripped at the end
-        # check each of the ORF spots
-        # TODO make this just an iteration of whole thing
-        for i in range(-3,6):
-            if translate_seq(seq=self.seq[find_dom_in_aa*3+i:end_spot*3+i], aa=self.strip_domain.replace("-","")):
-                return self.seq[find_dom_in_aa*3+i:end_spot*3+i]
+            # make sure always aaa at the end and 6 nts being stripped at the end
+            # check each of the ORF spots
+            # TODO make this just an iteration of whole thing
+            for i in range(-3,6):
+                if translate_seq(seq=self.seq[find_dom_in_aa*3+i:end_spot*3+i], aa=self.strip_domain.replace("-","")):
+                    return self.seq[find_dom_in_aa*3+i:end_spot*3+i]
+
+        except:
+            return "Failed"
+
 #
+
 # class TrimmerHeavy(models.Model):
 #     id = models.AutoField(primary_key=True)
 #     SMARTindex = models.CharField(max_length=20)

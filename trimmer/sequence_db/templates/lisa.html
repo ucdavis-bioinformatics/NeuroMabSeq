@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+  <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="about_me">
+
+  <form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    {{ main_form.as_p }}
+    <button type="submit">ELISA/FLISA report</button>
+  </form>
+
+  </div>
+
+
+  <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="about_me">
+
+    <div class="row">
+        {% if graph_wv1 %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_wv1|safe }}
+            </div>
+        {% endif %}
+    </div>
+      <div class="row">
+        {% if graph_wv2 %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_wv2|safe }}
+            </div>
+        {% endif %}
+    </div>
+      <div class="row">
+        {% if graph_wv3 %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_wv3|safe }}
+            </div>
+        {% endif %}
+    </div>
+      <div class="row">
+        {% if graph_all %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_all|safe }}
+            </div>
+        {% endif %}
+    </div>
+
+      <div class="row">
+        {% if graph_3d %}
+            <div class="column" style="width:100%;height:100%">
+            {{ graph_3d|safe }}
+            </div>
+        {% endif %}
+    </div>
+  </div>
+{% endblock %}

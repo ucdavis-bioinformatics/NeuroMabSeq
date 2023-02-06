@@ -15,6 +15,7 @@ from django.conf import settings
 import urllib
 import json
 import plotly.express as px
+
 from django.views.generic import View
 import csv
 from Bio import SearchIO
@@ -45,6 +46,13 @@ from django.utils.decorators import method_decorator
 from django.db.models import Count
 from .methods import *
 from django.db.models import Q
+
+import xmltodict
+import pandas as pd
+import numpy as np
+import plotly.io as pio
+import collections
+import pandas as pd
 
 
 def get_random_string(length):
@@ -779,3 +787,180 @@ class StatusCSVExportView(View):
             writer.writerow(row)
 
         return response
+
+
+
+"""
+LISA STUFF
+"""
+
+def xml_to_dict(
+    filename: str
+)-> dict:
+    # Open the file and read the contents
+    with open(filename, 'rb') as file:
+        my_xml = file.read()
+        file.close()
+
+    my_dict = xmltodict.parse(my_xml)
+    return my_dict
+
+
+def deep_convert_dict(
+    layer: dict
+) -> dict:
+    to_ret = layer
+    if isinstance(layer, collections.OrderedDict):
+        to_ret = dict(layer)
+
+    try:
+        for key, value in to_ret.items():
+            to_ret[key] = deep_convert_dict(value)
+    except AttributeError:
+        pass
+
+    return to_ret
+
+
+def lisa_process(
+        context: dict,
+        flisa_path: str,
+        elisa_path: str,
+        pos_control1: str,
+        pos_control2: str,
+        neg_control1: str,
+        neg_control2: str,
+) -> dict:
+    """
+    :param context:
+    :param flisa_path:
+    :param elisa_path:
+    :param pos_control1:
+    :param pos_control2:
+    :param neg_control1:
+    :param neg_control2:
+    :return:
+    """
+
+    # ELISA
+    master_list = []
+    for i in range(0, len(xml_to_dict(filename=elisa_path)["Experiment"]["PlateSections"])):
+        get_just_reduced = deep_convert_dict(xml_to_dict(filename=elisa_path)["Experiment"]["PlateSections"][i])
+        get_just_reduced = get_just_reduced["PlateSection"]["reducedData"]["Well"]
+        for w in get_just_reduced:
+            w = deep_convert_dict(w)
+            w["plate"] = i + 1
+            master_list.append(w)
+    df_e = pd.DataFrame.from_records(master_list)
+
+    # FLISA
+    master_list = []
+    start_dict = xml_to_dict(filename=flisa_path)["Experiment"]["PlateSections"]
+    for i in range(0, len(start_dict)):
+        get_just_reduced = deep_convert_dict(start_dict[i])
+        get_just_reduced = get_just_reduced["PlateSection"]
+        get_just_reduced = deep_convert_dict(get_just_reduced["Wavelengths"]["Wavelength"])
+        for wv in range(0, len(get_just_reduced)):
+            grab_wavelength = deep_convert_dict(get_just_reduced[wv])["@WavelengthIndex"]
+            get_just_reduced_wv = deep_convert_dict(get_just_reduced[wv])
+            get_just_reduced_wells = [deep_convert_dict(i) for i in get_just_reduced_wv["Wells"]["Well"]]
+            for w in get_just_reduced_wells:
+                w["wavelength"] = grab_wavelength
+                w["plate"] = i + 1
+                master_list.append(w)
+
+    df_f = pd.DataFrame.from_records(master_list)
+    df_f.index = df_f["@Name"] + "_Plate" + df_f["plate"].astype(str)
+    df_f = df_f[["RawData", "wavelength"]].pivot(columns='wavelength').droplevel(0, axis=1)
+
+
+    # Normalize to well after merging ELISA and FLISA
+    df_e.index = df_e["@Name"] + "_Plate" + df_e["plate"].astype(str)
+    # add the plate to help with normalization process
+    final_df = df_e.merge(df_f, left_index=True, right_index=True)
+
+    master_norm_list = []
+    for i in set(final_df["plate"].to_list()):
+        # filter for the plate
+        temp_fil = final_df[final_df["plate"] == i][["reducedVal", "1", "2", "3"]]
+
+        # fix the column types
+        for col in temp_fil.columns:
+            temp_fil[col] = temp_fil[col].astype(float)
+            # lets log scale this as well
+            temp_fil[col] = np.log2(temp_fil[col])
+
+        # get the positive control and divide by it
+        pos_control1 = temp_fil.loc["A1_Plate" + str(i)]
+        pos_control2 = temp_fil.loc["A12_Plate" + str(i)]
+        pos_control = (pos_control1 + pos_control2) / 2
+        temp_fil = temp_fil / pos_control
+
+        # column sum normalize
+        for col in temp_fil.columns:
+            temp_fil[col] = temp_fil[col] / temp_fil[col].sum()
+
+        # pos_control = temp_fil.loc[["A1_Plate" + str(i), "A12_Plate" + str(i)]]
+
+        master_norm_list.append(temp_fil)
+
+    final_df = pd.concat(master_norm_list)
+    final_df.columns = ["ELISA", "FLISAwv1", "FLISAwv2", "FLISAwv3"]
+    final_df["Control"] = ""
+    for index, row in final_df.iterrows():
+        if "A12_" in index or "A1_" in index:
+            final_df.at[index, "Control"] = "Positive Control"
+        if "H1_" in index or "H12_" in index:
+            final_df.at[index, "Control"] = "Negative Control"
+    final_df["Name"] = final_df.index
+    final_df["F1_E"] = final_df["FLISAwv1"] + final_df["ELISA"]
+    final_df["F2_E"] = final_df["FLISAwv2"] + final_df["ELISA"]
+    final_df["F3_E"] = final_df["FLISAwv3"] + final_df["ELISA"]
+    final_df["FLISA"] = final_df["FLISAwv1"] + final_df["FLISAwv2"] + final_df["FLISAwv3"]
+    final_df["Max"] = final_df[["FLISAwv1", "FLISAwv2", "FLISAwv3"]].idxmax(axis=1)
+
+    fig = px.scatter(final_df, x="ELISA", y="FLISAwv1", color="Control", symbol="Max",
+                     hover_data=["Name", "FLISAwv2", "FLISAwv3"])
+    context['graph_wv1'] = fig.to_html()
+    fig = px.scatter(final_df, x="ELISA", y="FLISAwv2", color="Control", symbol="Max",
+                     hover_data=["Name", "FLISAwv1", "FLISAwv3"])
+    context['graph_wv2'] = fig.to_html()
+    fig = px.scatter(final_df, x="ELISA", y="FLISAwv3", color="Control", symbol="Max",
+                     hover_data=["Name", "FLISAwv1", "FLISAwv2"])
+    context['graph_wv3'] = fig.to_html()
+    fig = px.scatter(final_df, x="ELISA", y="FLISA", color="Control", symbol="Max",
+                     hover_data=["Name", "FLISAwv1", "FLISAwv2", "FLISAwv3"])
+    context['graph_all'] = fig.to_html()
+
+    final_df["ELISA_pow"] = final_df["ELISA"] + 10
+    fig = px.scatter_3d(final_df, x="FLISAwv1", y="FLISAwv2", z="FLISAwv3",
+                        color="Control", size="ELISA_pow")
+    context['graph_3d'] = fig.to_html()
+
+    return context
+
+def lisa(request):
+    context = {}
+    if request.method == 'POST':
+        main_form = LISAForm(request.POST, request.FILES)
+
+        if main_form.is_valid():
+            elisa = main_form.cleaned_data['elisa_reduced_xml'].file.name
+            flisa = main_form.cleaned_data['flisa_raw_xml'].file.name
+            context = lisa_process(context=context,
+                                   elisa_path=elisa,
+                                   flisa_path=flisa,
+                                   pos_control1="A1",
+                                   pos_control2="A2",
+                                   neg_control1="H1",
+                                   neg_control2="H12")
+            context['main_form'] = LISAForm()
+            return render(request, 'lisa.html', context)
+        else:
+            context['errors'] = main_form.errors
+            context['main_form'] = LISAForm(request.POST)
+
+    else:
+        context['main_form'] = LISAForm()
+
+    return render(request, 'lisa.html', context)
