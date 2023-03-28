@@ -9,15 +9,15 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 
 # todo just run this all on entry
-def group_objects(self):
+def group_objects(entry):
     for chain_type in ["Light", "Heavy"]:
         seqs = TrimmerSequence.objects.filter(entry__show_on_web=True,
-                                              entry__pk=self.pk,
+                                              entry__pk=entry.pk,
                                               chain=chain_type,
                                               # sketchy to have this?
                                               anarci_duplicate=False).order_by('asv_order')
-        if not self.pk % 100:
-            print(f"{chain_type}-{self.pk}")
+        if not entry.pk % 100:
+            print(f"{chain_type}-{entry.pk}")
 
         #imgt_aa_acid_seqs = [i.strip_domain for i in light_seqs]
         #if len(imgt_aa_acid_seqs) != len(set(imgt_aa_acid_seqs)):
@@ -70,9 +70,10 @@ def group_objects(self):
                 item.bad_support = True
             item.save()
         if chain_type == "Light":
-            self.light_count = self.new_light_count
+            entry.light_count = entry.new_light_count
         if chain_type == "Heavy":
-            self.heavy_count = self.new_heavy_count
+            entry.heavy_count = entry.new_heavy_count
+        entry.save()
 
 
 def run_all_entry_group():
@@ -130,6 +131,7 @@ def get_header(chain, type):
         if "ubuntu" in prefix:
             pass
         else:
+            print(error)
             print(chain.__dict__)
         return None
 
@@ -153,11 +155,13 @@ def generate_seq_fa():
     all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True,
                                                       chain="Heavy",
                                                       anarci_bad=False,
-                                                      anarci_duplicate=False).exclude(aa='-')
+                                                      anarci_duplicate=False,
+                                                      bad_support=False).exclude(aa='-')
     all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True,
                                                       chain="Light",
                                                       anarci_bad=False,
-                                                      anarci_duplicate=False).exclude(aa='-')
+                                                      anarci_duplicate=False,
+                                                      bad_support=False).exclude(aa='-')
     seq_list = get_list(all_heavy_chains, all_light_chains, 'seq')
     with open('../static_data/dna.fa','w') as dna_fa_out:
         for item in seq_list:
@@ -167,11 +171,13 @@ def generate_aa_fa():
     all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True,
                                                       chain="Heavy",
                                                       anarci_bad=False,
-                                                      anarci_duplicate=False).exclude(aa='-')
+                                                      anarci_duplicate=False,
+                                                      bad_support=False).exclude(aa='-')
     all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True,
                                                       chain="Light",
                                                       anarci_bad=False,
-                                                      anarci_duplicate=False).exclude(aa='-')
+                                                      anarci_duplicate=False,
+                                                      bad_support=False).exclude(aa='-')
 
     aa_list = get_list(all_heavy_chains, all_light_chains, 'strip_aa')
     with open('../static_data/protein.fa','w') as dna_fa_out:

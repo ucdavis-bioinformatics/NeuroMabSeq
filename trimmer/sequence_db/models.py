@@ -183,18 +183,18 @@ class TrimmerEntry(models.Model):
     @property
     def new_heavy_count(self):
         return len(TrimmerSequence.objects.filter(entry__pk=self.pk,
-                                              anarci_bad=False,
-                                              anarci_duplicate=False,
-                                              bad_support=False,
-                                              chain="Heavy"))
+                                                  anarci_bad=False,
+                                                  anarci_duplicate=False,
+                                                  bad_support=False,
+                                                  chain="Heavy"))
 
     @property
     def new_light_count(self):
         return len(TrimmerSequence.objects.filter(entry__pk=self.pk,
-                                              anarci_bad=False,
-                                              anarci_duplicate=False,
-                                              bad_support=False,
-                                              chain="Light"))
+                                                  anarci_bad=False,
+                                                  anarci_duplicate=False,
+                                                  bad_support=False,
+                                                  chain="Light"))
 
     @property
     def get_url(self):

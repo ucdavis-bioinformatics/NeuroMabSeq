@@ -5,6 +5,7 @@ rm mydatabase
 python manage.py migrate
 # directory, update True/False (False will run a reset)
 ./manage.py shell < run_update.py
+./manage.py shell -c "from sequence_db.methods import *; run_all_entry_group()"
 ./manage.py shell < run_status_update.py
 ./manage.py shell < run_metadata_update.py
 ./manage.py shell < generate_blat.py
