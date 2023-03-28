@@ -118,6 +118,8 @@ function toggle_it(itemID){
                   </tr>
                   <tr>
                        <td class="td-seq">{{item.vector_sequence}}</td>
+<!--                       <td class="td-seq">{{item.run_anarci}}</td>-->
+
                   </tr>
                   <tr>
                       <td>
@@ -214,6 +216,7 @@ function toggle_it(itemID){
                                            <td><strong>Region</strong></td>
                                            <td><strong>Sequence Fragment</strong></td>
                                            <td><strong>Length</strong></td>
+                                           <td><strong>Max Index Range</strong></td>
                                        </tr>
 
                                        {% for value in item.get_table %}
@@ -222,6 +225,7 @@ function toggle_it(itemID){
                                                 <td style="word-wrap: break-word">{{value.label}}</td>
                                                 <td class="td-seq">{{value.splice}}</td>
                                                 <td style="word-wrap: break-word">{{value.len_splice}}</td>
+                                                <td style="word-wrap: break-word">{{value.region_max_len}}</td>
                                        </tr>
                                        {% endfor %}
                                    </table>
@@ -257,6 +261,7 @@ function toggle_it(itemID){
                   </tr>
                   <tr>
                        <td class="td-seq">{{item.vector_sequence}}</td>
+
                   </tr>
                   <tr>
                       <td>
@@ -347,6 +352,7 @@ function toggle_it(itemID){
                                            <td><strong>Region</strong></td>
                                            <td><strong>Sequence Fragment</strong></td>
                                            <td><strong>Length</strong></td>
+                                           <td><strong>Max Index Range</strong></td>
                                        </tr>
 
                                        {% for value in item.get_table %}
@@ -355,6 +361,7 @@ function toggle_it(itemID){
                                                 <td style="word-wrap: break-word">{{value.label}}</td>
                                                 <td class="td-seq">{{value.splice}}</td>
                                                 <td style="word-wrap: break-word">{{value.len_splice}}</td>
+                                                <td style="word-wrap: break-word">{{value.region_max_len}}</td>
                                        </tr>
                                        {% endfor %}
                                    </table>

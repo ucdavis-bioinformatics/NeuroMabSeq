@@ -177,16 +177,39 @@ def main_page(request):
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['total_number_entries'] = len(all_entries)
-    context['total_number_light'] = len(TrimmerSequence.objects.filter(chain="Light"))
-    context['total_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy"))
+    context['total_number_light'] = len(TrimmerSequence.objects.filter(chain="Light",
+                                                                       anarci_bad=False,
+                                                                       anarci_duplicate=False,
+                                                                       bad_support=False,
+                                                                       ))
+    context['total_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy",
+                                                                       anarci_bad=False,
+                                                                       anarci_duplicate=False,
+                                                                       bad_support=False,
+                                                                       ))
 
     context['monoclonal_number_entries'] = len(all_entries.filter(~Q(category__in=[4,5])))
-    context['monoclonal_number_light'] = len(TrimmerSequence.objects.filter(chain="Light").exclude(entry__category__in=[4,5]))
-    context['monoclonal_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy").exclude(entry__category__in=[4,5]))
+    context['monoclonal_number_light'] = len(TrimmerSequence.objects.filter(chain="Light",
+                                                                            anarci_bad=False,
+                                                                            bad_support=False,
+                                                                            anarci_duplicate=False).exclude(entry__category__in=[4,5]))
+    context['monoclonal_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy",
+                                                                            anarci_bad=False,
+                                                                            bad_support=False,
+                                                                            anarci_duplicate=False).exclude(entry__category__in=[4,5]))
 
     context['parental_number_entries'] = len(all_entries.filter(category__in=[4,5]))
-    context['parental_number_light'] = len(TrimmerSequence.objects.filter(chain="Light", entry__category__in=[4,5]))
-    context['parental_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy", entry__category__in=[4,5]))
+    context['parental_number_light'] = len(TrimmerSequence.objects.filter(chain="Light",
+                                                                          entry__category__in=[4,5],
+                                                                          anarci_bad=False,
+                                                                          bad_support=False,
+                                                                          anarci_duplicate=False))
+    context['parental_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy",
+                                                                          entry__category__in=[4,5],
+                                                                          anarci_bad=False,
+                                                                          anarci_duplicate=False,
+                                                                          bad_support=False,
+                                                                          ))
 
     template = loader.get_template(html)
     return HttpResponse(template.render(context, request))
@@ -361,9 +384,15 @@ def blat(request,query_seq):
                 with open(search_prefix_file_name, 'w') as temp_file:
                     if form.cleaned_data["clonality"]:
                         sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix.replace('_','/'),
-                                                               clonality=form.cleaned_data["clonality"])
+                                                                   clonality=form.cleaned_data["clonality"],
+                                                                   anarci_bad=False,
+                                                                   bad_support=False,
+                                                                   anarci_duplicate=False)
                     else:
-                        sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix.replace('_', '/'))
+                        sequences = TrimmerSequence.objects.filter(entry__mabid__contains=search_prefix.replace('_', '/'),
+                                                                   anarci_bad=False,
+                                                                   bad_support=False,
+                                                                   anarci_duplicate=False)
                     for seq in sequences:
                         testing = get_header(seq, seq.chain)
                         temp_file.write(get_header(seq, seq.chain))
@@ -613,9 +642,19 @@ class TrimmerEntryDetailView(DetailView):
             context['pk2'] = self.kwargs['pk2']
         except:
             context['pk2'] = 0
-        context['light'] = TrimmerSequence.objects.filter(entry=context['entry'], duplicate=False, chain="Light").exclude(aa='-').order_by('asv_order')
+        context['light'] = TrimmerSequence.objects.filter(entry=context['entry'],
+                                                          duplicate=False,
+                                                          chain="Light",
+                                                          anarci_duplicate=False,
+                                                          bad_support=False,
+                                                          anarci_bad=False).exclude(aa='-').order_by('asv_order')
         # context['light_duplicates'] = TrimmerLight.objects.filter(entry=context['entry'], duplicate=True)
-        context['heavy'] = TrimmerSequence.objects.filter(entry=context['entry'], duplicate=False, chain="Heavy").exclude(aa='-').order_by('asv_order')
+        context['heavy'] = TrimmerSequence.objects.filter(entry=context['entry'],
+                                                          duplicate=False,
+                                                          chain="Heavy",
+                                                          anarci_duplicate=False,
+                                                          bad_support=False,
+                                                          anarci_bad=False).exclude(aa='-').order_by('asv_order')
         # context['heavy_duplicates'] = TrimmerHeavy.objects.filter(entry=context['entry'], duplicate=True)
         #context['graph'] = GetAsvGraph()
         #context['graph_pct'] = GetPctGraph()
@@ -631,7 +670,7 @@ def TrimmerEntryListView(request):
     context['protein_targets'] = [i[0] for i in simple_get_targets()]
     context['mabids'] = [i[0] for i in simple_get_mab_ids()]
     context['categories'] = [i[0] for i in simple_get_mab_ids()]
-    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = TrimmerEntry.objects.all()#filter(show_on_web=True, )
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)
@@ -689,7 +728,10 @@ def SequenceListView(request):
 
 def fasta_file_response(request):
     context = {}
-    all_entries = TrimmerSequence.objects.filter(entry__show_on_web=True).exclude(aa='-')
+    all_entries = TrimmerSequence.objects.filter(entry__show_on_web=True,
+                                                 anarci_bad=False,
+                                                 bad_support=False,
+                                                 anarci_duplicate=False).exclude(aa='-')
     context['filter'] = TrimmerSequenceFilter(request.GET, queryset=all_entries)
     context['queryset'] = context['filter'].qs[:200]
     filename = "neuromabseq_export.fa"

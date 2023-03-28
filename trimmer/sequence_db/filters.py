@@ -2,13 +2,18 @@ from .models import *
 import django_filters
 
 def get_mab_ids():
+    """
+
+    Returns:
+
+    """
     all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     return lambda: sorted([(entry.mabid, entry.mabid) for entry in all_entries])
 
 def get_targets():
-    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = TrimmerEntry.objects.all()#filter(show_on_web=True, )
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     return lambda: sorted(list(set([(entry.protein_target, entry.protein_target) for entry in all_entries
@@ -27,14 +32,14 @@ def get_concentration():
     return lambda: sorted(list(set([(entry.concentration, entry.concentration) for entry in all_entries])))
 
 def simple_get_targets():
-    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = TrimmerEntry.objects.all()#filter(show_on_web=True, )
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     return list(set([(entry.protein_target, entry.protein_target) for entry in all_entries
                            if entry.protein_target != 'nan' and entry.protein_target]))
 
 def simple_get_mab_ids():
-    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
+    all_entries = TrimmerEntry.objects.all()#filter(show_on_web=True, )
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     return sorted([(entry.mabid, entry.mabid) for entry in all_entries])

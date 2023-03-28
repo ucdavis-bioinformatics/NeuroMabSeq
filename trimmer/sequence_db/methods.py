@@ -5,6 +5,81 @@ import math
 ## To run
 # python manage.py shell
 # from sequence_db.methods import *
+from multiprocessing.dummy import Pool as ThreadPool
+
+
+# todo just run this all on entry
+def group_objects(self):
+    for chain_type in ["Light", "Heavy"]:
+        seqs = TrimmerSequence.objects.filter(entry__show_on_web=True,
+                                              entry__pk=self.pk,
+                                              chain=chain_type,
+                                              # sketchy to have this?
+                                              anarci_duplicate=False).order_by('asv_order')
+        if not self.pk % 100:
+            print(f"{chain_type}-{self.pk}")
+
+        #imgt_aa_acid_seqs = [i.strip_domain for i in light_seqs]
+        #if len(imgt_aa_acid_seqs) != len(set(imgt_aa_acid_seqs)):
+        seq_dict = {}
+        seq_count = {}
+        pk_dict = {}
+        final = []
+        # here we get the ones that match and group them
+        # todo make this pandas eventually
+        for item in seqs:
+            # this should update strip domain
+            item.domain = item.run_anarci["domain"]
+            item.numbering = item.run_anarci["numbering"]
+            if item.strip_domain in seq_dict.keys():
+                seq_dict[item.strip_domain] += item.asv_support
+                seq_count[item.strip_domain] += 1
+                item.anarci_duplicate = True
+            else:
+                seq_dict[item.strip_domain] = item.asv_support
+                seq_count[item.strip_domain] = 1
+                #pk_dict [item.strip_domain]
+                final.append(item)
+            item.save()
+        update_final = []
+        # todo add substrings or subsequences/results for some
+        # seen mabs with identical mab id
+        # subclones should be same category, everything before / in theory all targets same protein
+
+        # next we get the ones that have bad characteristics and get rid of those
+        for item in final:
+            keep = True
+            item.asv_support = seq_dict[item.strip_domain]
+            item.subseqs = seq_count[item.strip_domain]
+            table = general_table(item, chain_type)
+            # not have a region (FR or CDR) with 0 length, dont keep if missing
+            for region in table:
+                if region["len_splice"] == 0:
+                    keep = False
+                    item.anarci_bad = True
+            # stop or start missing 10 elements from FR 1 or 4 then bad sign too
+            if item.strip_domain[-10:] == "----------" or item.strip_domain[:10] == "----------":
+                keep = False
+                item.anarci_bad = True
+
+            # lets go with a 10% cutoff for now
+            if item.asv_support/item.total_reads < 0.1:
+                # keep = False
+                # update_final.append(item)
+                # TODO make this a seperate flag
+                item.bad_support = True
+            item.save()
+        if chain_type == "Light":
+            self.light_count = self.new_light_count
+        if chain_type == "Heavy":
+            self.heavy_count = self.new_heavy_count
+
+
+def run_all_entry_group():
+    all_entries = TrimmerEntry.objects.filter(show_on_web=True)
+    print("Fixing Anarci Sequences")
+    pool = ThreadPool(20)
+    results = pool.map(group_objects, all_entries)
 
 
 # this is called in the wipe_db.py script
@@ -75,16 +150,29 @@ def get_list(heavy_chains, light_chains, type):
     return seq_list
 
 def generate_seq_fa():
-    all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Heavy").exclude(aa='-')
-    all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Light").exclude(aa='-')
+    all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True,
+                                                      chain="Heavy",
+                                                      anarci_bad=False,
+                                                      anarci_duplicate=False).exclude(aa='-')
+    all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True,
+                                                      chain="Light",
+                                                      anarci_bad=False,
+                                                      anarci_duplicate=False).exclude(aa='-')
     seq_list = get_list(all_heavy_chains, all_light_chains, 'seq')
     with open('../static_data/dna.fa','w') as dna_fa_out:
         for item in seq_list:
             dna_fa_out.write(item)
 
 def generate_aa_fa():
-    all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Heavy").exclude(aa='-')
-    all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True, chain="Light").exclude(aa='-')
+    all_heavy_chains = TrimmerSequence.objects.filter(entry__show_on_web=True,
+                                                      chain="Heavy",
+                                                      anarci_bad=False,
+                                                      anarci_duplicate=False).exclude(aa='-')
+    all_light_chains = TrimmerSequence.objects.filter(entry__show_on_web=True,
+                                                      chain="Light",
+                                                      anarci_bad=False,
+                                                      anarci_duplicate=False).exclude(aa='-')
+
     aa_list = get_list(all_heavy_chains, all_light_chains, 'strip_aa')
     with open('../static_data/protein.fa','w') as dna_fa_out:
         for item in aa_list:
@@ -237,7 +325,12 @@ def data_upload(update, dir):
 
 
 def seq_count(entry, chain_type):
-    return len(TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain=chain_type))
+    return len(TrimmerSequence.objects.filter(entry__pk=entry.pk,
+                                              duplicate=False,
+                                              chain=chain_type,
+                                              anarci_bad=False,
+                                              anarci_duplicate=False,
+                                              ))
 
 
 def assign_order(seqs, chain_type):
@@ -247,8 +340,16 @@ def assign_order(seqs, chain_type):
 
 
 def update_order(entry):
-    light_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Light").exclude(aa='-')
-    heavy_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,  duplicate=False, chain="Heavy").exclude(aa='-')
+    light_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,
+                                                duplicate=False,
+                                                chain="Light",
+                                                anarci_bad=False,
+                                                anarci_duplicate=False).exclude(aa='-')
+    heavy_seqs = TrimmerSequence.objects.filter(entry__pk=entry.pk,
+                                                duplicate=False,
+                                                chain="Heavy",
+                                                anarci_bad=False,
+                                                anarci_duplicate=False).exclude(aa='-')
     assign_order(light_seqs, "LC")
     assign_order(heavy_seqs, "HC")
 
@@ -363,8 +464,18 @@ def new_metadata_upload(filename=None):
             if row['sample_name'] != 'None' and row['sample_name'] != 0 and '_' in row['sample_name']:
                 # well = row['sample_name'].split('_')[1]
                 # plate = 'plate' + row['sample_name'].split('_')[0][1:]
-                light_entries = TrimmerSequence.objects.filter(sample_name=row['sample_name'], chain="Light")
-                heavy_entries = TrimmerSequence.objects.filter(sample_name=row['sample_name'], chain="Heavy")
+                light_entries = TrimmerSequence.objects.filter(sample_name=row['sample_name'],
+                                                               chain="Light",
+                                                               anarci_bad=False,
+                                                               bad_support=False,
+                                                               anarci_duplicate=False,
+                                                               )
+                heavy_entries = TrimmerSequence.objects.filter(sample_name=row['sample_name'],
+                                                               chain="Heavy",
+                                                               anarci_bad=False,
+                                                               bad_support=False,
+                                                               anarci_duplicate=False,
+                                                               )
 
             if len(light_entries):
                 entry = light_entries[0].entry

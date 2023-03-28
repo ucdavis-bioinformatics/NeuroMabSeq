@@ -89,10 +89,10 @@ def general_regions_function(object, type):
     for region in increment:
         new_dict = {}
         length = 0
-        for number in object.numbering.split(','):
-
+        for number, domain in zip(object.numbering.split(','), object.domain.split(",")):
             if int(number) in [i for i in range(region['splice'][0] + 1, region['splice'][1] + 1)]:
                 length += 1
+
         new_dict['length'] = length
         if 'CDR' in region['label']:
             new_dict['color'] = region_dict['CDR']
@@ -103,6 +103,7 @@ def general_regions_function(object, type):
     return regions_info
 
 def general_table(object, type):
+    # expected length and actual length
     if type == 'Heavy':
         increment = heavy_increment
     else:
@@ -111,17 +112,21 @@ def general_table(object, type):
     for region in increment:
         new_dict = {}
         length = 0
+        max_len = 0
         new_splice = ''
         for number, aa in zip(object.numbering.split(','), object.domain.split(',')):
             if int(number) in [i for i in range(region['splice'][0] + 1, region['splice'][1] + 1)]:
                 new_splice += aa
-                length += 1
+                if aa != "-":
+                    length += 1
+                max_len += 1
         if 'CDR' in region['label']:
             new_dict['color'] = region_dict['CDR']
         else:
             new_dict['color'] = region_dict['HF']
         new_dict['splice'] = new_splice.replace('-','')
         new_dict['len_splice'] = length
+        new_dict['region_max_len'] = max_len
         new_dict['range'] = region['range']
         new_dict['label'] = region['label']
 
@@ -143,6 +148,9 @@ class TrimmerEntry(models.Model):
     clonality = models.CharField(choices=(('Monoclonal','Monoclonal'),
                                           ('Oligoclonal','Oligoclonal')), max_length=12, default="")
 
+
+
+
     @property
     def get_count(self):
         return TrimmerEntry.objects.filter(mabid=self.mabid).count()
@@ -158,11 +166,35 @@ class TrimmerEntry(models.Model):
 
     @property
     def heavy_duplicates(self):
-        return TrimmerSequence.objects.filter(entry__pk=self.pk, duplicate=True, chain="Heavy").order_by('asv_support')
+        return TrimmerSequence.objects.filter(entry__pk=self.pk,
+                                              anarci_bad=False,
+                                              anarci_duplicate=True,
+                                              bad_support=False,
+                                              chain="Heavy").order_by('asv_support')
 
     @property
     def light_duplicates(self):
-        return TrimmerSequence.objects.filter(entry__pk=self.pk, duplicate=True, chain="Light").order_by('asv_support')
+        return TrimmerSequence.objects.filter(entry__pk=self.pk,
+                                              anarci_bad=False,
+                                              anarci_duplicate=True,
+                                              bad_support=False,
+                                              chain="Heavy").order_by('asv_support')
+
+    @property
+    def new_heavy_count(self):
+        return len(TrimmerSequence.objects.filter(entry__pk=self.pk,
+                                              anarci_bad=False,
+                                              anarci_duplicate=False,
+                                              bad_support=False,
+                                              chain="Heavy"))
+
+    @property
+    def new_light_count(self):
+        return len(TrimmerSequence.objects.filter(entry__pk=self.pk,
+                                              anarci_bad=False,
+                                              anarci_duplicate=False,
+                                              bad_support=False,
+                                              chain="Light"))
 
     @property
     def get_url(self):
@@ -189,8 +221,6 @@ def translate_seq(
             break
         else:
             aa_comp.append(n_to_aa[seq[i*3:i*3+3]])
-    #print(aa)
-    #print(''.join(aa_comp))
     return ''.join(aa_comp) == aa
 
 
@@ -218,14 +248,10 @@ class TrimmerSequence(models.Model):
     chain = models.CharField(choices=(("Light", "Light"),("Heavy", "Heavy")), max_length=10)
     asv_order = models.IntegerField(blank=True, null=True)
     chain_id = models.CharField(max_length=25, default='')
-
-    @property
-    def heavy_duplicates(self):
-        return TrimmerSequence.objects.filter(entry__pk=self.pk, duplicate=True, chain="Heavy").order_by('asv_support')
-
-    @property
-    def light_duplicates(self):
-        return TrimmerSequence.objects.filter(entry__pk=self.pk, duplicate=True, chain="Heavy").order_by('asv_support')
+    anarci_bad = models.BooleanField(default=False)
+    anarci_duplicate = models.BooleanField(default=False)
+    bad_support = models.BooleanField(default=False)
+    subseqs = models.IntegerField(blank=True, null=True)
 
 
     @property
@@ -269,18 +295,66 @@ class TrimmerSequence(models.Model):
     def is_sanger(self):
         return self.seq_platform == 'Sanger'
 
+    @property
+    def run_anarci(self):
+        import subprocess
+        """Run ANARCI program and parse results into a dictionary. Return FIRST hit."""
+        result = None
+        aa = self.strip_aa
+        # Parse the aa into each sub-piece that doesn't have a stop codon:
+        # TODO
+        subAAs = str(aa).strip('X').split('*')
+        for i in range(len(subAAs)):
+            s = subAAs[i]
+            if (len(s) > 0):
+                cmd = "anarci" + " --scheme imgt -i " + s
+                test = subprocess.run(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                      universal_newlines=True)
+                output = test.stdout.splitlines()
+                if len(output) > 2:
+                    result = {}
+                    mcols = output[4].split('|')
+                    mdata = output[5].split('|')
+                    result['chain_type'] = mdata[mcols.index('chain_type')]
+                    result['e-value'] = mdata[mcols.index('e-value')]
+                    result['score'] = mdata[mcols.index('score')]
+                    result['seqstart_index'] = mdata[mcols.index('seqstart_index')]
+                    result['seqend_index'] = mdata[mcols.index('seqend_index')]
+                    result['scheme'] = output[6].split('=')[1].strip()
+                    splitAA = s[0:int(result['seqstart_index'])]
+                    splitAA += '`' + s[int(result['seqstart_index']):int(result['seqend_index'])] + '`'
+                    splitAA += s[int(result['seqend_index']):]
+                    subAAs[i] = splitAA
+                    #result['frame'] = frame
+                    result['AA'] = '*'.join(subAAs)
+                    result['numbering'] = []
+                    result['domain'] = []
+                    for l in output[7:]:
+                        if l != '//':
+                            result['numbering'] += [l.strip().split()[1]]
+                            result['domain'] += [l.strip().split()[-1]]
+                    result['numbering'] = ','.join(result['numbering'])
+                    result['domain'] = ','.join(result['domain'])
+                    break
+        #print(result)
+        return result
 
     @property
     def vector_sequence(self):
         try:
             find_dom_in_aa = self.strip_aa.find(self.strip_domain.replace("-",""))
             end_spot = len(self.strip_domain.replace("-","")) + find_dom_in_aa
-
             # make sure always aaa at the end and 6 nts being stripped at the end
             # check each of the ORF spots
             # TODO make this just an iteration of whole thing
             for i in range(-3,6):
                 if translate_seq(seq=self.seq[find_dom_in_aa*3+i:end_spot*3+i], aa=self.strip_domain.replace("-","")):
+                    # print(self.seq[find_dom_in_aa*3+i:end_spot*3+i],
+                    #       self.strip_domain.replace("-", "")
+                    #       )
+                    # print(len(self.seq[find_dom_in_aa*3+i:end_spot*3+i]),
+                    #       len(self.strip_domain.replace("-", ""))
+                    #       )
                     return self.seq[find_dom_in_aa*3+i:end_spot*3+i]
 
         except:

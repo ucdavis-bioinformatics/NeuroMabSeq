@@ -12,5 +12,6 @@
 .DS_Store
 data/*
 trimmer/trimmer/settings.py
-data2/*
-data3/*
+data3/HTML_Reports/*
+data3/AnnotatedResults/*
+data3/StatusReports/*
