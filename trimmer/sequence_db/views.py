@@ -181,22 +181,26 @@ def main_page(request):
                                                                        anarci_bad=False,
                                                                        anarci_duplicate=False,
                                                                        bad_support=False,
+                                                                       entry__show_on_web=True
                                                                        ))
     context['total_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy",
                                                                        anarci_bad=False,
                                                                        anarci_duplicate=False,
                                                                        bad_support=False,
+                                                                       entry__show_on_web=True
                                                                        ))
 
     context['monoclonal_number_entries'] = len(all_entries.filter(~Q(category__in=[4,5])))
     context['monoclonal_number_light'] = len(TrimmerSequence.objects.filter(chain="Light",
                                                                             anarci_bad=False,
                                                                             bad_support=False,
-                                                                            anarci_duplicate=False).exclude(entry__category__in=[4,5]))
+                                                                            anarci_duplicate=False,
+                                                                            entry__show_on_web=True).exclude(entry__category__in=[4,5]))
     context['monoclonal_number_heavy'] = len(TrimmerSequence.objects.filter(chain="Heavy",
                                                                             anarci_bad=False,
                                                                             bad_support=False,
-                                                                            anarci_duplicate=False).exclude(entry__category__in=[4,5]))
+                                                                            anarci_duplicate=False,
+                                                                            entry__show_on_web=True).exclude(entry__category__in=[4,5]))
 
     context['parental_number_entries'] = len(all_entries.filter(category__in=[4,5]))
     context['parental_number_light'] = len(TrimmerSequence.objects.filter(chain="Light",
@@ -670,7 +674,7 @@ def TrimmerEntryListView(request):
     context['protein_targets'] = [i[0] for i in simple_get_targets()]
     context['mabids'] = [i[0] for i in simple_get_mab_ids()]
     context['categories'] = [i[0] for i in simple_get_mab_ids()]
-    all_entries = TrimmerEntry.objects.all()#filter(show_on_web=True, )
+    all_entries = TrimmerEntry.objects.filter(show_on_web=True, )
     all_entries = all_entries.exclude(mabid__contains='positive')
     all_entries = all_entries.exclude(mabid__contains='negative')
     context['filter'] = TrimmerEntryFilter(request.GET, queryset=all_entries)

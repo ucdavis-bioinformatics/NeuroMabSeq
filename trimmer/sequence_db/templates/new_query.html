@@ -92,18 +92,21 @@ td.wrapok {
 
       $(document).ready(function() {
           $('#albums').DataTable({
-              "searching": false,
-              "sortable": false,
+              "searching": true,
+              "sortable": true,
               "scrollX": true,
               'serverSide': true,
               'ajax': '/api/entry_list/?format=datatables' + '&mabid=' + mabid + '&category=' + cat + '&protein_target=' + target + '&clonality=' + clonality + '&ordering=' + ordering + '&search=' + search,
               'columns': [
-                  {'data': 'mabid', 'sortable': false},
+                  {'data': 'mabid', 'sortable': true},
                   {'data': 'get_category', 'sortable': false},
                   {'data': 'clonality', 'sortable': false},
                   {'data': 'get_protein_target', 'sortable': false},
                   {'data': 'light_count', 'sortable': false},
                   {'data': 'heavy_count', 'sortable': false},
+                  {'data': 'max_lcstars', 'sortable': false},
+                  {'data': 'max_hcstars', 'sortable': false},
+                  {'data': 'maxavgstars', 'sortable': false},
                   {'data': 'get_url', 'sortable': false, render: function ( data, type, row ) {
                         return '<a class="btn btn-info btn-sm" href=/' + data + '>' + 'Show Full Entry' + '</a>';
                    }},
@@ -194,7 +197,11 @@ td.wrapok {
               <th align="left" >Protein Target</th>
               <th align="left" ># Light Chain Sequences</th>
               <th align="left" ># Heavy Chain Sequences</th>
+              <th align="left" >&star; Max LC Stars</th>
+              <th align="left" >&star; Max HC Stars</th>
+              <th align="left" >&star; Max Avg. Stars</th>
               <th align="left" >See Entry</th>
+
             </tr>
           </thead>
         </table>

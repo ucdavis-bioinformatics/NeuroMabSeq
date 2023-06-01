@@ -91,7 +91,11 @@ class TrimmerEntryFilter(django_filters.FilterSet):
                                                       ('protein_target', 'Target Ascending'), ('-protein_target', 'Target Descending'),
                                                       ('category', 'Category Ascending'), ('-category', 'Category Descending'),
                                                       ('light_count', 'Light Count Ascending'), ('-light_count', 'Light Count Descending'),
-                                                      ('heavy_count', 'Heavy Count Ascending'), ('-heavy_count', 'Heavy Count Descending')
+                                                      ('heavy_count', 'Heavy Count Ascending'), ('-heavy_count', 'Heavy Count Descending'),
+                                                      ('max_lcstars', 'LC Star Max Ascending'), ('-max_lcstars', 'LC Star Max Descending'),
+                                                      ('max_hcstars', 'HC Star Max Ascending'), ('-max_hcstars', 'HC Star Max Descending'),
+                                                      ('maxavgstars', 'Max Avg. Ascending'), ('-maxavgstars', 'Max Avg. Descending'),
+
                                                       ))
     search = django_filters.CharFilter()
     # search_target = django_filters.CharFilter()

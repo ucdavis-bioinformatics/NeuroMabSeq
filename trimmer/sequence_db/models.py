@@ -147,8 +147,9 @@ class TrimmerEntry(models.Model):
     heavy_count = models.IntegerField(blank=True, null=True)
     clonality = models.CharField(choices=(('Monoclonal','Monoclonal'),
                                           ('Oligoclonal','Oligoclonal')), max_length=12, default="")
-
-
+    max_lcstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    max_hcstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    maxavgstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
 
     @property
@@ -252,7 +253,9 @@ class TrimmerSequence(models.Model):
     anarci_duplicate = models.BooleanField(default=False)
     bad_support = models.BooleanField(default=False)
     subseqs = models.IntegerField(blank=True, null=True)
-
+    stars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    asv_stars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    duplicate_stars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     @property
     def strip_domain(self):

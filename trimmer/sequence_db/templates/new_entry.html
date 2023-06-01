@@ -104,7 +104,7 @@ function toggle_it(itemID){
               <table style="table-layout: fixed; width: 100%">
                   {% for item in light %}
                   <tr>
-                    <th>Sequence: {{ forloop.counter }}</th>
+                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}}</th>
                   </tr>
                   <tr>
                       {% if item.pk == pk2 %}
@@ -127,6 +127,9 @@ function toggle_it(itemID){
                             <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('light{{forloop.counter}}a');">
                               <span class="glyphicon glyphicon-plus-sign"></span> Sequencing Info
                             </a>
+                            <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('light{{forloop.counter}}a2');">
+                              <span class="glyphicon glyphicon-plus-sign"></span> &star; Scoring Info
+                            </a>                            
                             <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('light{{forloop.counter}}b');toggle_it('light{{forloop.counter}}c');toggle_it('light{{forloop.counter}}d')">
                               <span class="glyphicon glyphicon-plus-sign"></span> Amino Acid Information
                             </a>
@@ -147,7 +150,7 @@ function toggle_it(itemID){
 
                                <table  id="light{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
-<!--                                        <th>Percent Support</th>-->
+                                       <th>Percent Support</th>
                                         <th>ASV Count</th>
                                         <th>Platform</th>
                                         <th>Plate</th>
@@ -157,7 +160,7 @@ function toggle_it(itemID){
                                       </tr>
 
                                       <tr>
-<!--                                          <td style="word-wrap: break-word">{{item.pct_support|floatformat:2 }}%</td>-->
+                                          <td style="word-wrap: break-word">{{item.pct_support|floatformat:2 }}%</td>
                                           <td style="word-wrap: break-word">{{item.asv_support|floatformat:0}}</td>
                                           <td style="word-wrap: break-word">{{item.seq_platform}}</td>
                                           <td style="word-wrap: break-word">{{item.plate}}</td>
@@ -171,6 +174,25 @@ function toggle_it(itemID){
 
                                </table>
                                <br>
+                               <table  id="light{{forloop.counter}}a2" style="display:none; table-layout: fixed; width: 100%">
+                                <tr>
+                                  <th>Stars &star;</th>
+                                  <th>ASV Stars &star;</th>
+                                  <th>Replicate Stars &star;</th>
+                                  <th>Percentile &star;</th>
+
+                                </tr>
+
+                                <tr>
+                                    <td style="word-wrap: break-word">{{item.stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.asv_stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.duplicate_stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.plate}}</td>
+
+                                </tr>
+
+                                </table>
+                                <br>                               
 
                                 <table  id="light{{forloop.counter}}b" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
@@ -245,7 +267,7 @@ function toggle_it(itemID){
 
                   {% for item in heavy %}
                   <tr>
-                    <th>Sequence: {{ forloop.counter }}</th>
+                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}}</th>
                   </tr>
                   <tr>
                       {% if item.pk == pk2 %}
@@ -266,6 +288,9 @@ function toggle_it(itemID){
                             <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('{{forloop.counter}}a');">
                               <span class="glyphicon glyphicon-plus-sign"></span> Sequencing Info
                             </a>
+                            <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('{{forloop.counter}}a2');">
+                              <span class="glyphicon glyphicon-plus-sign"></span> &star; Scoring Info
+                            </a>
                             <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('{{forloop.counter}}b');toggle_it('{{forloop.counter}}c');toggle_it('{{forloop.counter}}d')">
                               <span class="glyphicon glyphicon-plus-sign"></span> Amino Acid Information
                             </a>
@@ -285,6 +310,7 @@ function toggle_it(itemID){
 <!--                               </table>-->
                                <table  id="{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%; border: 5px">
                                       <tr>
+                                        <th>Percent Support</th>
                                         <th>ASV Count</th>
                                         <th>Platform</th>
                                         <th>Plate</th>
@@ -293,6 +319,7 @@ function toggle_it(itemID){
 
                                       </tr>
                                       <tr>
+                                          <td style="word-wrap: break-word">{{item.pct_support|floatformat:2 }}%</td>
                                           <td style="word-wrap: break-word">{{item.asv_support|floatformat:0}}</td>
                                           <td style="word-wrap: break-word">{{item.seq_platform}}</td>
                                           <td style="word-wrap: break-word">{{item.plate}}</td>
@@ -304,6 +331,24 @@ function toggle_it(itemID){
                                           {% endif %}                                      </tr>
 
                                </table>
+                               <table  id="{{forloop.counter}}a2" style="display:none; table-layout: fixed; width: 100%">
+                                <tr>
+                                  <th>Stars &star;</th>
+                                  <th>ASV Stars &star;</th>
+                                  <th>Replicate Stars &star;</th>
+                                  <th>Percentile &star;</th>
+
+                                </tr>
+
+                                <tr>
+                                    <td style="word-wrap: break-word">{{item.stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.asv_stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.duplicate_stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.plate}}</td>
+
+                                </tr>
+
+                                </table>                        
                                <br>
                                 <table  id="{{forloop.counter}}b" style="display:none; table-layout: fixed; width: 100%">
                                       <tr>
