@@ -150,7 +150,7 @@ class TrimmerEntry(models.Model):
     max_lcstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     max_hcstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     maxavgstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
+    contains_verified = models.BooleanField(default=False)
 
     @property
     def get_count(self):
@@ -256,7 +256,8 @@ class TrimmerSequence(models.Model):
     stars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     asv_stars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     duplicate_stars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
+    verified = models.BooleanField(default=False)
+    
     @property
     def strip_domain(self):
         try:

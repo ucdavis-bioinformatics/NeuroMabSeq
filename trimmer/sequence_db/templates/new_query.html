@@ -107,6 +107,17 @@ td.wrapok {
                   {'data': 'max_lcstars', 'sortable': false},
                   {'data': 'max_hcstars', 'sortable': false},
                   {'data': 'maxavgstars', 'sortable': false},
+                  <!--Display as an checkmark emoji if true else nothing and make the pixels bigger-->
+                  {'data': 'contains_verified', 'sortable': false, 
+                  render: function ( data, type, row ) {
+                        if (data == true){
+                            return '&#9989;'
+                        }
+                        else{
+                            return ''
+                        }
+                   }
+                  },
                   {'data': 'get_url', 'sortable': false, render: function ( data, type, row ) {
                         return '<a class="btn btn-info btn-sm" href=/' + data + '>' + 'Show Full Entry' + '</a>';
                    }},
@@ -161,7 +172,8 @@ td.wrapok {
       </div>
 
         <button type="submit" class="btn btn-primary">
-            <span class="glyphicon glyphicon-search"></span> Search
+          <!-- Spyglass emoji -->
+          &#128269; Search
         </button>
 
 
@@ -169,12 +181,16 @@ td.wrapok {
          <div>
          <div align="center" style="padding:5px"
           <a href="/new_query">
+           <!-- Refresh emoji -->
                <button  label="Sequence Database" name="so_link"  class="btn btn-warning">Reset Filter</button>
           </a>
          </div>
          <div align="right">
           <a href="/faq_list">
-               <button label="FAQ" name="so_link"  class="btn btn-info">Frequently Asked Questions</button>
+            <!-- Question emoji -->
+
+
+               <button label="FAQ" name="so_link"  class="btn btn-info"> &#10067; Frequently Asked Questions</button>
           </a>
          </div>
        </div>
@@ -200,6 +216,7 @@ td.wrapok {
               <th align="left" >&star; Max LC Stars</th>
               <th align="left" >&star; Max HC Stars</th>
               <th align="left" >&star; Max Avg. Stars</th>
+              <th align="left" >LC & HC Verified by Cloning</th>
               <th align="left" >See Entry</th>
 
             </tr>

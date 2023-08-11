@@ -104,7 +104,7 @@ function toggle_it(itemID){
               <table style="table-layout: fixed; width: 100%">
                   {% for item in light %}
                   <tr>
-                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}}</th>
+                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}} {% if item.verified %} -- Verified by Cloning: &#9989 {% else %} {% endif %} </th>
                   </tr>
                   <tr>
                       {% if item.pk == pk2 %}
@@ -267,7 +267,8 @@ function toggle_it(itemID){
 
                   {% for item in heavy %}
                   <tr>
-                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}}</th>
+                    <!--Show check mark emoji if verified is true -->
+                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}}  {% if item.verified %} -- Verified by Cloning: &#9989 {% else %} {% endif %} </th>
                   </tr>
                   <tr>
                       {% if item.pk == pk2 %}
