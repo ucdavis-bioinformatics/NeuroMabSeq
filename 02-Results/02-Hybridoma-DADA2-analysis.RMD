@@ -34,8 +34,15 @@ outp = './'
 # sampleData = read.table(paste("https://submissions.dnatech.ucdavis.edu/server/api/submissions/", 
 #                               submission, "/download/?format=tsv&data=samples", sep=''), sep='\t', header=T, as.is=T)
 
-sampleData = read.table(paste("https://ucdavis.coreomics.com/server/api/submissions/", 
-                              submission, "/download/?format=tsv&data=samples", sep=''), sep='\t', header=T, as.is=T)
+library(httr)
+file_temp_out <- paste("output_", submission, "_temp.txt", sep='')
+writeLines(content(httr::GET(url = paste("https://ucdavis.coreomics.com/server/api/submissions/", submission, "/download/?format=tsv&data=samples", sep=''), config = httr::config(ssl_verifypeer = FALSE)),as='text'), file_temp_out)
+sampleData = read.table(file_temp_out, sep='\t', header=T, as.is=T)
+#result <- httr::GET(
+#  url    = "https://ucdavis.coreomics.com/server/api/submissions/1d4b3d6143c0/download/?format=tsv&data=samples",
+#  config = httr::config(ssl_verifypeer = FALSE)
+#)
+
 
 #sampleData = read.table('https://ucdavis.coreomics.com/server/api/submissions/b51b81e9ee80/download/?format=tsv&data=samples', sep='\t', header=T, as.is=T)
 
