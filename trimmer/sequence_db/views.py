@@ -742,7 +742,7 @@ def fasta_file_response(request):
     content = ''
     # TODO Need to fix this based on the updated Heavy and Light chain pks
     for i in context["queryset"]:
-        content += get_header(i, i.chain, i.asv_order)
+        content += get_header(i, i.chain)
         content += i.seq + '\n'
     response = HttpResponse(content, content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
