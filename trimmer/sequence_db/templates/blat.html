@@ -127,6 +127,7 @@ $(document).ready(function() {
                     <th>Percent Identity</th>
                     <th>Score</th>
                     <th>Mab ID</th>
+                    <th>Plate Well</th>
                     <th>Chain Type</th>
                     <th>Clonality</th>
                     <th>See Entry</th>
@@ -139,6 +140,7 @@ $(document).ready(function() {
                   <td>{{item.ident_pct}}</td>
                   <td>{{item.score}}</td>
                   <td>{{item.mabid}}</td>
+                  <td>{{item.plate_well}}</td>
                   {% if item.chain %}
                     <td>{{item.chain}}</td>
                   {% else %}

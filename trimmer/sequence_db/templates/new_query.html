@@ -109,9 +109,23 @@ td.wrapok {
                   {'data': 'maxavgstars', 'sortable': false},
                   <!--Display as an checkmark emoji if true else nothing and make the pixels bigger-->
                   {'data': 'contains_verified', 'sortable': false, 
+                  // also add a contains_failed column to the table
+
                   render: function ( data, type, row ) {
+                        // if true and contains_failed is true, display a checkmark emoji and an X emoji
                         if (data == true){
                             return '&#9989;'
+                        }
+                        else{
+                            return ''
+                        }
+                   }
+                  },
+                  // do the same thing for contains_failed
+                  {'data': 'contains_failed', 'sortable': false,
+                  render: function ( data, type, row ) {
+                        if (data == true){
+                            return '&#10060;'
                         }
                         else{
                             return ''
@@ -217,6 +231,7 @@ td.wrapok {
               <th align="left" >&star; Max HC Stars</th>
               <th align="left" >&star; Max Avg. Stars</th>
               <th align="left" >LC & HC Verified by Cloning</th>
+              <th align="left" >LC & HC Failed by Cloning</th>
               <th align="left" >See Entry</th>
 
             </tr>

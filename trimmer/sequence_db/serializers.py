@@ -7,7 +7,8 @@ class TrimmerEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = TrimmerEntry
         fields = ['id', 'mabid', 'show_on_web', 'category', 'protein_target', 'heavy_count', 'light_count', 'get_category',
-                  'get_protein_target', 'get_url', 'clonality', 'max_lcstars', 'max_hcstars', 'maxavgstars', 'contains_verified']
+                  'get_protein_target', 'get_url', 'clonality', 'max_lcstars', 'max_hcstars', 'maxavgstars', 'contains_verified', 
+                  'contains_failed']
 
 
 # can also use a Model Serializer here

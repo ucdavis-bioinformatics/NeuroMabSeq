@@ -49,6 +49,20 @@ n_to_aa = {
 
 region_dict = {'HF': '#00FFFF', 'CDR': '#CCFF99'}
 
+# if the key is < 10 need to add a 0 to the start though
+well_dictionary = {str(key)+"-SMARTindex": value for key, value in zip([i for i in range(1,97)],
+                                                    ["A1","B1","C1","D1","E1","F1","G1","H1",
+                                                     "A2","B2","C2","D2","E2","F2","G2","H2",
+                                                     "A3","B3","C3","D3","E3","F3","G3","H3",
+                                                     "A4","B4","C4","D4","E4","F4","G4","H4",
+                                                     "A5","B5","C5","D5","E5","F5","G5","H5",
+                                                     "A6","B6","C6","D6","E6","F6","G6","H6",
+                                                     "A7","B7","C7","D7","E7","F7","G7","H7",
+                                                     "A8","B8","C8","D8","E8","F8","G8","H8",
+                                                     "A9","B9","C9","D9","E9","F9","G9","H9",
+                                                     "A10","B10","C10","D10","E10","F10","G10","H10",
+                                                     "A11","B11","C11","D11","E11","F11","G11","H11",
+                                                     "A12","B12","C12","D12","E12","F12","G12","H12",])}
 
 categories = {
     1: "NeuroMab mAbs",
@@ -151,6 +165,7 @@ class TrimmerEntry(models.Model):
     max_hcstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     maxavgstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     contains_verified = models.BooleanField(default=False)
+    contains_failed = models.BooleanField(default=False)
 
     @property
     def get_count(self):
@@ -257,6 +272,18 @@ class TrimmerSequence(models.Model):
     asv_stars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     duplicate_stars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     verified = models.BooleanField(default=False)
+    failed = models.BooleanField(default=False)
+
+    @property
+    def well_from_smartindex(self):
+        # remove the leading 0 if it exist:
+        try:
+            if self.SMARTindex[0] == '0':
+                return well_dictionary[self.SMARTindex[1:]]
+            else:
+                return well_dictionary[self.SMARTindex]
+        except KeyError:
+            return ''
     
     @property
     def strip_domain(self):

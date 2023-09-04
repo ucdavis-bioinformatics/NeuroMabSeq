@@ -442,6 +442,8 @@ def blat(request,query_seq):
                     #temp_dict['plate'] = parse_id[4]
                     temp_dict['chain_id'] = parse_id[7]
                     temp_dict['clonality'] = parse_id[8]
+                    # grab model for the sequence based on the pk and get the plate 
+                    temp_dict['plate_well'] = TrimmerSequence.objects.get(pk=temp_dict['pk']).plate + '_' + TrimmerSequence.objects.get(pk=temp_dict['pk']).well_from_smartindex
                     if temp_dict["clonality"] and temp_dict["clonality"] == form.cleaned_data["clonality"]:
                         all_results.append(temp_dict)
                 #print(parse_id)
