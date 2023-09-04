@@ -104,7 +104,7 @@ function toggle_it(itemID){
               <table style="table-layout: fixed; width: 100%">
                   {% for item in light %}
                   <tr>
-                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}} {% if item.verified %} -- Verified by Cloning: &#9989 {% else %} {% endif %} {% if item.failed %} -- Failed by Cloning: &#10060 {% else %} {% endif %}</th>
+                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}} {% if item.verified %} -- Verified by Cloning: &#9989 {% else %} {% endif %} </th> <!--{% if item.failed %} -- Failed by Cloning: &#10060 {% else %} {% endif %} </th> -->
                   </tr>
                   <tr>
                       {% if item.pk == pk2 %}
@@ -268,7 +268,7 @@ function toggle_it(itemID){
                   {% for item in heavy %}
                   <tr>
                     <!--Show check mark emoji if verified is true -->
-                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}}  {% if item.verified %} -- Verified by Cloning: &#9989 {% else %} {% endif %} {% if item.failed %} -- Failed by Cloning: &#10060 {% else %} {% endif %} </th>
+                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}}  {% if item.verified %} -- Verified by Cloning: &#9989 {% else %} {% endif %} </th> <!--{% if item.failed %} -- Failed by Cloning: &#10060 {% else %} {% endif %} </th> -->
                   </tr>
                   <tr>
                       {% if item.pk == pk2 %}

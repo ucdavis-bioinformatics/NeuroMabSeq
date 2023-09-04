@@ -121,17 +121,17 @@ td.wrapok {
                         }
                    }
                   },
-                  // do the same thing for contains_failed
-                  {'data': 'contains_failed', 'sortable': false,
-                  render: function ( data, type, row ) {
-                        if (data == true){
-                            return '&#10060;'
-                        }
-                        else{
-                            return ''
-                        }
-                   }
-                  },
+                  // // do the same thing for contains_failed
+                  // {'data': 'contains_failed', 'sortable': false,
+                  // render: function ( data, type, row ) {
+                  //       if (data == true){
+                  //           return '&#10060;'
+                  //       }
+                  //       else{
+                  //           return ''
+                  //       }
+                  //  }
+                  // },
                   {'data': 'get_url', 'sortable': false, render: function ( data, type, row ) {
                         return '<a class="btn btn-info btn-sm" href=/' + data + '>' + 'Show Full Entry' + '</a>';
                    }},
@@ -231,7 +231,7 @@ td.wrapok {
               <th align="left" >&star; Max HC Stars</th>
               <th align="left" >&star; Max Avg. Stars</th>
               <th align="left" >LC & HC Verified by Cloning</th>
-              <th align="left" >LC & HC Failed by Cloning</th>
+              <!-- <th align="left" >LC & HC Failed by Cloning</th> -->
               <th align="left" >See Entry</th>
 
             </tr>
