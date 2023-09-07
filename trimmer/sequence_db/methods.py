@@ -188,6 +188,8 @@ def generate_aa_fa():
 # FAQ
 ########################################################################################################################
 def generate_faq():
+    # delete all faq entries
+    FAQ.objects.all().delete()
     with open("/Users/keithmitchell/Desktop/Repositories/NeuroMabSeq/static_data/faq/faq.tsv") as faq_file:
         for line in faq_file:
             line = line.replace('\n', '')

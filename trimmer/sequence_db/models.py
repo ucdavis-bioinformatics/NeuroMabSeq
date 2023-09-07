@@ -166,6 +166,7 @@ class TrimmerEntry(models.Model):
     maxavgstars = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     contains_verified = models.BooleanField(default=False)
     contains_failed = models.BooleanField(default=False)
+    scfv_verified = models.CharField(max_length=100, blank=True, null=True)
 
     @property
     def get_count(self):
