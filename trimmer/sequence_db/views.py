@@ -889,7 +889,6 @@ def lisa_process(
     :param neg_control2:
     :return:
     """
-
     # ELISA
     master_list = []
     for i in range(0, len(xml_to_dict(filename=elisa_path)["Experiment"]["PlateSections"])):
@@ -920,7 +919,7 @@ def lisa_process(
     df_f = pd.DataFrame.from_records(master_list)
     df_f.index = df_f["@Name"] + "_Plate" + df_f["plate"].astype(str)
     df_f = df_f[["RawData", "wavelength"]].pivot(columns='wavelength').droplevel(0, axis=1)
-
+    df_f["1"] = df_f["1"].astype(float)+1
 
     # Normalize to well after merging ELISA and FLISA
     df_e.index = df_e["@Name"] + "_Plate" + df_e["plate"].astype(str)
@@ -938,10 +937,9 @@ def lisa_process(
             # lets log scale this as well
             temp_fil[col] = np.log2(temp_fil[col])
 
-        # get the positive control and divide by it
-        pos_control1 = temp_fil.loc["A1_Plate" + str(i)]
-        pos_control2 = temp_fil.loc["A12_Plate" + str(i)]
-        pos_control = (pos_control1 + pos_control2) / 2
+        pos_control1_df = temp_fil.loc[f"{pos_control1}_Plate" + str(i)]
+        pos_control2_df = temp_fil.loc[f"{pos_control2}_Plate" + str(i)]
+        pos_control = (pos_control1_df + pos_control2_df) / 2
         temp_fil = temp_fil / pos_control
 
         # column sum normalize
@@ -956,16 +954,48 @@ def lisa_process(
     final_df.columns = ["ELISA", "FLISAwv1", "FLISAwv2", "FLISAwv3"]
     final_df["Control"] = ""
     for index, row in final_df.iterrows():
-        if "A12_" in index or "A1_" in index:
+        if f"{pos_control1}"==index.split("_")[0] or f"{pos_control2}"==index.split("_")[0]:
             final_df.at[index, "Control"] = "Positive Control"
-        if "H1_" in index or "H12_" in index:
+        if f"{neg_control1}"==index.split("_")[0] or f"{neg_control2}"==index.split("_")[0]:
             final_df.at[index, "Control"] = "Negative Control"
+
+    final_df["FLISA_wv1 + ELISA"] = final_df["FLISAwv1"] + final_df["ELISA"]
+    if "FLISAwv2" in final_df.columns:
+        # calculate sum for max later
+        final_df["FLISA_wv2 + ELISA"] = final_df["FLISAwv2"] + final_df["ELISA"]
+    if "FLISAwv3" in final_df.columns:
+        final_df["FLISA_wv3 + ELISA"] = final_df["FLISAwv3"] + final_df["ELISA"]
+    flisa_cols = [i for i in final_df.columns if "FLISA" in i]
+    final_df["FLISA"] = final_df[[i for i in final_df.columns if "FLISA" in i]].sum(axis=1)
+    final_df["Max"] = final_df[[i for i in final_df.columns if "FLISA" in i]].idxmax(axis=1)
+
     final_df["Name"] = final_df.index
+    
     final_df["F1_E"] = final_df["FLISAwv1"] + final_df["ELISA"]
+    #context['F1_E'] = final_df.sort_values("FLISA_wv1 + ELISA", ascending=False)[:100].to_html(table_id="table_wv1", classes=["table-bordered", "table-striped", "table-hover"])
+    
     final_df["F2_E"] = final_df["FLISAwv2"] + final_df["ELISA"]
+    #if "FLISAwv2" in flisa_cols:
+        #context['F2_E'] = final_df.sort_values("FLISA_wv2 + ELISA",ascending=False)[:100].to_html(table_id="table_wv2", classes=["table-bordered", "table-striped", "table-hover"])
+    #context['F2_E'] = final_df["F2_E"].to_html()
+    
     final_df["F3_E"] = final_df["FLISAwv3"] + final_df["ELISA"]
+    #if "FLISAwv3" in flisa_cols:
+        #context['F3_E'] = final_df.sort_values("FLISA_wv3 + ELISA",ascending=False)[:100].to_html(table_id="table_wv3", classes=["table-bordered", "table-striped", "table-hover"])
+    #context['F3_E'] = final_df["F3_E"].to_html()
+
     final_df["FLISA"] = final_df["FLISAwv1"] + final_df["FLISAwv2"] + final_df["FLISAwv3"]
+    #context['FLISA'] = final_df.sort_values("FLISA",ascending=False)[:100].to_html()
+
     final_df["Max"] = final_df[["FLISAwv1", "FLISAwv2", "FLISAwv3"]].idxmax(axis=1)
+    if "FLISAwv2" in flisa_cols and "FLISAwv3" in flisa_cols:
+        filter_indexes = list((set(final_df.sort_values("FLISAwv1",ascending=False)[:300].index) & 
+        set(final_df.sort_values("FLISAwv2",ascending=False)[:300].index) &
+        set(final_df.sort_values("FLISAwv3",ascending=False)[:300].index)))
+        #final_df.loc[filter_indexes][:50]
+        #context["All3"] = final_df.loc[filter_indexes].to_html(table_id="table_wv4", classes=["table-bordered", "table-striped", "table-hover"])
+        context["All3"] = final_df.to_html(table_id="table_wv4", classes=["table-bordered", "table-striped", "table-hover"])
+
 
     fig = px.scatter(final_df, x="ELISA", y="FLISAwv1", color="Control", symbol="Max",
                      hover_data=["Name", "FLISAwv2", "FLISAwv3"])
@@ -995,13 +1025,19 @@ def lisa(request):
         if main_form.is_valid():
             elisa = main_form.cleaned_data['elisa_reduced_xml'].file.name
             flisa = main_form.cleaned_data['flisa_raw_xml'].file.name
+            # get pos_control1, pos_control2, neg_control1, neg_control2 from the main form
+            pos_1 = main_form.cleaned_data['pos_control1']
+            pos_2 = main_form.cleaned_data['pos_control2']
+            neg_1 = main_form.cleaned_data['neg_control1']
+            neg_2 = main_form.cleaned_data['neg_control2']
             context = lisa_process(context=context,
                                    elisa_path=elisa,
                                    flisa_path=flisa,
-                                   pos_control1="A1",
-                                   pos_control2="A2",
-                                   neg_control1="H1",
-                                   neg_control2="H12")
+                                   pos_control1=pos_1,
+                                   pos_control2=pos_2,
+                                   neg_control1=neg_1,
+                                   neg_control2=neg_2)
+            
             context['main_form'] = LISAForm()
             return render(request, 'lisa.html', context)
         else:

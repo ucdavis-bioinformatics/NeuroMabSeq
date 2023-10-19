@@ -53,7 +53,7 @@ class LISAForm(forms.Form):
     pos_control2 = forms.ChoiceField(required=True, choices=(("A1", "A1"),
                                                      ("A12", "A12"),
                                                      ("H1", "H1"),
-                                                     ("H12", "H12")), initial='A1')
+                                                     ("H12", "H12")), initial='A12')
 
     neg_control1 = forms.ChoiceField(required=True, choices=(("A1", "A1"),
                                                      ("A12", "A12"),
