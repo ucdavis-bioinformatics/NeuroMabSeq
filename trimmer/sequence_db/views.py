@@ -907,14 +907,24 @@ def lisa_process(
         get_just_reduced = deep_convert_dict(start_dict[i])
         get_just_reduced = get_just_reduced["PlateSection"]
         get_just_reduced = deep_convert_dict(get_just_reduced["Wavelengths"]["Wavelength"])
-        for wv in range(0, len(get_just_reduced)):
-            grab_wavelength = deep_convert_dict(get_just_reduced[wv])["@WavelengthIndex"]
-            get_just_reduced_wv = deep_convert_dict(get_just_reduced[wv])
+        if type(deep_convert_dict(get_just_reduced)) == list:
+            for wv in range(0,len(get_just_reduced)):
+                grab_wavelength = deep_convert_dict(get_just_reduced[wv])["@WavelengthIndex"]
+                get_just_reduced_wv = deep_convert_dict(get_just_reduced[wv])
+                get_just_reduced_wells = [deep_convert_dict(i) for i in get_just_reduced_wv["Wells"]["Well"]]
+                for w in get_just_reduced_wells:
+                    w["wavelength"] = grab_wavelength
+                    w["plate"] = i+1
+                    master_list.append(w)
+        else:
+            grab_wavelength = deep_convert_dict(get_just_reduced)["@WavelengthIndex"]
+            get_just_reduced_wv = deep_convert_dict(get_just_reduced)
             get_just_reduced_wells = [deep_convert_dict(i) for i in get_just_reduced_wv["Wells"]["Well"]]
             for w in get_just_reduced_wells:
                 w["wavelength"] = grab_wavelength
-                w["plate"] = i + 1
+                w["plate"] = i+1
                 master_list.append(w)
+            
 
     df_f = pd.DataFrame.from_records(master_list)
     df_f.index = df_f["@Name"] + "_Plate" + df_f["plate"].astype(str)
@@ -929,13 +939,15 @@ def lisa_process(
     master_norm_list = []
     for i in set(final_df["plate"].to_list()):
         # filter for the plate
-        temp_fil = final_df[final_df["plate"] == i][["reducedVal", "1", "2", "3"]]
+        # filter only the ones in the plate and then set those
+        rawcols = [i for i in final_df.columns if i in ["reducedVal", "1", "2", "3"]]
+        temp_fil = final_df[final_df["plate"] == i][rawcols]
 
         # fix the column types
         for col in temp_fil.columns:
             temp_fil[col] = temp_fil[col].astype(float)
             # lets log scale this as well
-            temp_fil[col] = np.log2(temp_fil[col])
+            temp_fil[col] = np.log2(temp_fil[col]+1)
 
         pos_control1_df = temp_fil.loc[f"{pos_control1}_Plate" + str(i)]
         pos_control2_df = temp_fil.loc[f"{pos_control2}_Plate" + str(i)]
@@ -951,7 +963,9 @@ def lisa_process(
         master_norm_list.append(temp_fil)
 
     final_df = pd.concat(master_norm_list)
-    final_df.columns = ["ELISA", "FLISAwv1", "FLISAwv2", "FLISAwv3"]
+    # set columns
+    options = ["ELISA", "FLISAwv1", "FLISAwv2", "FLISAwv3"]
+    final_df.columns = options[:len(final_df.columns)]
     final_df["Control"] = ""
     for index, row in final_df.iterrows():
         if f"{pos_control1}"==index.split("_")[0] or f"{pos_control2}"==index.split("_")[0]:
@@ -965,6 +979,8 @@ def lisa_process(
         final_df["FLISA_wv2 + ELISA"] = final_df["FLISAwv2"] + final_df["ELISA"]
     if "FLISAwv3" in final_df.columns:
         final_df["FLISA_wv3 + ELISA"] = final_df["FLISAwv3"] + final_df["ELISA"]
+
+
     flisa_cols = [i for i in final_df.columns if "FLISA" in i]
     final_df["FLISA"] = final_df[[i for i in final_df.columns if "FLISA" in i]].sum(axis=1)
     final_df["Max"] = final_df[[i for i in final_df.columns if "FLISA" in i]].idxmax(axis=1)
@@ -973,21 +989,15 @@ def lisa_process(
     
     final_df["F1_E"] = final_df["FLISAwv1"] + final_df["ELISA"]
     #context['F1_E'] = final_df.sort_values("FLISA_wv1 + ELISA", ascending=False)[:100].to_html(table_id="table_wv1", classes=["table-bordered", "table-striped", "table-hover"])
-    
-    final_df["F2_E"] = final_df["FLISAwv2"] + final_df["ELISA"]
-    #if "FLISAwv2" in flisa_cols:
-        #context['F2_E'] = final_df.sort_values("FLISA_wv2 + ELISA",ascending=False)[:100].to_html(table_id="table_wv2", classes=["table-bordered", "table-striped", "table-hover"])
-    #context['F2_E'] = final_df["F2_E"].to_html()
-    
-    final_df["F3_E"] = final_df["FLISAwv3"] + final_df["ELISA"]
-    #if "FLISAwv3" in flisa_cols:
-        #context['F3_E'] = final_df.sort_values("FLISA_wv3 + ELISA",ascending=False)[:100].to_html(table_id="table_wv3", classes=["table-bordered", "table-striped", "table-hover"])
-    #context['F3_E'] = final_df["F3_E"].to_html()
+    if "FLISAwv2" in flisa_cols:
+        final_df["F2_E"] = final_df["FLISAwv2"] + final_df["ELISA"]
 
-    final_df["FLISA"] = final_df["FLISAwv1"] + final_df["FLISAwv2"] + final_df["FLISAwv3"]
-    #context['FLISA'] = final_df.sort_values("FLISA",ascending=False)[:100].to_html()
+    if "FLISAwv3" in flisa_cols:
+        final_df["F3_E"] = final_df["FLISAwv3"] + final_df["ELISA"]
 
-    final_df["Max"] = final_df[["FLISAwv1", "FLISAwv2", "FLISAwv3"]].idxmax(axis=1)
+    final_df["FLISA"] = final_df[[i for i in final_df.columns if "FLISA" in i]].sum(axis=1)
+    #final_df["Max"] = final_df[[i for i in final_df.columns if "FLISA" in i]].idxmax(axis=1)    #context['FLISA'] = final_df.sort_values("FLISA",ascending=False)[:100].to_html()
+
     if "FLISAwv2" in flisa_cols and "FLISAwv3" in flisa_cols:
         filter_indexes = list((set(final_df.sort_values("FLISAwv1",ascending=False)[:300].index) & 
         set(final_df.sort_values("FLISAwv2",ascending=False)[:300].index) &
@@ -996,25 +1006,43 @@ def lisa_process(
         #context["All3"] = final_df.loc[filter_indexes].to_html(table_id="table_wv4", classes=["table-bordered", "table-striped", "table-hover"])
         context["All3"] = final_df.to_html(table_id="table_wv4", classes=["table-bordered", "table-striped", "table-hover"])
 
+    wvdone = [i for i in final_df.columns if "FLISAwv" in i] + ["Name"]
+
 
     fig = px.scatter(final_df, x="ELISA", y="FLISAwv1", color="Control", symbol="Max",
-                     hover_data=["Name", "FLISAwv2", "FLISAwv3"])
+                     hover_data=wvdone)
     context['graph_wv1'] = fig.to_html()
-    fig = px.scatter(final_df, x="ELISA", y="FLISAwv2", color="Control", symbol="Max",
-                     hover_data=["Name", "FLISAwv1", "FLISAwv3"])
-    context['graph_wv2'] = fig.to_html()
-    fig = px.scatter(final_df, x="ELISA", y="FLISAwv3", color="Control", symbol="Max",
-                     hover_data=["Name", "FLISAwv1", "FLISAwv2"])
-    context['graph_wv3'] = fig.to_html()
+
+    if "FLISAwv2" in flisa_cols:
+        fig = px.scatter(final_df, x="ELISA", y="FLISAwv2", color="Control", symbol="Max",
+                        hover_data=wvdone)
+        context['graph_wv2'] = fig.to_html()
+    
+    else:
+        context['graph_wv2'] = None
+
+
+    if "FLISAwv3" in flisa_cols:
+        fig = px.scatter(final_df, x="ELISA", y="FLISAwv3", color="Control", symbol="Max",
+                        hover_data=wvdone)
+        context['graph_wv3'] = fig.to_html()
+    else:
+        context['graph_wv3'] = None
+    
+
+
+    if "FLISAwv2" in flisa_cols and "FLISAwv3" in flisa_cols:
+        final_df["ELISA_pow"] = final_df["ELISA"] + 10
+        fig = px.scatter_3d(final_df, x="FLISAwv1", y="FLISAwv2", z="FLISAwv3",
+                            color="Control", size="ELISA_pow")
+        context['graph_3d'] = fig.to_html()
+    else:
+        context['graph_3d'] = None
+
     fig = px.scatter(final_df, x="ELISA", y="FLISA", color="Control", symbol="Max",
-                     hover_data=["Name", "FLISAwv1", "FLISAwv2", "FLISAwv3"])
+                     hover_data=wvdone)
     context['graph_all'] = fig.to_html()
-
-    final_df["ELISA_pow"] = final_df["ELISA"] + 10
-    fig = px.scatter_3d(final_df, x="FLISAwv1", y="FLISAwv2", z="FLISAwv3",
-                        color="Control", size="ELISA_pow")
-    context['graph_3d'] = fig.to_html()
-
+    context['All3'] = final_df.to_html(table_id="table_wv4", classes=["table-bordered", "table-striped", "table-hover"])
     return context
 
 def lisa(request):
