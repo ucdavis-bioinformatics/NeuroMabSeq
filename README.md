@@ -1,5 +1,13 @@
 # NeuroMabSeq Website
 
+## Just the website and database code install
+
+
+
+## Just the pipeline install
+
+
+
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
 
 
