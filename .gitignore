@@ -15,3 +15,11 @@ trimmer/trimmer/settings.py
 data3/HTML_Reports/*
 data3/AnnotatedResults/*
 data3/StatusReports/*
+trimmer/picklequeries/*
+trimmer/jupyter/.ipynb_checkpoints/*
+trimmer/.ipynb_checkpoints/*
+trimmer/jupyter/*.csv
+.idea/*
+junk/*
+
+
