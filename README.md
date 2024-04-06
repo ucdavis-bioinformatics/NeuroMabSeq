@@ -1,76 +1,14 @@
 # NeuroMabSeq Website
 
+## Just the website and database code install
+
+
+
+## Just the pipeline install
+
+
+
 ## DJANGO + NGINX + GUNICORN  see the tutorial for setup below.
-
-### TODO:
-- who should be long term superuser?
-- csv limit as well ?
-- setup auto update scripts
-    - `./update.sh`
-    - need directory from Sam
-- auto renew encryption keys
-- if no prediction do not show...
-- blat filter for name.. some are different category number so should filter 
-- K89/34 sould pull up the R as well so have another string query option (min identity score)
-- button on the clone to blast to this sort of thing
-# - list everything by the sequence identity 
-- slug sample links
-- update the table to seperate by parental and monoclonal
-  (based on categories - neuromab mab, non neuromab mbas)
-  top row is all TOTAL
-  monoclonal
-  oligoclonal samples vs all other categories basically (include commercially sequuenced)
-- 6180 : filter plate AP1 and showonweb=TRUE dropouts file..
-
-
-- Look into dropouts
-- mixedRNA and cell samples and 67...
-- for some monoclonal still have 
-- maybe work on the login stuff some more
-
-
-- clean up the entry view..
-- 101.1 101.2 etc if repeats..
-- fix the duplicates in the blat search
-- aa file download
-- help with sams example (aberrant chain 6-7 in one?)
-- auto create settings with hidden recaptcha as part of ./restart.sh
-- fix html table for blat and duplicate entries
-- turn of debug, any other steps to check for proper deployment settings
-- auto detect query
-- work with the addgene metadata 
-- how to backup sql lite database
-- debug=FALSE, turn of debug, any other steps to check for proper deployment settings
-- upload the whole plate? Pull duplicates first?
-- worth quantifying RNA, amplicons or new RNA for failures...
-- if RNA there then try different protocol > cDNA from everything
-
-
-### Questions/Notes
-- what is the deal with this mabid
-- what is going on here: Omitting the empty string in them for now.
-- 5 subclones of the same parent should be identical?
-- create some stats for the subclone groupings? API with sequence->phylogeneitc tree?
-- check with cutoff from sam, p5
-- see what is feasible for rules for ^^ highlight things that are similar and see if they are similar
-- no targeted split-seq protocol, basically scrna seq since all poly a amplified 
-- check with cutoff from sam, p5
-- create some stats for the subclone groupings? API with sequence->phylogeneitc tree?
-- 5 subclones of the same parent should be identical?
-- see what is feasible for rules for ^^ highlight things that are similar and see if they are similar
-- upload the whole plate? Pull duplicates first?
-- worth quantifying RNA, amplicons or new RNA for failures...
-- if RNA there then try different protocol > cDNA from everything
-- auto detect query
-- work with the addgene metadata 
-- moving into parents.. flexibility trial period another 4000 sequences 
-- mass spec to test things.. antibody have some characteristics 
-- fancy machine for liquid transfer needs more work done on it 
-- endpoint analysis. rtPCR. mass genotyping of crops is same technology for covid testing
-
-
-![](.README_images/eaa2df05.png)
-
 
 
 1. Check out the Django Project Tutorial in this directory.
@@ -124,7 +62,7 @@
 
 
 
-#### This will fix 99% of problems unless someone pushes something funny to the repo!!!!
+#### This will fix 99% of problems unless someone pushes something funny to the repo
 ```  # from the Neuromabseq directory
 
 sudo pkill gunicorn   
