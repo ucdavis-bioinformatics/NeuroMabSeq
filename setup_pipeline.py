@@ -31,6 +31,7 @@ os.system(f'cp ./NeuroMabSeq/analyze_plates.rmd ./02-Reporting/')
 for plate in ss:
     print(plate['plate'])
     r1 = glob(f"./00-RawData/{plate['filePrefix']}*_R1_*")
+    print(r1)
     assert len(r1) == 1, f"ERROR: plate['filePrefix'] matches more than one file."
     r1 = r1[0]
     r2 = r1.replace("_R1_", "_R2_")

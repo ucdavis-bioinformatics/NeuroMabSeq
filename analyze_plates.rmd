@@ -100,6 +100,7 @@ for(plate in plateMetaData$plate){
     hcasv = read.table(paste0("../01-Processing/", plate,'/02-Results/00-no-filter-seqtab_HC.tsv'), header=T, as.is=T)
     hcasv = hcasv[,-c(1)]
     hc_gt0 = colSums(hcasv>0)[smindex]
+    # the below is used to calculate the number of ASVs with >= 10 reads
     hc_gte10 = colSums(hcasv>=10)[smindex]
 
     lcasv = read.table(paste0("../01-Processing/", plate,'/02-Results/00-no-filter-seqtab_LC.tsv'), header=T, as.is=T)
