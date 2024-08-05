@@ -1,0 +1,170 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 90%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+</style>
+
+{% load static %}
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.css" %}">
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}">
+<link rel="stylesheet" href="{% static "css/responsive.dataTables.min.css" %}">
+<!--<script src="{% static "js/jquery-1.9.1.js" %}"></script>-->
+<!--<script src="{% static "js/jquery.dataTables.js" %}"></script>-->
+<script src="{% static "js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "js/dataTables.responsive.min.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+
+
+<script>
+
+$(document).ready(function(){ $('#myTable').DataTable(); });
+
+$(document).ready(function() {
+    $('#example').DataTable();
+} );
+</script>
+<div class="w3-container w3-content w3-padding-16">
+<!-- Add text element and Increase the font size for the  text -->
+<div align="center" style="font-size: 20px;">
+  <div style="font-size: 18px;">
+    More information on the project can be found <a href="https://www.nature.com/articles/s41598-023-43233-4">in this publication.</a>.
+    Please cite the paper if you use the data in this database and reference the full mAb ID in your usage.
+  </div>
+</div>
+  <h2 align="center">FAQ List</h2>
+        <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="center" bgcolor="white" >
+          <thead>
+            <tr>
+              <th style="width: 35%;">Question</th>
+              <th>Message</th>
+              {% if user.is_staff %}
+                <th>Edit Message</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+          {% for faq in questions %}
+            <tr>
+              <td>{{faq.question}}</td>
+              <td>{{faq.message|urlize}}</td>
+
+              {% if user.is_staff %}
+                <td>
+                  <a href="/edit_faq/{{faq.pk}}/">
+                    <button  label="Edit FAQ" name="so_link" class="btn btn-info">FAQ Edit</button>
+                  </a>
+                </td>
+              {% endif %}
+
+            </tr>
+            {% empty %}
+             <div>No faqs yet.</div>
+            {% endfor %}
+          </tbody>
+        </table>
+</div>
+
+
+<div class="w3-container w3-content w3-padding-16">
+
+  <h2 align="center">Definition List</h2>
+        <table id="example" cellspacing="0" width="100%" align="center" bgcolor="white" >
+          <thead>
+            <tr>
+              <th style="width: 30%;">Term</th>
+              <th>Definition</th>
+              {% if user.is_staff %}
+                <th>Edit Message</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+          {% for faq in definitions %}
+            <tr>
+              <td>{{faq.question}}</td>
+              <td>{{faq.message|urlize}}</td>
+
+              {% if user.is_staff %}
+                <td>
+                  <a href="/edit_faq/{{faq.pk}}/">
+                    <button  label="Edit FAQ" name="so_link" class="btn btn-info">FAQ Edit</button>
+                  </a>
+                </td>
+              {% endif %}
+
+            </tr>
+            {% empty %}
+             <div>No faqs yet.</div>
+            {% endfor %}
+          </tbody>
+        </table>
+</div>
+
+
+<!-- 
+<h2 align="center">Definition List</h2>
+<table id="example" cellspacing="0" width="100%" align="center" bgcolor="white" >
+  <thead>
+    <tr>
+      <th style="width: 30%;">Term</th>
+      <th>Definition</th>
+      {% if user.is_staff %}
+        <th>Edit Message</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for faq in definitions %}
+    <tr>
+      <td>{{faq.question}}</td>
+      <td>{{faq.message|urlize}}</td>
+
+      {% if user.is_staff %}
+        <td>
+          <a href="/edit_faq/{{faq.pk}}/">
+            <button  label="Edit FAQ" name="so_link" class="btn btn-info">FAQ Edit</button>
+          </a>
+        </td>
+      {% endif %}
+
+    </tr>
+    {% empty %}
+     <div>No faqs yet.</div>
+    {% endfor %}
+  </tbody>
+</table> -->
+
+
+
+
+
+
+<!-- <div class="container">
+  <h2>Important methods from the paper: </h2>
+  <h3>Where is the star system generated and what does it mean?</h3>
+
+  <img src="{% static "Equations.png" %}" alt="star system" width="500" height="200">
+
+</div>
+</div> -->
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<title>NeuroMabSeq</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">-->
+<!--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+{% load static %}
+<link rel="shortcut icon" type="image/png" href="{% static "favicon.gif" %}">
+<link rel="stylesheet" href="{% static "css/w3.css" %}">
+<link rel="stylesheet" href="{% static "css/googlefont.css" %}">
+<link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+<link rel="stylesheet" href="{% static "css/font-awesome.min.css" %}">
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-159126069-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'UA-159126069-1');
+</script>
+
+
+<style>
+body {font-family: "Lato", sans-serif}
+.mySlides {display: none}
+p {
+    word-break: break-all;
+    white-space: normal;
+}
+</style>
+<body>
+
+
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-card" style="background-color:#002855">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+
+    <div class="w3-dropdown-hover w3-hide-small">
+      <button class="w3-padding-large w3-button" style="color:white" title="More">DATABASE<i class="fa fa-caret-down"></i></button>
+      <div class="w3-dropdown-content w3-bar-block w3-card-4">
+        <a href="/new_query/?search=&name_choice=&target_choice=&category_choice=&clonality=Monoclonal&ordering=" class="w3-bar-item w3-button" style="background-color:white">QUERY</a>
+        <a href="/blat/None/" class="w3-bar-item w3-button" style="background-color:white">BLAT SEARCH</a>
+        <a href="/query/" class="w3-bar-item w3-button" style="background-color:white">FASTA EXPORT</a>
+      </div>
+    </div>
+
+    <div class="w3-dropdown-hover w3-hide-small">
+      <button class="w3-padding-large w3-button" style="color:white" title="More">PROJECT INFO <i class="fa fa-caret-down"></i></button>
+      <div class="w3-dropdown-content w3-bar-block w3-card-4">
+        <a href="http://neuromab.ucdavis.edu/" class="w3-bar-item w3-button">NEUROMAB WEBSITE</a>
+        <a href="/faq_list/" class="w3-bar-item w3-button">FAQ LIST</a>
+        <a href="https://github.com/ucdavis-bioinformatics/NeuroMabSeq/tree/website" class="w3-bar-item w3-button">GITHUB</a>
+      </div>
+    </div>
+
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-padding-large w3-button" style="color:white" title="More">MY ACCOUNT<i class="fa fa-caret-down"></i></button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+          <a href="/logout" class="w3-bar-item w3-button">LOGOUT</a>
+          <a href="/login" class="w3-bar-item w3-button">LOGIN</a>
+        </div>
+      </div>
+
+      {% if user.is_staff %}
+      <div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-padding-large w3-button" style="color:white" title="More">UPDATE DATABASE<i class="fa fa-caret-down"></i></button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+          <a href="/edit_metadata/" class="w3-bar-item w3-button">ADD METADATA</a>
+          <a href="/add_faq/" class="w3-bar-item w3-button">ADD FAQ</a>
+        </div>
+      </div>
+      {% endif %}
+<!--    <div align="center" sytle="position:absolute"><a href="/"  class="w3-button-small w3-center" style="color:white"><img style="padding:2px;width:25%" src="{% static "neuromablogo2.png" %}" alt="My image" style="width:50%"></a>-->
+
+      <a href="/" class="w3-padding-large w3-button w3-right" style="color:white">NeuroMabSeq Home</a>
+
+    </div>
+</a>
+
+  </div>
+</div>
+
+<!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+<div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px;color:white">
+  <a href="/new_query/" class="w3-bar-item w3-button w3-padding-large">QUERY</a>
+<!--  <a href="/analytics/" class="w3-bar-item w3-button w3-padding-large">ANALYTICS</a>-->
+  <a href="http://neuromab.ucdavis.edu/" class="w3-bar-item w3-button w3-padding-large">NEUROMAB</a>
+  <a href="https://github.com/ucdavis-bioinformatics/NeuroMabSeq/tree/website" class="w3-bar-item w3-button w3-padding-large">GITHUB</a>
+</div>
+
+
+
+<div class="w3-container w3-content w3-center w3-padding-20" align="center" style="align:center;max-width:550px;margin-top:42px;margin-bottom:2px;background-color:white;border-radius:8px" id="about_me">
+        <img align="center" style="padding:5px;max-width:100%" src="{% static "neuromablogo4.png" %}" alt="My image">
+</div>
+{% if user.username %}
+    <div class="w3-container w3-content w3-center w3-padding-20" style="align:center;max-width:550px;margin-top:42px;border:thin solid black;margin-bottom:2px;border-radius:8px">
+
+            <h4 style="display:flex;">
+                {% if user.username %}
+                    {% if user.is_superuser %}
+                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Superuser    </b></div>
+                    {% elif user.is_staff %}
+                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> with status of <b>Staff    </b></div>
+                    {% elif user.is_active %}
+                        <div style="font-size:18px">You are currently logged in as: <b>{{user}}</b> </div>
+                    {% endif %}
+                {% endif %}
+            </h4>
+        </div>
+{% endif %}
+{% block content %}
+
+{% endblock %}
+
+<!-- The Contact Section -->
+<!--<div class="w3-gray w3-padding-64"  id="contact">-->
+<!--  &lt;!&ndash;<p class="w3-opacity w3-center"><i>Fan? Drop a note!</i></p>&ndash;&gt;-->
+<!--  <div class="w3-row w3-padding-32">-->
+<!--    <div class="w3-col m6 w3-large w3-margin-bottom">-->
+<!--&lt;!&ndash;      <i class="fa fa-map-marker" style="width:30px"></i> Los Angeles, US<br>&ndash;&gt;-->
+<!--      &lt;!&ndash;<i class="fa fa-phone" style="width:30px"></i> Phone: (559) 936-5597<br>&ndash;&gt;-->
+<!--&lt;!&ndash;      <i class="fa fa-envelope" style="width:30px"> </i> Email: keithgmitchell@g.ucla.edu<br>&ndash;&gt;-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!-- Footer -->
+<footer class="w3-gray w3-padding-32 w3-center w3-opacity w3-light-grey w3-xlarge">
+  <h6>© 2021 The Regents of the University of California, Davis campus. All Rights Reserved.</h6>
+    <hr style="width:100%">
+  <h4 class="w3-wide w3-center">CONTACT</h4>
+  <h6>Please submit any issues/requests at the following github:</h6>
+  <h5> <a class="fa fa-github w3-hover-opacity" href="https://github.com/ucdavis-bioinformatics/NeuroMabSeq/tree/website">Website Branch</a></h5>
+  <h5><a class="fa fa-github w3-hover-opacity" href="https://github.com/ucdavis-bioinformatics/NeuroMabSeq/tree/pipeline">Pipeline Branch</a></h5>
+<!--  <a class="fa fa-bitbucket w3-hover-opacity" href="https://bitbucket.org/keithgmitchell/"></a>-->
+  <!--<p class="w3-medium">Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>-->
+</footer>
+
+
+<script>
+// Automatic Slideshow - change image every 4 seconds
+var myIndex = 0;
+carousel();
+
+function carousel() {
+    var i;
+    var x = document.getElementsByClassName("mySlides");
+    for (i = 0; i < x.length; i++) {
+       x[i].style.display = "none";
+    }
+    myIndex++;
+    if (myIndex > x.length) {myIndex = 1}
+    x[myIndex-1].style.display = "block";
+    setTimeout(carousel, 4000);
+}
+
+// Used to toggle the menu on small screens when clicking on the menu button
+function myFunction() {
+    var x = document.getElementById("navDemo");
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+    } else {
+        x.className = x.className.replace(" w3-show", "");
+    }
+}
+
+// When the user clicks anywhere outside of the modal, close it
+var modal = document.getElementById('ticketModal');
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+
+</body>
+</html>

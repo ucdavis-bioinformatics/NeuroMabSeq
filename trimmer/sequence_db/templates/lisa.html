@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+
+{% block content %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+<!-- Datatables stuff -->
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.css" %}">
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}">
+<link rel="stylesheet" href="{% static "css/responsive.dataTables.min.css" %}">
+<script src="{% static "js/jquery-1.9.1.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "js/dataTables.responsive.min.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<!-- https://code.jquery.com/jquery-3.7.0.js
+https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js
+https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js
+https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js
+https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js
+https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js
+https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js
+https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js -->
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+
+
+<script>
+$(document).ready(function() {
+    $('#table_wv4').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
+} );
+  $(document).ready(function() {
+      $('#table_wv2').DataTable();
+      buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+  } );
+  $(document).ready(function() {
+      $('#table_wv3').DataTable();
+  } );
+  $(document).ready(function() {
+      $('#table_wv4').DataTable();
+  } );    
+</script>
+
+
+  <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="about_me">
+
+  <form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    {{ main_form.as_p }}
+    <button type="submit">ELISA/FLISA report</button>
+  </form>
+
+  </div>
+
+  <!--Make the div have padding and only 90% of the width-->
+  <div class="w3-container w3-content w3-padding-64" style="max-width:90%" id="about_me">
+
+    <div class="row">
+        {% if graph_wv1 %}
+            <div class="column" style="max-width:90%">
+            {{ graph_wv1|safe }}
+            </div>
+        {% endif %}
+        <!-- Add the html table F1_Elisa -->
+    </div>
+      <div class="row">
+        {% if graph_wv2 %}
+            <div class="column" style="max-width:90%">
+            {{ graph_wv2|safe }}
+            </div>
+        {% endif %}      
+    </div>
+      <div class="row">
+        {% if graph_wv3 %}
+            <div class="column" style="max-width:90%">
+            {{ graph_wv3|safe }}
+            </div>
+        {% endif %}    
+    </div>
+      <div class="row">
+        {% if graph_all %}
+            <div class="column" style="max-width:90%">
+            {{ graph_all|safe }}
+            </div>
+        {% endif %}
+        {% if All3 %}
+            <div class="card-body" style="max-width:90%">
+                {{ All3 | safe }}
+            </div>
+        {% endif %}        
+    </div>
+
+      <div class="row">
+        {% if graph_3d %}
+            <div class="column" style="max-width:90%"">
+            {{ graph_3d|safe }}
+            </div>
+        {% endif %}
+    </div>
+  </div>
+{% endblock %}

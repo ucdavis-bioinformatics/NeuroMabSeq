@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="w3-container w3-content w3-padding-16">
+
+  <div align="center" style="margin:20;padding:20;border:thin solid black;border-radius:8px;width:100%;align:center">
+
+
+      <h2>Login</h2>
+      {% if errors %}
+            {% for error in errors %}
+                {% if error %}
+                    <div class="alert alert-danger">
+                        <strong> Entry {{forloop.counter}}: {{ error|escape }}</strong>
+                    </div>
+                {% endif %}
+            {% endfor %}
+      {% endif %}
+      <form method="post">
+       {% csrf_token %}
+       {{ form|crispy }}
+
+       <script src='https://www.google.com/recaptcha/api.js'></script>
+       <div style="padding:20px" class="g-recaptcha" data-sitekey="6LfwjbEZAAAAAHMfs22TYLtJw5YWx-EsglR1LsQo"></div>
+       <button type="submit" class="btn btn-success">Submit</button>
+
+      </form>
+  </div>
+</div>
+
+<div class="w3-container w3-content w3-padding-16">
+
+
+</div>
+{% endblock %}

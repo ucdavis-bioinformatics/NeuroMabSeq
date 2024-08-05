@@ -1,0 +1,463 @@
+Comments	Priority	Code	scFv ID	Status 061923	Year completed	gBlock set	Plasmid	Code	Best	Notes									
+	27	S-2	K74/71	Inconclusive IHC 6/30/22		1	pcDNA3.1	2											
+Bad gBlock, do not redo	11	S-3	N308/48	Inconclusive COS-IF 6/27/22		1	pcDNA3.1	3											
+Bad gBlock, do not count	28	S-4	N70/28	Failed via COS-IF 5/18/22	3	1	pcDNA3.1	4											
+Bad gBlock, do not count	8	S-5	L6/60	Failed via COS-IF 6/15/22	3	1	pcDNA3.1	5											
+Bad gBlock, do not count	25	S-6	K87A/10	Passed sequencing, transfected, untested		1	pcDNA3.1	6											
+Bad gBlock, do not count	45	S-7	N377/20	Failed via COS-IF 5/18/22	3	1	pcDNA3.1	7											
+Bad gBlock, do not count	23	S-8	N327/95	Failed via COS-IF 6/14/22	3	1	pcDNA3.1	8											
+Bad gBlock, do not count	24	S-9	N206A/8	Failed via COS-IF 6/27/22	3	1	pcDNA3.1	9											
+Bad gBlock, do not count	22	S-11	N95/35	Failed via IHC 6/30/22	3	1	pcDNA3.1	11											
+no need as S-276 worked	3	S-13	N241A/34	COS-IF inconclusive 5/9/23				13											
+Bad gBlock, do not count	43	S-14	K55/7	Failed via COS-IF 6/29/22	3	1	pcDNA3.1	14											
+	396*	S-16	L108/92	Failed via COS-IF 10/1/21	3	2a	pcDNA3.1	16											
+	19	S-17	A12/18	Passed validation via IHC 6/30/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	17											
+	430*	S-18	L122/6	Failed via COS-IF 8/16/21	3	2a	pcDNA3.1	18											
+	453*	S-19	N452/81	Passed validation via CHN/CCN-IF 9/10/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	19											
+		S-22	L100/1	Failed via COS-IF 4/7/22	3	2a	pcDNA3.1	22											
+	308*	S-23	L113/130	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	23											
+	367*	S-24	L113/13	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	24											
+	465	S-25	L125/129	Passed validation via CHN/CCN-IF 9/10/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	25											
+(VL2) VH-VL	2	S-26	N106/36	Failed via IHC 8/26/21	3	2a	pcDNA3.1	26											
+	44	S-27	N221/17	Passed validation via COS-IF 08/26/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	27											
+	322*	S-28	L115/13	Passed validation via COS-IF 07/19/21, shipped to Addgene 1/11/22, reshipped in shipment scheduled for June 2022	3	2a	pcDNA3.1	28											
+	13	S-29	N133/21	Passed validation via COS-IF 6/29/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	29											
+try as VL-VH	21	S-30	K57/1	Failed via CHN/CCN 9/10/21, Failed via COS-IF 10/1/21	3	2a	pcDNA3.1	30											
+	323*	S-31	L121/42	Failed via COS-IF 7/19/21	3	2a	pcDNA3.1	31											
+	395*	S-32	L107/39	Passed validation via COS-IF 08/26/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	32											
+	397*	S-33	L109/39	Failed via COS-IF 10/1/21	3	2a	pcDNA3.1	33											
+	50	S-34	N19/2	Failed via COS-IF 10/1/21	3	2a	pcDNA3.1	34											
+	58	S-36	L23/27	Failed via COS-IF 6/29/22	3	2a	pcDNA3.1	36											
+	36	S-37	N134/12	Passed validation via COS-IF 04/7/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	37											
+	53	S-38	K64/15	Failed via COS-IF 10/15/21	3	2a	pcDNA3.1	38											
+	337*	S-39	L117/1	Passed validation via COS-IF 10/1/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	39											
+	418	S-40	L119/106	Failed via COS-IF 10/15/21	3	2a	pcDNA3.1	40											
+	398*	S-41	L113/27	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	41											
+gBlock needed	277*	S-42	L106/83					42											
+	47	S-43	K67/25	Failed via COS-IF 6/15/22	3	2a	pcDNA3.1	43											
+investigate/redo evaluation	59	S-44	N74/25	Failed via COS-IF 5/9/23	4	2a	pcDNA3.1	44											
+no need as trial set worked	14	S-46	K65/35					46											
+	274	S-47	L118/80	Failed via COS-IF 6/29/22	3	2a	pcDNA3.1	47											
+investigate	424	S-48	L125/121					48											
+	400*	S-49	L120/12	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	49											
+	452*	S-50	N452/73	Passed validation via COS-IF 6/29/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	50											
+	60	S-52	N138/6	Failed via COS-IF 6/29/22	3	2a	pcDNA3.1	52											
+	401*	S-55	L121/25	Failed via COS-IF 6/27/22	3	2a	pcDNA3.1	55											
+	403*	S-56	L126/93	Failed via COS-IF 6/27/22	3	2a	pcDNA3.1	56											
+	428*	S-57	L118/66	Failed via COS-IF 4/7/22	3	2a	pcDNA3.1	57											
+which VL was used	6	S-58	L21/32	Failed via COS-IF 6/27/22	3	2a	pcDNA3.1	58											
+	12	S-59	N59/20	Passed validation via COS-IF 10/1/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	59											
+	61	S-60	N18/30	Failed via COS-IF 10/1/21	3	2a	pcDNA3.1	60											
+no need as trial set worked	20	S-61	N355/1	gBlock ordered		2a	pcDNA3.1	61											
+	309*	S-63	L124/59	Passed validation via CHN/CCN-IF 9/10/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	63											
+	404*	S-64	L127/8	Passed validation via COS-IF 6/29/22, shipped to Addgene 8/11/22	3	2a	pcDNA3.1	64											
+	431*	S-65	L122/68	Passed validation via CHN/CCN-IF 9/3/21, shipped to Addgene 1/11/22, reshipped in shipment scheduled for June 2022	3	2a	pcDNA3.1	65											
+	17	S-66	N68/6	Failed via COS-IF 2/24/23	4	2a	pcDNA3.1	66											
+no need S-111 passed	29	S-67	N1/12	Passed sequencing, transfected, pending validation		2a	pcDNA3.1	67											
+gBlock	31	S-68	N103/39					68											
+	15	S-69	N59/36	Failed via COS-IF 8/26/21	3	2a	pcDNA3.1	69											
+	38	S-70	N103/31	Passed validation via COS-IF 08/26/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	70											
+Investigate	283*	S-71	L106/4	Passed sequencing, transfected, COS-IF validation inconclusive		2a	pcDNA3.1	71											
+	429*	S-72	L120/30	Failed via COS-IF 6/14/22	3	2a	pcDNA3.1	72											
+	56	S-73	N87/25	Failed via COS-IF 6/29/22	3	2a	pcDNA3.1	73											
+	46	S-74	K20/78	Passed validation via COS-IF 07/19/21, shipped to Addgene 1/11/22, reshipped in shipment scheduled for June 2022	3	2a	pcDNA3.1	74											
+	42	S-75	K28/86	Failed via COS-IF 8/26/21	3	2a	pcDNA3.1	75											
+	35	S-76	N106/65	Failed via COS-IF 8/26/21	3	2a	pcDNA3.1	76											
+	32	S-77	N97A/31	Failed via COS-IF 10/15/21	3	2a	pcDNA3.1	77											
+no need S-154 worked	62	S-78	K60/73					78											
+	393*	S-80	N483/126	Passed validation via COS-IF 08/26/21, shipped to Addgene 1/11/22	3	2a	pcDNA3.1	80											
+	19	S-81	A12/18	Passed validation via IHC 6/30/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	81											
+	58	S-82	L23/27	Passed validation via COS-IF 4/7/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	82											
+		S-83	L100/1	Failed via COS-IF 2/4/22, Failed via CHN/CCN 4/11/22	3	2t	pcDNA3.1	83											
+	322	S-84	L115/13	Passed validation via COS-IF 1/13/22, shipped to Addgene 8/11/22	3	2t		84											
+	323	S-85	L121/42	Failed via COS-IF 2/4/22	3	2t	pcDNA3.1	85											
+	48	S-86	N71/37	Failed via COS-IF 4/7/22	3	2t	pcDNA3.1	86											
+	13	S-87	N133/21	Failed via COS-IF 2/4/22	3	2t	pcDNA3.1	87											
+	20	S-88	N355/1	Failed via COS-IF 1/24/22	3	2t	pcDNA3.1	88											
+	16	S-89	N112B/14	Failed via COS-IF 2/4/22	3	2t	pcDNA3.1	89											
+	33	S-90	K69/3	Failed via COS-IF 6/29/22	3	2t	pcDNA3.1	90											
+	34	S-91	L57/46	Failed via COS-IF 2/4/22	3	2t	pcDNA3.1	91											
+	37	S-92	N23B/49	Passed validation via IHC 3/30/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	92											
+	41	S-93	K75/41	Failed via COS-IF 2/22/22	3	2t	pcDNA3.1	93											
+	39	S-94	N114/10	Passed validation via COS-IF 4/7/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	94											
+	49	S-95	N367/62	Failed via COS-IF 2/22/22	3	2t	pcDNA3.1	95											
+	52	S-96	N170A/1	Passed validation via COS-IF 2/22/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	96											
+	60	S-97	N74/25	Failed via IHC 3/30/22	3	2t	pcDNA3.1	97											
+	112	S-98	L121/25	Failed via COS-IF 4/7/22	3	2t	pcDNA3.1	98											
+	117	S-99	L113/130	Passed validation via COS-IF 3/15/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	99											
+	118	S-100	L113/13 	Passed validation via COS-IF 3/15/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	100											
+	119	S-101	L113/27	Passed validation via COS-IF 3/15/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	101											
+	131	S-102	L120/12	Failed via COS-IF 6/29/22	3	2t	pcDNA3.1	102											
+	132	S-103	L120/30	Failed via COS-IF 6/29/22	3	2t	pcDNA3.1	103											
+	134	S-104	L126/93	TC Supes collected 10-Mar-22, COS-IF fail 3/29/22	3	2t	pcDNA3.1	104											
+investigate/redo evaluation	404	S-105	L127/8	Failed via COS-IF 6/5/23	4	2t	pcDNA3.1	105											
+	2	S-106	N106/36	Failed via IHC  3/31/22	3	2t	pcDNA3.1	106											
+which VL was used	6	S-107	L21/32	TC Supes collected 10-Mar-22, COS-IF fail 3/29/22	3	2t	pcDNA3.1	107											
+	12	S-108	N59/20	Passed validation via COS-IF 3/29/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	108											
+	15	S-109	N59/36	Passed validation via COS-IF 3/29/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	109											
+try as VL-VH	21	S-110	K57/1	TC Supes collected 10-Mar-22, COS-IF fail 3/29/22	3	2t	pcDNA3.1	110											
+	29	S-111	N1/12	Passed validation via IHC 3/31/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	111											
+	32	S-112	N97A/31	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	112											
+	35	S-113	N106/65	Failed via IHC 3/31/22	3	2t	pcDNA3.1	113											
+	36	S-114	N134/12	Passed validation via COS-IF 4/7/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	114											
+	38	S-115	N103/31	Passed validation via COS-IF 3/29/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	115											
+	42	S-116	K28/86	Failed via COS-IF 3/29/22	3	2t	pcDNA3.1	116											
+test	17	S-117	N68/6	Failed via COS-IF 2/24/23	4	2t	pcDNA3.1	117											
+	46	S-118	K20/78	Passed validation via COS-IF 3/29/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	118											
+	283	S-119	L106/4	TC Supes collected 17-Mar-22, COS-IF fail 3/31/22	3	2t	pcDNA3.1	119											
+	337	S-120	L117/1	Passed validation via COS-IF 3/29/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	120											
+	431	S-121	L122/68	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	121											
+	395	S-122	L107/39	Failed via COS-IF 3/29/22	3	2t	pcDNA3.1	122											
+	428	S-123	L118/66	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	123											
+investigate/do evaluation	430	S-124	L122/6	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	124											
+	53	S-125	K64/15	Failed via COS-IF 4/7/2022	3	2t	pcDNA3.1	125											
+	47	S-126	K67/25	Failed via COS-IF 4/7/2022	3	2t	pcDNA3.1	126											
+	44	S-127	N221/17	Failed via COS-IF 2/24/23	4	2t	pcDNA3.1	127											
+	396	S-128	L108/92	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	128											
+	414	S-129	L109/39	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	129											
+	274	S-130	L118/80	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	130											
+	418	S-131	L119/106	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	131											
+	309	S-132	L124/59	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	132											
+	465	S-133	L125/129	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	133											
+	60	S-134	N138/6	Failed via IHC 6/26/22	3	2t	pcDNA3.1	134											
+	61	S-135	N18/30	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	135											
+	50	S-136	N19/2	Failed via COS-IF 5/3/2022	3	2t	pcDNA3.1	136											
+	452	S-137	N452/73	Passed validation via COS-IF 6/14/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	137											
+	453	S-138	N452/81	Passed validation via COS-IF 6/14/22, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	138											
+	393	S-139	N483/126	Passed validation via COS-IF 5/3/2022, shipped to Addgene 8/11/22	3	2t	pcDNA3.1	139											
+	56	S-140	N87/25	Failed via COS-IF 6/29/22	3	2t	pcDNA3.1	140											
+	64	S-141	K28/74	Passed validation via brain IHC 6/26/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	141											
+	67	S-142	N26A/23	Failed via COS-IF 6/29/22	3	3	pcDNA3.4	142											
+	149	S-143	L76/36	Passed validation via COS-IF 6/14/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	143											
+	126	S-144	N207/27	Passed validation via COS-IF 6/14/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	144											
+	155	S-145	N393/2	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	145											
+	165	S-146	N414/25	Passed validation via COS-IF 6/14/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	146											
+	68	S-147	N67/15	Passed validation via COS-IF 6/14/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	147											
+	Not ranked	S-148	L127/12	Failed via IHC 062622	3	3	pcDNA3.4	148											
+	97	S-149	N10/7	Failed via COS-IF 6/14/22	3	3	pcDNA3.4	149											
+investigate/do evaluation	130	S-150	N192/12	TC Supes Collected 25-May-22, inconclusive COS-IF, IHC 6/27/22		3	pcDNA3.4	150											
+	467	S-151	N483/26	Passed validation via COS-IF 6/29/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	151											
+	193	S-152	N212A/34	Passed validation via COS-IF 6/14/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	152											
+	70	S-153	L24/18	Failed via COS-IF 6/29/22	3	3	pcDNA3.4	153											
+	62	S-154	K60/73	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	154											
+	194	S-155	L80/21	Failed via COS-IF 6/29/22	3	3	pcDNA3.4	155											
+	224	S-156	N219/5	TC Supes Collected 25-May-22, Failed via COS-IF (6/14/22)	3	3	pcDNA3.4	156											
+	134	S-157	N398A/34	Passed validation via brain IHC  6/23/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	157											
+	142	S-158	N421A/85	Failed via IHC 6/27/22	3	3	pcDNA3.4	158											
+	100	S-159	N72/16	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	159											
+	Not ranked	S-160	L130/1	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	160											
+	137	S-161	N100/13	Passed validation via Protein ELISA 6/29/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	161											
+	115	S-162	N245/1	Failed via IHC 6/27/22	3	3	pcDNA3.4	162											
+	466	S-163	N483/84	Passed validation via COS-IF 6/29/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	163											
+	225	S-164	N225A/10	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	164											
+	65	S-165	N106/20	Passed validation via brain IHC 6/26/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	165											
+	127	S-166	K73/20	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	166											
+	133	S-167	N125/10	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	167											
+	66	S-168	N22/21	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	168											
+	164	S-169	N399/19	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	169											
+	148	S-170	N46/30	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	170											
+	101	S-171	N81/2	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	171											
+		S-172	L131/17.1	Passed validation via HEK-IF 6/20/22 and protein ELISA 6/29/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	172											
+	90	S-173	N105/13	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	173											
+	139	S-174	N245/36	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	174											
+	Not ranked	S-175	N486/76	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	175											
+	244	S-176	N229A/32	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	176											
+	55	S-177	N144/14	TC Supes Collected 07-Jun-22, awaiting validation		3	pcDNA3.4	177											
+	150	S-178	K96/7	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	178											
+	112	S-179	N152B/23	TC Supes Collected 07-Jun-22, validation in progress (inconclusive 2x), IHC 13-June-23 inconclusive		3	pcDNA3.4	179											
+	161	S-180	N294A/10	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	180											
+	128	S-181	N39B/8	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	181											
+	218	S-182	N49A/21	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	182											
+investigate/redo evaluation	110	S-183	1F1	Failed via COS-IF 6/5/23	4	3	pcDNA3.4	183											
+		S-184	L131/20.1	Passed validation via HEK-IF 6/20/22 and protein ELISA 6/29/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	184											
+	79	S-185	N105/17	Passed validation via brain IHC 6/26/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	185											
+	131	S-186	N319A/14	Failed via COS-IF 2/24/23	4	3	pcDNA3.4	186											
+	94	S-187	N75/33	Failed via IHC 6/27/22	3	3	pcDNA3.4	187											
+	185	S-188	N238/31	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	188											
+	44	S-189	N221/17	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	189											
+	222	S-190	L102/45	Failed via IHC 6/20/22	3	3	pcDNA3.4	190											
+	181	S-191	N154/32	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	191											
+	226	S-192	N327A/38	Failed via IHC 6/26/22	3	3	pcDNA3.4	192											
+	191	S-193	N4/15	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	193											
+	196	S-194	N53/32	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	194											
+	69	S-195	K56A/50	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	195											
+		S-196	L131/27.2	Passed validation via Protein ELISA 6/29/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	196											
+	129	S-197	N141/28	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	197											
+	119	S-198	N332B/15	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	198											
+	169	S-199	N126B/31	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	199											
+	172	S-200	N25/35	Failed via COS-IF 6/13/22	3	3	pcDNA3.4	200											
+	73	S-201	N23B/6	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3		201											
+	197	S-202	L45/30	Failed via IHC 6/30/22	3	3	pcDNA3.4	202											
+	136	S-203	N18/28	Passed validation via IHC 6/30/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	203											
+investigate/redo evaluation	209	S-204	N343/26	TC Supes Collected 07-Jun-22, validation in progress (inconclusive)		3	pcDNA3.4	204											
+	195	S-205	N408/79	Failed via IHC 6/20/22	3	3	pcDNA3.4	205											
+	104	S-206	N55/10	Failed via IHC 6/30/22	3	3	pcDNA3.4	206											
+		S-207	K89/41.2	Passed validation via brain IHC 6/26/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	207											
+		S-208	L57/23.1	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	208											
+	141	S-209	N15/4	Failed via COS-IF 2/24/23	4	3	pcDNA3.4	209											
+	121	S-210	N375/67	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	210											
+		S-211	N144/32	Passed validation via COS-IF 6/13/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	211											
+	238	S-212	N366/60	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	212											
+	114	S-213	N271/44	Failed via IHC 6/20/22	3	3	pcDNA3.4	213											
+	125	S-214	L48A/9	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	214											
+	135	S-215	N183/15	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	215											
+	198	S-216	N363/71	Passed validation via IHC 6/30/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	216											
+	195	S-217	N408/79v2	Failed via IHC 062622	3	3	pcDNA3.4	217											
+	144	S-218	N6/38	Failed via IHC 062622	3	3	pcDNA3.4	218											
+	277	S-219	L106/83	Failed via IHC 062622	3	3	pcDNA3.4	219											
+		S-220	L61C/30	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	220											
+	80	S-221	N159/5	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	221											
+	122	S-222	N37A/10	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	222											
+	241	S-223	N158/28	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	223											
+	243	S-224	N384/63	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	224											
+	78	S-225	N393/76	Transfected 6/8/22, COS-IF set 22 inconclusive		3	pcDNA3.4	225											
+	206	S-226	L71/5	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	226											
+	163	S-227	N185/7	Transfected 6/8/22, COS-IF inconclusive ,Protein ELISA positive 6/27/23,  pending to Addgene	4	3	pcDNA3.4	227											
+	202	S-228	N372B/1	Passed validation via brain IHC  6/20/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	228											
+	211	S-229	N410/17	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	229											
+	213	S-230	N64A/36	Failed via IHC 6/27/22	3	3	pcDNA3.4	230											
+investigate/redo evaluation	424	S-231	L125/121	COS-IF inconclusive 6/27/22, IHC Positive 6/13/23	3	3	pcDNA3.4	231											
+	342	S-232	L83/11	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	232											
+	131	S-233	N186/29	Failed via IHC 6/30/22	3	3	pcDNA3.4	233											
+	81	S-234	N38/8	COS-IF inconclusive 6/27/22, IHC inconclusive 6/13/23		3	pcDNA3.4	234											
+	230	S-235	N209C/35	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	235											
+	245	S-236	N396/29	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	236											
+	167	S-237	N50/36	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	237											
+		S-238	K56A/57	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	238											
+	94	S-239	N75/3	COS-IF inconclusive 6/27/22, IHC negative 13-June-23		3	pcDNA3.4	239											
+	268	S-240	N15/39	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	240											
+		S-241	K28/25	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	241											
+	252	S-242	N170A/26	Passed validation via COS-IF 1/25/23, shipped to Addgene 3/9/23	4	3	pcDNA3.4	242	242C										
+		S-243	K28/27	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	243											
+	271	S-244	N270/47	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	244											
+		S-245	K28/38	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	245											
+	270	S-246	N302/10	Failed via IHC 062622	3	3	pcDNA3.4	246											
+		S-247	K28/42	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	3	pcDNA3.4	247											
+		S-248	L58A/6	Failed via IHC 062622, Failed via COS-IF 6/29/22	3	3	pcDNA3.4	248											
+		S-249	K28/58	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	249											
+		S-250	K28/94	Failed via COS-IF 6/27/22	3	3	pcDNA3.4	250											
+	5	S-251	N86/8VL-VH	Passed validation via COS-IF 10/28/22,  shipped to Addgene 3/9/23	4	4	pcDNA3.4	251											
+	47	S-252	K67/25VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	252											
+	2	S-253	N106/36(VL2)VH-VL	Failed via IHC 10/10/22	4	4	pcDNA3.4	253											
+	6	S-254	L21/32VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	254											
+	48	S-255	N71/37VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	255											
+	8	S-256	L6/60VL-VH	Passed validation via IHC 10/10/22, shipped to Addgene 3/9/23	4	4	pcDNA3.4	256											
+	56	S-257	N87/25VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	257											
+try as VL-VH	22	S-258	N95/35VL-VH	Passed validation via IHC 10/10/22, shipped to Addgene 3/9/23	4	4	pcDNA3.4	258											
+	16	S-259	N112B/14VL-VH	Passed validation via COS-IF 10/28/22, shipped to Addgene 3/9/23	4	4	pcDNA3.4	259											
+	24	S-260	N206A/8VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	260											
+	43	S-261	K55/7(VL1)VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	261											
+	34	S-262	L57/46VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	262											
+	50	S-263	N19/2VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	263		wrong VL sequence in gblock									
+	42	S-264	K28/86VL-VH	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	264											
+	2	S-265	N106/36(VL2)VL-VH	Passed validation via IHC 10/10/22, shipped to Addgene 3/9/23	4	4	pcDNA3.4	265											
+	45	S-266	N377/20VL-VH	Passed validation via COS-IF 2/24/23, pending to Addgene	4	4	pcDNA3.4	266										Inconclusive 	Category 5
+	50	S-267	N19/2VH-VL	Failed via COS-IF  10/28/22	4	4	pcDNA3.4	267		wrong VL sequence in gblock									
+redo GA	28	S-268	N70/28	Failed via sequencing 09-Dec-22		1a	pcDNA3.1	268											
+investigate/redo evaluation	11	S-269	N308/48	inconclusive by COS-IF 1/15/23		1a	pcDNA3.1	269											
+	23	S-270	N327/95	Failed via COS-IF 1/25/23	4	1a	pcDNA3.1	270											
+investigate/redo evaluation	26	S-271	K36/15	inconclusive by COS-IF 1/15/23		1a	pcDNA3.1	271											
+	45	S-272	N377/20	Passed validation via COS-IF 2/2/23, shipped to Addgene 3/9/23	4	1a	pcDNA3.1	272	272C										
+	30	S-273	N16B/8	Passed validation via COS-IF 2/2/23, shipped to Addgene 3/9/23	4	1a	pcDNA3.1	273	All same										
+	24	S-274	N206A/8	Passed validation via COS-IF 2/2/23, shipped to Addgene 3/9/23	4	1a	pcDNA3.1	274	274B										
+investigate/redo evaluation	43	S-275	K55/7	Failed via COS-IF 6/5/23	4	1a	pcDNA3.1	275											
+	3	S-276	N241A/34	COS-IF positive 2/2/23, shipped to Addgene 3/9/23	4	1a	pcDNA3.1	276	276D										
+	27	S-277	K74/71	TC Supes Collected 1/24/23		1a	pcDNA3.1	277											
+gblock	57	S-278	L20/8	Failed via IHC 4/25/2023	4	5	pcDNA3.4	278											
+	72	S-279	L11A/41	Passed validation via  IHC 4/18/2023, pending to AddGene	4	5	pcDNA3.4	279											
+	74	S-280	N196/16	Passed validation via  IHC 4/18/2023, pending to AddGene	4	5	pcDNA3.4	280	280E										
+	89	S-281	N127/31	Failed via IHC 4/18/2023	4	5	pcDNA3.4	281											
+	91	S-282	N110/29	Failed via IHC 4/18/2023	4	5	pcDNA3.4	282											
+	93	S-283	L60/4	Failed via IHC 4/18/2023	4	5	pcDNA3.4	283											
+	98	S-284	N151/3	Passed validation via  IHC 4/18/2023, pending to AddGene	4	5	pcDNA3.4	284	284A										
+	107	S-285	N212/17	Passed validation via  IHC 4/18/2023, pending to AddGene	4	5	pcDNA3.4	285	285A										
+investigate	109	S-286	N8B/1	Failed via IHC 4/25/2023	4	5	pcDNA3.4	286											
+	111	S-287	N1/66	Failed via IHC 4/18/2023	4	5	pcDNA3.4	287											
+gblock	40	S-288	8G10	Failed via COS-IF 4/13/23	4	5	pcDNA3.4	288											
+	275	S-289	1D8	COS-IF inconclusive, 4/13/23, Protein ELISA positive 6/27/23,  pending to Addgene	4	5	pcDNA3.4	289											
+	51	S-290	N3/26	Failed via COS-IF 4/13/23	4	5	pcDNA3.4	290											
+	71	S-291	N69/46	Passed validation via COS-IF 4/13/23, pending to Addgene	4	5	pcDNA3.4	291	291D										
+	256	S-292	N367/51	Passed validation via COS-IF 4/13/23, pending to Addgene	4	5	pcDNA3.4	292	292B										
+	77	S-293	K17/70	Passed validation via COS-IF 4/13/23, pending to Addgene	4	5	pcDNA3.4	293											
+	83	S-294	N178A/9	Failed via COS-IF 4/21/23	4	5	pcDNA3.4	294											
+	84	S-295	N202/7	Failed via COS-IF 4/21/23	4	5	pcDNA3.4	295											
+	85	S-296	K7/45	Passed validation via COS-IF 4/21/23, pending to Addgene	4	5	pcDNA3.4	296	296A										
+	87	S-297	N168/6	Failed via COS-IF 4/21/23	4	5	pcDNA3.4	297											
+	88	S-298	N93A/49	Passed validation via COS-IF 4/21/23, pending to Addgene	4	5	pcDNA3.4	298	298B										
+	95	S-299	L28/4	Failed via COS-IF 4/21/23	4	5	pcDNA3.4	299											
+	96	S-300	N149/25	Passed validation via COS-IF 4/21/23, pending to Addgene	4	5	pcDNA3.4	300	300F										
+	99	S-301	N43/6	Passed validation via COS-IF 4/21/23, pending to Addgene	4	5	pcDNA3.4	301	301A										
+	102	S-302	N11/33	Failed via COS-IF 4/21/23	4	5	pcDNA3.4	302											
+	106	S-303	N201/35	Passed validation via COS-IF 4/21/23, pending to Addgene	4	5	pcDNA3.4	303	303A										
+	116	S-304	N289/16	Passed validation via COS-IF 4/21/23, pending to Addgene	4	5	pcDNA3.4	304	304C										
+Bad gBlock, do not redo	117	S-305	N7/18	Passed validation via COS-IF 6/26/23, pending to Addgene	4	5	pcDNA3.4	305	305B										
+	119	S-306	N76/8	Failed via COS-IF 4/21/23	4	5	pcDNA3.4	306											
+	120	S-307	L51/82	Failed via COS-IF 4/21/23	4	5	pcDNA3.4	307											
+	173	S-308	N129/15	Passed validation via COS-IF 4/21/23, pending to Addgene	4	5	pcDNA3.4	308	308D										
+	177	S-309	N422/18	Passed validation via COS-IF 4/21/23, pending to Addgene	4	5	pcDNA3.4	309	309E										
+	188	S-310	N191/7	Failed via COS-IF 4/21/23	4	5	pcDNA3.4	310											
+	233	S-311	N325B/65	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	311											
+	264	S-312	N276A/15	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	312	312A										
+	278	S-313	N148/30	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	313											
+	285	S-314	N144/17	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	314											
+	282	S-315	N445/27	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	315											
+	286	S-316	N255/38	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	316											
+	290	S-317	N372B/60	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	317											
+	295	S-318	N479/12	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	318											
+	334	S-319	N479/107	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	319											
+	296	S-320	N86/44	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	320											
+	319	S-321	N86/20	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	321											
+	303	S-322	N304B/115	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	322											
+	306	S-323	N448/88	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	323											
+	311	S-324	L86/33	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	324											
+	335	S-325	N52B/27	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	325											
+	343	S-326	N4/49	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	326											
+	345	S-327	N425/45	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	327											
+	355	S-328	N160/21	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	328											
+	363	S-329	N390/43	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	329											
+	364	S-330	N429/19	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	330											
+	371	S-331	N133/35	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	331											
+	379	S-332	N290B/25	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	332											
+	387	S-333	N402/46	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	333											
+	388	S-334	N403/63	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	334											
+	389	S-335	N406/47	Failed via COS-IF 4/27/23	4	5	pcDNA3.4	335											
+	451	S-336	N449/73	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	336											
+	463	S-337	N471/27	Passed validation via COS-IF 4/27/23, pending to Addgene	4	5	pcDNA3.4	337											
+		S-338	N419/40	Falied Cos-IF 6/26/23		6	pcDNA3.4	338											
+		S-339	N419/78	Falied Cos-IF 6/26/23	4	6	pcDNA3.4	339											
+		S-340	L118/135	Failed via GA 6/3/23		6	pcDNA3.4	340											
+		S-341	L118/14	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	341											
+		S-342	K75/30	Failed via COS-IF 6/15/23	4	6	pcDNA3.4	342											
+		S-343	K75/18	Failed via COS-IF 6/15/23	4	6	pcDNA3.4	343											
+		S-344	L24/1	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	344											
+		S-345	L24/11	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	345											
+		S-346	L24/19	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	346											
+		S-347	L24/21	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	347											
+		S-348	N432/21.1	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	348											
+		S-349	N432/63	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	349											
+		S-350	L121/136	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	350											
+		S-351	L121/133	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	351											
+		S-352	K66/27	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	352											
+		S-353	K66/38	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	353											
+		S-354	K66/59	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	354											
+		S-355	L107/90(VL1)	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	355											
+		S-356	L107/95	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	356											
+		S-357	L113/26	Failed via COS-IF 6/26/23		6	pcDNA3.4	357											
+		S-358	L113/28	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	358											
+		S-359	L113/29	Failed via COS-IF 6/15/23	4	6	pcDNA3.4	359											
+		S-360	L113/44	Passed validation via COS-IF 6/15/23, pending to Addgene	4	6	pcDNA3.4	360											
+		S-361	L113/62	Failed via COS-IF 6/20/23	4	6	pcDNA3.4	361											
+		S-362	L86/14	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	362											
+		S-363	L86/2	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	363											
+		S-364	N112/16	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	364											
+		S-365	N112B/29	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	365											
+		S-366	K57/27	Failed via COS-IF 6/20/23	4	6	pcDNA3.4	366											
+		S-367	K57/41	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	367											
+		S-368	N227/21	transfected 6/12/23, Failed via IHC 6/20/23		6	pcDNA3.4	368											
+		S-369	N294A/6	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	369											
+		S-370	N323A/31	Failed via COS-IF 6/20/23	4	6	pcDNA3.4	370											
+		S-371	N416/57	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	371											
+		S-372	N424/45	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	372											
+		S-373	L106/23	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	373											
+		S-374	N485/22	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	374											
+		S-375	N486/25	Failed via COS-IF 6/20/23	4	6	pcDNA3.4	375											
+		S-376	L114/38	Passed validation via COS-IF 6/20/23, pending to Addgene	4	6	pcDNA3.4	376											
+		S-377	N389/9	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	377											
+		S-378	N194/11	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	378											
+		S-379	K13/31	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	379											
+		S-380	N140A/12	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	380											
+		S-381	K19/46	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	381											
+	153	S-382	N312/10	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	382											
+		S-383	N372A/1	Failed via COS-IF 6/29/23	4	6	pcDNA3.4	383											
+		S-384	N391/68	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	384											
+		S-385	N241A/72	Failed via COS-IF 6/29/23	4	6	pcDNA3.4	385											
+		S-386	L122/144	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	386											
+		S-387	L123/46	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	387											
+		S-388	L83/81	TC supes collected 6/17/23, Inconclusive 6/29/23		6	pcDNA3.4	388											
+		S-389	N55/82	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	389											
+		S-390	N468/37	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	390											
+		S-391	N155/9	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	391											
+		S-392	N119/44	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	392											
+		S-393	N121A/1	Failed via COS-IF 6/29/23	4	6	pcDNA3.4	393											
+		S-394	L6/48	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	394											
+		S-395	N56/21	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	395											
+		S-396	K74/53	TC supes collected 6/17/23, Inconclusive 6/29/23		6	pcDNA3.4	396											
+		S-397	N428/12	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	397											
+		S-398	N452/30	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	398											
+		S-399	N473/36.3	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	399											
+		S-400	L119/134(VL2)	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	400											
+		S-401	L28/36	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	401											
+		S-402	N395/68	Failed via COS-IF 6/29/23	4	6	pcDNA3.4	402											
+		S-403	N238/30	TC supes collected 6/17/23, Inconclusive 6/29/23		6	pcDNA3.4	403											
+		S-404	D4/154	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	404											
+		S-405	L64/32	Failed via COS-IF 6/29/23	4	6	pcDNA3.4	405											
+		S-406	N411/51	Passed validation via COS-IF 6/26/23, pending to Addgene	4	6	pcDNA3.4	406											
+		S-407	N465/11	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	407											
+		S-408	N57/2	Failed via COS-IF 6/26/23	4	6	pcDNA3.4	408											
+	1		K28/43	Passed validation via brain IHC 2/23/22, shipped to Addgene 8/11/22	3	test, 3 tags	pcDNA3.1												
+	10	Genscript 2022	K89/34 Flag	Passed validation via COS-IF 6/14/22, shipped to Addgene 8/11/22	3	Genscript 2022	pcDNA3.4												
+	10		K89/34	Passed validation via brain IHC 2/23/22, shipped to Addgene 8/11/22	3	test, 3 tags	pcDNA3.1												
+	18	Genscript 2022	N28/9 Flag	Passed validation via COS-IF 6/29/22, shipped to Addgene 8/11/22	3	Genscript 2022	pcDNA3.4												
+	236*	Genscript 2022	L114/3 Flag	Passed validation via COS-IF 6/27/22, shipped to Addgene 8/11/22	3	Genscript 2022	pcDNA3.4												
+	13	trial set	N133/21	Passed validation via COS-IF 06/19/21, shipped to Addgene 1/11/22	2	trial set	pcDNA3.1												
+	14	trial set	K65/35	Passed validation via COS-IF 06/19/21, shipped to Addgene 1/11/22	2	trial set	pcDNA3.1												
+	17	trial set	N68/6	Passed validation via HEK-IF 06/23/21, shipped to Addgene 1/11/22	2	trial set	pcDNA3.1												
+	20	trial set	N355/1	Passed validation via COS-IF 06/19/21, shipped to Addgene 1/11/22, reshipped in shipment scheduled for June 2022	2	trial set	pcDNA3.1												
+	63	Genscript2019	N263/31 LC1	Passed validation via COS-IF 2/24/20, shipped to Addgene 1/11/22	2	Genscript2019	pCDNA3.4												
+	63	Genscript2019	N263/31 LC2	Did not express, not shipped	2	Genscript2019	pCDNA3.4												
+	1	Genscript2020	K28/43	Passed validation via brain IHC 2/25/20, shipped to Addgene 1/11/22	1	Genscript2020	pCDNA3.4												
+	4	Genscript2018	N295B/66	Passed validation via COS-IF, shipped to Addgene 1/11/22	1	Genscript2018	pcDNA3.1												
+	7	Genscript2018	N86/38	Passed validation via COS-IF 2/24/20, shipped to Addgene 1/11/22	1	Genscript2018	pcDNA3.1												
+	9	Genscript2018	K14/16	Passed validation via brain IHC 2/25/20, shipped to Addgene 1/11/22	1	Genscript2018	pcDNA3.1												
+	10	Genscript2020	K89/34	Passed validation via brain IHC 2/25/20, shipped to Addgene 1/11/22	1	Genscript2020	pCDNA3.4												
+	15	Genscript2018	N59/36	Passed validation via COS-IF, shipped to Addgene 1/11/22	1	Genscript2018	pcDNA3.1												
+	18	Genscript2018	N28/9	Passed validation via brain IHC 2/25/20, shipped to Addgene 1/11/22	1	Genscript2018	pcDNA3.1												
+	54	Genscript2018	N29/29	Passed validation via COS-IF 2/24/20, shipped to Addgene 1/11/22	1	Genscript2018	pcDNA3.1												
+	75	Genscript2018	N419/40	Weak/no expression, Failed via validation	1	Genscript2018	pCDNA3.1												
+	82	Genscript2018	K13/31	Weak/no expression, Failed via validation	1	Genscript2018	pCDNA3.1												
+	86	Genscript2018	N52A/42	Passed validation via COS-IF, shipped to Addgene 1/11/22	1	Genscript2018	pcDNA3.1												
+	92	Genscript2020	K39/25	Passed validation via brain IHC 2/25/20, shipped to Addgene 1/11/22	1	Genscript2020	pCDNA3.4												
+	103	Genscript2018	N56/21	Weak/no expression, Failed via validation	1	Genscript2018	pCDNA3.1												
+	105	Genscript2018	K66/38	Weak/no expression, Failed via validation	1	Genscript2018	pCDNA3.1												
+	152	Genscript2018	N57/2	Weak/no expression, Failed via validation	1	Genscript2018	pCDNA3.1												
+	156	Genscript2018	K55/82	Good expression, Failed via validation	1	Genscript2018	pCDNA3.1												
+	171	Genscript2018	N419/78	Weak/no expression, Failed via validation	1	Genscript2018	pCDNA3.1												
+	236*	Genscript2019	L114/3	Passed validation via brain IHC 2/25/20, shipped to Addgene 1/11/22	1	Genscript2019	pCDNA3.4												
+	241*	Genscript2019	L109/57	Passed validation via brain IHC 2/25/20, shipped to Addgene 1/11/22	1	Genscript2019	pCDNA3.4												
+	298*	Genscript2019	L114/81	Passed validation via brain IHC 2/25/20, shipped to Addgene 1/11/22	1	Genscript2019	pCDNA3.4												
+	430*	Genscript2019	L122/6	Passed validation via COS-IF, shipped to Addgene 1/11/22	1	Genscript2019	pCDNA3.4												
+	469*	Genscript2019	N486/32	Passed validation via COS-IF/IHC, shipped to Addgene 1/11/22	1	Genscript2019	pCDNA3.4												
+redo using GA gBlock needed		Genscript2018	D3/71	Weak/no expression, Failed via validation	1	Genscript2018	pCDNA3.1												
+which VL was used	6	trial set	L21/32	Passed sequencing, transfected, pending validation		trial set	pcDNA3.1												
+no need as S-59 and S-108 worked	12	trial set	N59/20	Passed sequencing, transfected, pending validation		trial set	pcDNA3.1												
+	21	Genscript2020	K57/1			Genscript2020	pCDNA3.4												
+																			
+																			
+redo evaluation or redo as GA gBlock needed	Not ranked	Genscript2019	L111/118	Good expression, COS-IF inconclusive		Genscript2019	pCDNA3.4												
+																			
+			N111/24	in progress as gblock		set 7	pCDNA3.4												
+			N275/14	in progress as gblock		set 7	pCDNA3.4												
+			K19/36	in progress as gblock		set 7	pCDNA3.4												
+			L8/15	in progress as gblock		set 7	pCDNA3.4												
+			K78/29	in progress as gblock		set 7	pCDNA3.4												
+	113		N147/6	in progress as gblock		set 7	pCDNA3.4												
+			N408/62	in progress as gblock		set 7	pCDNA3.4												
+			N283/7	in progress as gblock		set 7	pCDNA3.4												
+			K9/40	in progress as gblock		set 7	pCDNA3.4												
+			N388A/10	in progress as gblock		set 7	pCDNA3.4												
+			N244/5	in progress as gblock		set 7	pCDNA3.4												
+			N106/43	in progress as gblock		set 7	pCDNA3.4												
+			K47/42	in progress as gblock		set 7	pCDNA3.4												
+			N182/17	in progress as gblock		set 7	pCDNA3.4												
+			N77/15	in progress as gblock		set 7	pCDNA3.4												
+			N212/3	in progress as gblock		set 7	pCDNA3.4												
+			L43/40	in progress as gblock		set 7	pCDNA3.4												
+			62-3G1	in progress as gblock		set 7	pCDNA3.4												
+			N81/37	in progress as gblock		set 7	pCDNA3.4												
+			L6/23	in progress as gblock		set 7	pCDNA3.4												
+			N116/14	in progress as gblock		set 7	pCDNA3.4												
+			L42/17	in progress as gblock		set 7	pCDNA3.4												
+			K37/89	in progress as gblock		set 7	pCDNA3.4												
+	76		N231B/34	in progress as gblock		set 7	pCDNA3.4												
+			N212/7	in progress as gblock		set 7	pCDNA3.4												
+			N34/34	in progress as gblock		set 7	pCDNA3.4												

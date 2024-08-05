@@ -1,0 +1,10 @@
+Category,Chemical Fusion Count,Chemical Fusion Percent,Electrofusion Count,Electrofusion Percent,Total Count,Total Percent
+VL or VH as 0,186,17.0%,155,18.0%,341,18.0%
+Total (VL>=1 and VH>=1),896,83.0%,694,82.0%,1590,82.0%
+No additional chain,874,81.0%,679,80.0%,1553,80.0%
+Additional chains of some sort,22,2.0%,15,1.8%,37,1.9%
+One additional chain of some sort,22,2.0%,15,1.8%,37,1.9%
+One additional VL only,14,1.3%,9,1.1%,23,1.2%
+One additional VH only,2,0.18%,2,0.24%,4,0.21%
+One additional VL and VH,6,0.55%,4,0.47%,10,0.52%
+Total Attempted,1082,100.0%,849,100.0%,1931,100.0%

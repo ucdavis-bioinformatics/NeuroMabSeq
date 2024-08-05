@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+td {
+    white-space: nowrap;
+}
+
+td.wrapok {
+    white-space:normal
+}
+</style>
+
+<!-- Datatables stuff -->
+<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">-->
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+
+
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.17/css/jquery.dataTables.css">-->
+<!--<script src="https://code.jquery.com/jquery-1.9.1.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>-->
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">-->
+
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">-->
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css">-->
+
+<link rel="stylesheet" href="{% static "css/bootstrap.min.css.1" %}">
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.css" %}">
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}">
+<link rel="stylesheet" href="{% static "css/responsive.dataTables.min.css" %}">
+<script src="{% static "js/jquery-1.9.1.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "js/dataTables.responsive.min.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script>
+$(document).ready(function(){ $('#myTable').DataTable(); });
+
+$(document).ready( function () {
+  var table = $('#example').DataTable({
+  });
+} );
+
+$(document).ready(function() {
+    $('#example1').DataTable({"pageLength": 50, paging: false, info: false,});
+} );
+
+
+
+</script>
+
+
+  <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:10000px">
+  <form method="get">
+    <div class="well" style="background-color:EAEAEA;padding:10;border-radius:8px;">
+      <h3 style="margin-top: 0">General Filter (Max 200 Shown and Exported)</h3>
+      <div class="row"  >
+        <div class="form-group col-sm-4 col-md-3">
+            <strong>{{ filter.form.mabid_search.label_tag }}</strong>
+          {% render_field filter.form.mabid_search class="form-control" %}
+        </div>
+        <div class="form-group col-sm-4 col-md-3">
+            <strong>{{ filter.form.mabid.label_tag }}</strong>
+          {% render_field filter.form.mabid class="form-control" %}
+        </div>
+        <div class="form-group col-sm-4 col-md-3">
+            <strong>{{ filter.form.category.label_tag }}</strong>
+          {% render_field filter.form.category class="form-control" %}
+        </div>
+        <div class="form-group col-sm-4 col-md-3">
+            <strong>{{ filter.form.target.label_tag }}</strong>
+          {% render_field filter.form.target class="form-control" %}
+        </div>
+          <div class="form-group col-sm-4 col-md-3">
+            <strong>{{ filter.form.chain.label_tag }}</strong>
+          {% render_field filter.form.chain class="form-control" %}
+        </div>
+        <div class="form-group col-sm-4 col-md-3">
+            <strong>{{ filter.form.ordering.label_tag }}</strong>
+          {% render_field filter.form.ordering class="form-control" %}
+        </div>
+
+
+      </div>
+        <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-search"></span> Search
+        </button>
+
+    </div>
+  </form>
+    <a href="/fasta_re/{{querystring}}/">
+      <button  label="Fasta" name="so_link" class="btn btn-info">Get Fasta File</button>
+    </a>
+
+</div>
+
+
+  <div class="w3-container w3-content w3-center w3-padding-5" style="max-width:10000px">
+
+
+
+  <h2>Entry Results</h2>
+        <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="left">
+              <thead>
+                <tr>
+                    <th>mAb ID</th>
+                    <th>Chain</th>
+                    <th>Category</th>
+                    <th>Protein Target</th>
+                    <th>Entry</th>
+
+                </tr>
+              </thead>
+          <tbody>
+          {% for item in queryset %}
+              <tr>
+                  <td>{{item.entry.mabid}}</td>
+                  <td>{{item.chain}}</td>
+                  <td>{{item.entry.get_category}}</td>
+                  <td>{{item.entry.protein_target}}</td>
+                  <td>
+                    <a href="/new_entry/{{item.entry.pk}}/{{item.pk}}/">
+                      <button  label="Entry Details" name="so_link" class="btn btn-info">See Full Entry</button>
+                    </a>
+                  </td>
+              </tr>
+          {% empty %}
+           <div>No invoices yet.</div>
+          {% endfor %}
+           </tbody>
+        </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css">
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css">
+
+
+
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <table id="albums" class="table table-striped table-bordered" style="width:100%" data-server-side="true" data-ajax="/api/entry_list2/?format=datatables">
+          <thead>
+            <tr>
+              <th data-data="mabid">MabID</th>
+              <th data-data="get_category">Category</th>
+              <th data-data="get_protein_target">Protein Target</th>
+              <th data-data="light_count">Light Count</th>
+              <th data-data="heavy_count">Heavy Count</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+  <script>
+      $(document).ready(function() {
+          $('#albums').DataTable();
+      });
+  </script>
+
+{% endblock %}

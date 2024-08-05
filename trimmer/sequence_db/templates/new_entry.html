@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+<!-- Datatables stuff -->
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.css" %}">
+<link rel="stylesheet" href="{% static "css/jquery.dataTables.min.css" %}">
+<link rel="stylesheet" href="{% static "css/responsive.dataTables.min.css" %}">
+<script src="{% static "js/jquery-1.9.1.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "js/dataTables.responsive.min.js" %}"></script>
+<script src="{% static "js/jquery.dataTables.js" %}"></script>
+
+
+<style>
+
+
+table {
+  border-collapse: collapse;
+}
+
+table, th, td, td-seq {
+  border: 1px solid black;
+  padding: 5px
+}
+
+td.td-seq {
+  font-family: Courier, monospace;
+  word-wrap: break-word;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+</style>
+
+<script>
+
+
+$(document).ready(function(){ $('#myTable').DataTable(); });
+
+$(document).ready( function () {
+  var table = $('#example').DataTable({
+  });
+} );
+$(document).ready(function() {
+    $('#example2').DataTable({"pageLength": 50, searching: false, paging: false, info: false, ordering: false, wrap: true});
+} );
+$(document).ready(function() {
+    $('#example1').DataTable({"pageLength": 50, searching: false, paging: false, info: false, ordering: false, wrap: true});
+} );
+
+</script>
+<script>
+function toggle_it(itemID){
+      // Toggle visibility between none and ''
+      if ((document.getElementById(itemID).style.display == 'none')) {
+            document.getElementById(itemID).style.display = ''
+            event.preventDefault()
+      } else {
+            document.getElementById(itemID).style.display = 'none';
+            event.preventDefault()
+      }
+  }
+
+</script>
+
+<!-- Page content -->
+<div class="w3-content" style="max-width:2000px;margin-top:46px">
+
+  <!-- Automatic Slideshow Images -->
+  <!--<div class="mySlides w3-display-container w3-center">-->
+    <!--<img src="https://bioinformatics.uconn.edu/wp-content/uploads/sites/15/2013/06/bioinfo3.png" style="width:100%">-->
+  <!--</div>-->
+  <!--<div class="mySlides w3-display-container w3-center">-->
+    <!--<img src="https://lh3.googleusercontent.com/ECEa_XenJr0Lv8AGMKOXtyu81br8vx7nZTqsZmgrJ_oF9w1yZlFqjR1TOM_s-wZO5fpfhYpo7sBV0jD6_hTJs8yoxoXfD4DZRBBQ0dhQI-pArhqO7ieJSPGXQPLF6YoR3rG8o6c71DIEGh-1gvFQSc3FCVcddXL_Sf7H_GjdNpSRQqr2L5b3RWptVH9LPT1w2GFzKnsXs-MZEtqccU4TWB7npVlugyWbClvF5AThjyiQQ1aBd8Qax2Z6qEX4wM3Yb4fyEqkilQbP9Kegsl0swZ4IYXO047kYZUCquRahzz-yOqfmbihiFKOnPhba8wymribbWk-htA0hVN8UNQxMIYxsaQkAGcFVVF-OEc4Z7d0BB2B7CQ51qmvu52Di0EXkh8P0cEIBKst7BrYERapq6JRbfNstLyroSO_4SmAO2kxO0wmA0CFPPRU9ooahovgciyeIz9pSwJRGV7i3ZzPyuXnapE-_rSzgJYhY4Dz6Zmhr7e48HL8R7VCBXmUxvJtZVEuejzC9KLU14fTNq47-8knwkAlJVI0xkrSvRqQraITm8T_RNekjzjUR-WRWyDZRPNr_ryywr-pP7wbybKqYYeCNV-V95pxkTM4MLyonLX-AwXJx1aX026NP67GCOuoem0aH7xy9zteOn1Yo2f9GMU-oRHGR-uLk9Ig1qg86fafobXx_HphzR4jEnvSn4dzSj2kwm2q54BVuf2IWOA=w1395-h1860-no" style="width:20%">-->
+  <!--</div>-->
+
+</div>
+
+  <!-- The Header Bio Section -->
+  <div class="w3-container w3-content w3-center w3-padding-20" style="max-width:1000px" id="about_me">
+      <div align="right">
+        <a href="/new_query/?search=&name_choice=&target_choice=&category_choice=&clonality=Monoclonal&ordering="" style="align:right">
+            <button  label="Sequence Database" name="so_link" style="padding: 15px 32px; align:right;" class="btn btn-info btn-md">Return to Sequence Database</button>
+        </a>
+       </div>
+      <h2 class="w3-wide" align="left"><strong>Entry:</strong> {{entry.mabid}}</h2>
+      <h3 class="w3-wide" align="left"><strong>Protein Target:</strong> {{entry.protein_target}}</h3>
+      <h3 class="w3-wide" align="left"><strong>Category:</strong> {{entry.get_category}}</h3>
+      <div>
+        <h3>Mouse Light Chain Results</h3>
+              <table style="table-layout: fixed; width: 100%">
+                  {% for item in light %}
+                  <tr>
+                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}} {% if item.verified %} -- Verified by Cloning: &#9989 {% else %} {% endif %} </th> <!--{% if item.failed %} -- Failed by Cloning: &#10060 {% else %} {% endif %} </th> -->
+                  </tr>
+                  <tr>
+                      {% if item.pk == pk2 %}
+                      <td bgcolor="#98FB98" class="td-seq">{{item.seq}}</td>
+                      {% else %}
+                      <td class="td-seq">{{item.seq}}</td>
+                      {% endif %}
+                  </tr>
+                  <tr>
+                      <th>Sequence {{ forloop.counter }} corresponding to IMGT amino acids 1-127:</th>
+                  </tr>
+                  <tr>
+                       <td class="td-seq">{{item.vector_sequence}}</td>
+                  </tr>
+                  <tr>
+                      <td>
+<!--                          <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}a');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>Sequencing Info</a>-->
+<!--                          <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}b');toggle_it('light{{forloop.counter}}c');"> <i class="fa fa-plus-square" style="font-size:36px;"></i> Amino Acid Information</a>-->
+<!--                          <a href="#" id="toggle" onclick="toggle_it('light{{forloop.counter}}d');"> <i class="fa fa-plus-square" style="font-size:36px;"></i>See Entries with Duplicates</a>-->
+                            <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('light{{forloop.counter}}a');">
+                              <span class="glyphicon glyphicon-plus-sign"></span> Sequencing Info
+                            </a>
+                            <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('light{{forloop.counter}}a2');">
+                              <span class="glyphicon glyphicon-plus-sign"></span> &star; Scoring Info
+                            </a>                            
+                            <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('light{{forloop.counter}}b');toggle_it('light{{forloop.counter}}c');toggle_it('light{{forloop.counter}}d')">
+                              <span class="glyphicon glyphicon-plus-sign"></span> Amino Acid Information
+                            </a>
+                            <a href="/blat/{{item.seq}}" class="btn btn-info"> Blat Sequence
+                            </a>
+
+<!--                               <table  id="light{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">-->
+
+<!--                                      <tr>-->
+<!--                                      {% for dup in item.entry.light_duplicates %}-->
+<!--                                          <td><a href="/{{dup.entry.pk}}">{{dup.entry.mabid}}</a></td>-->
+<!--                                      {% empty %}-->
+<!--                                          <td>No entries yet.</td>-->
+<!--                                      {% endfor %}-->
+<!--                                      </tr>-->
+
+<!--                               </table>-->
+
+                               <table  id="light{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%">
+                                      <tr>
+                                       <th>Percent Support</th>
+                                        <th>ASV Count</th>
+                                        <th>Platform</th>
+                                        <th>Plate</th>
+                                        <th>Total Reads</th>
+                                        <th>SMARTindex</th>
+
+                                      </tr>
+
+                                      <tr>
+                                          <td style="word-wrap: break-word">{{item.pct_support|floatformat:2 }}%</td>
+                                          <td style="word-wrap: break-word">{{item.asv_support|floatformat:0}}</td>
+                                          <td style="word-wrap: break-word">{{item.seq_platform}}</td>
+                                          <td style="word-wrap: break-word">{{item.plate}}</td>
+                                          <td style="word-wrap: break-word">{{item.total_reads}}</td>
+                                          {% if item.is_sanger %}
+                                            <td style="word-wrap: break-word">N/A</td>
+                                          {% else %}
+                                            <td style="word-wrap: break-word">{{item.SMARTindex}}</td>
+                                          {% endif %}
+                                      </tr>
+
+                               </table>
+                               <br>
+                               <table  id="light{{forloop.counter}}a2" style="display:none; table-layout: fixed; width: 100%">
+                                <tr>
+                                  <th>Stars &star;</th>
+                                  <th>ASV Stars &star;</th>
+                                  <th>Replicate Stars &star;</th>
+                                  <th>Percentile &star;</th>
+
+                                </tr>
+
+                                <tr>
+                                    <td style="word-wrap: break-word">{{item.stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.asv_stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.duplicate_stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.plate}}</td>
+
+                                </tr>
+
+                                </table>
+                                <br>                               
+
+                                <table  id="light{{forloop.counter}}b" style="display:none; table-layout: fixed; width: 100%">
+                                      <tr>
+                                        <th>Amino Acid</th>
+                                        <th>ANARCI prediction of IMGT amino acids 1-127</th>
+
+                                      </tr>
+                                      <tr>
+                                          <td class="td-seq">{{item.strip_aa}}</td>
+                                          <td class="td-seq">{{item.strip_domain}}</td>
+                                      </tr>
+
+                               </table>
+                                   <div  id="light{{forloop.counter}}c" style="display:none">
+                                   <table  style="display:block; overflow-x:auto; white-space:nowrap;">
+                                       <br>
+                                       <tr align="left">
+                                           <a href="http://www.imgt.org/IMGTScientificChart/RepresentationRules/colormenu.php#"><strong>IMGT amino acid positions:</strong></a>
+                                       </tr>
+                                       <tr>
+                                       {% for value in item.get_layout %}
+                                                <td style="width:20px">{{value.numbering}}</td>
+                                       {% endfor %}
+                                       </tr>
+                                       <tr>
+                                       {% for value in item.get_layout %}
+                                           <td class="td-seq">{{value.domain}}</td>
+                                       {% endfor %}
+                                       </tr>
+                                       <tr>
+                                       {% for value in item.get_region %}
+                                           <td colspan="{{value.length}}" bgcolor="{{value.color}}" style="width:20px">{{value.label}}</td>
+                                       {% endfor %}
+                                       </tr>
+                                   </table>
+                                </div>
+                                <div  id="light{{forloop.counter}}d" style="display:none">
+                                   <table style="table-layout: fixed; width: 100%">
+                                       <tr>
+                                           <td><strong>Residues</strong></td>
+                                           <td><strong>Region</strong></td>
+                                           <td><strong>Sequence Fragment</strong></td>
+                                           <td><strong>Length</strong></td>
+                                           <td><strong>Max Index Range</strong></td>
+                                       </tr>
+
+                                       {% for value in item.get_table %}
+                                       <tr bgcolor="{{value.color}}">
+                                                <td style="word-wrap: break-word">{{value.range}}</td>
+                                                <td style="word-wrap: break-word">{{value.label}}</td>
+                                                <td class="td-seq">{{value.splice}}</td>
+                                                <td style="word-wrap: break-word">{{value.len_splice}}</td>
+                                                <td style="word-wrap: break-word">{{value.region_max_len}}</td>
+                                       </tr>
+                                       {% endfor %}
+                                   </table>
+                                </div>
+                      </td>
+                  </tr>
+
+                  {% empty %}
+                   <div>No entries yet.</div>
+                  {% endfor %}
+              </table>
+
+
+
+      </div>
+      <div>
+        <h3>Mouse Heavy Chain Results</h3>
+              <table style="table-layout: fixed; width: 100%">
+
+                  {% for item in heavy %}
+                  <tr>
+                    <!--Show check mark emoji if verified is true -->
+                    <th>Sequence: {{ forloop.counter }} -- Star rating: &star;{{item.stars}}  {% if item.verified %} -- Verified by Cloning: &#9989 {% else %} {% endif %} </th> <!--{% if item.failed %} -- Failed by Cloning: &#10060 {% else %} {% endif %} </th> -->
+                  </tr>
+                  <tr>
+                      {% if item.pk == pk2 %}
+                      <td bgcolor="#98FB98" class="td-seq">{{item.seq}}</td>
+                      {% else %}
+                      <td class="td-seq">{{item.seq}}</td>
+                      {% endif %}
+                  </tr>
+                  <tr>
+                      <th>Sequence {{ forloop.counter }} corresponding to IMGT amino acids 1-128:</th>
+                  </tr>
+                  <tr>
+                       <td class="td-seq">{{item.vector_sequence}}</td>
+
+                  </tr>
+                  <tr>
+                      <td>
+                            <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('{{forloop.counter}}a');">
+                              <span class="glyphicon glyphicon-plus-sign"></span> Sequencing Info
+                            </a>
+                            <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('{{forloop.counter}}a2');">
+                              <span class="glyphicon glyphicon-plus-sign"></span> &star; Scoring Info
+                            </a>
+                            <a href="#" class="btn btn-success btn-md" id="toggle" onclick="toggle_it('{{forloop.counter}}b');toggle_it('{{forloop.counter}}c');toggle_it('{{forloop.counter}}d')">
+                              <span class="glyphicon glyphicon-plus-sign"></span> Amino Acid Information
+                            </a>
+                            <a href="/blat/{{item.seq}}" class="btn btn-info"> Blat Sequence
+                            </a>
+
+<!--                               <table  id="{{forloop.counter}}d" style="display:none; table-layout: fixed; width: 100%">-->
+
+<!--                                      <tr>-->
+<!--                                      {% for dup in item.entry.heavy_duplicates %}-->
+<!--                                          <td><a href=/new_entry/{{dup.entry.pk}}>{{dup.entry.mabid}}</a></td>-->
+<!--                                      {% empty %}-->
+<!--                                          <td>No entries yet.</td>-->
+<!--                                      {% endfor %}-->
+<!--                                      </tr>-->
+
+<!--                               </table>-->
+                               <table  id="{{forloop.counter}}a" style="display:none; table-layout: fixed; width: 100%; border: 5px">
+                                      <tr>
+                                        <th>Percent Support</th>
+                                        <th>ASV Count</th>
+                                        <th>Platform</th>
+                                        <th>Plate</th>
+                                        <th>Total Reads</th>
+                                        <th>SMARTindex</th>
+
+                                      </tr>
+                                      <tr>
+                                          <td style="word-wrap: break-word">{{item.pct_support|floatformat:2 }}%</td>
+                                          <td style="word-wrap: break-word">{{item.asv_support|floatformat:0}}</td>
+                                          <td style="word-wrap: break-word">{{item.seq_platform}}</td>
+                                          <td style="word-wrap: break-word">{{item.plate}}</td>
+                                          <td style="word-wrap: break-word">{{item.total_reads}}</td>
+                                          {% if item.is_sanger %}
+                                            <td style="word-wrap: break-word">N/A</td>
+                                          {% else %}
+                                            <td style="word-wrap: break-word">{{item.SMARTindex}}</td>
+                                          {% endif %}                                      </tr>
+
+                               </table>
+                               <table  id="{{forloop.counter}}a2" style="display:none; table-layout: fixed; width: 100%">
+                                <tr>
+                                  <th>Stars &star;</th>
+                                  <th>ASV Stars &star;</th>
+                                  <th>Replicate Stars &star;</th>
+                                  <th>Percentile &star;</th>
+
+                                </tr>
+
+                                <tr>
+                                    <td style="word-wrap: break-word">{{item.stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.asv_stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.duplicate_stars|floatformat:2 }}</td>
+                                    <td style="word-wrap: break-word">{{item.plate}}</td>
+
+                                </tr>
+
+                                </table>                        
+                               <br>
+                                <table  id="{{forloop.counter}}b" style="display:none; table-layout: fixed; width: 100%">
+                                      <tr>
+                                        <th>Amino Acid</th>
+                                        <th>ANARCI prediction of IMGT amino acids 1-128
+
+                                      </th>
+
+                                      </tr>
+                                      <tr>
+                                          <td class="td-seq">{{item.strip_aa}}</td>
+                                          <td class="td-seq">{{item.strip_domain}}</td>
+                                      </tr>
+
+
+                               </table>
+                                <div  id="{{forloop.counter}}c" style="display:none">
+                                   <table  style="display:block; overflow-x:auto; white-space:nowrap;">
+                                       <br>
+                                       <tr align="left">
+                                           <a href="http://www.imgt.org/IMGTScientificChart/RepresentationRules/colormenu.php#"><strong>IMGT amino acid positions:</strong></a>
+                                       </tr>
+                                       <tr>
+                                       {% for value in item.get_layout %}
+                                                <td style="width:20px">{{value.numbering}}</td>
+                                       {% endfor %}
+                                       </tr>
+                                       <tr>
+                                       {% for value in item.get_layout %}
+                                           <td class="td-seq">{{value.domain}}</td>
+                                       {% endfor %}
+                                       </tr>
+                                       <tr>
+                                       {% for value in item.get_region %}
+                                           <td colspan="{{value.length}}" bgcolor="{{value.color}}" style="width:20px">{{value.label}}</td>
+                                       {% endfor %}
+                                       </tr>
+                                   </table>
+                                </div>
+                                <div  id="{{forloop.counter}}d" style="display:none">
+                                   <table style="table-layout: fixed; width: 100%">
+                                       <tr>
+                                           <td><strong>Residues</strong></td>
+                                           <td><strong>Region</strong></td>
+                                           <td><strong>Sequence Fragment</strong></td>
+                                           <td><strong>Length</strong></td>
+                                           <td><strong>Max Index Range</strong></td>
+                                       </tr>
+
+                                       {% for value in item.get_table %}
+                                       <tr bgcolor="{{value.color}}">
+                                                <td style="word-wrap: break-word">{{value.range}}</td>
+                                                <td style="word-wrap: break-word">{{value.label}}</td>
+                                                <td class="td-seq">{{value.splice}}</td>
+                                                <td style="word-wrap: break-word">{{value.len_splice}}</td>
+                                                <td style="word-wrap: break-word">{{value.region_max_len}}</td>
+                                       </tr>
+                                       {% endfor %}
+                                   </table>
+                                </div>
+
+
+                      </td>
+                  </tr>
+
+
+                  {% empty %}
+                   <div>No entries yet.</div>
+                  {% endfor %}
+              </table>
+
+
+      </div>
+
+
+<!--    <div class="row">-->
+<!--        {% if graph %}-->
+<!--            <div class="column" style="width:100%;height:100%">-->
+<!--            {{ graph|safe }}-->
+<!--            </div>-->
+<!--        {% endif %}-->
+<!--    </div>-->
+
+<!--    <div class="row">-->
+<!--        {% if graph_pct %}-->
+<!--            <div class="column" style="width:100%;height:100%">-->
+<!--            {{ graph_pct|safe }}-->
+<!--            </div>-->
+<!--        {% endif %}-->
+<!--    </div>-->
+
+<!--    <div class="row">-->
+<!--        {% if graph_seq %}-->
+<!--            <div class="column" style="width:100%;height:100%">-->
+<!--            {{ graph_seq|safe }}-->
+<!--            </div>-->
+<!--        {% endif %}-->
+<!--    </div>-->
+</div>
+
+
+{% endblock %}

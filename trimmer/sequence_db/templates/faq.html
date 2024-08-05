@@ -1,0 +1,80 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 90%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+</style>
+
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.17/css/jquery.dataTables.css">-->
+<!--<script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
+<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.17/js/jquery.dataTables.js"></script>-->
+
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
+
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css">
+
+<script>
+
+$(document).ready(function(){ $('#myTable').DataTable(); });
+
+$(document).ready(function() {
+    $('#example').DataTable();
+} );
+</script>
+
+
+  <div class="container">
+      <h3>What do the category definitions mean?</h3>
+        <table id="example" class="display responsive nowrap" cellspacing="0" width="100%" align="center" bgcolor="white" >
+      <tr>
+          <td><strong>NeuroMab mAbs:</strong></td> <td>sequences obtained from the specific subcloned hybridoma cell lines producing the mAbs that comprise the NeuroMab collection (http://neuromab.ucdavis.edu/neuromabs.cfm)</td>
+      </tr>
+      <tr>
+          <td><strong>Non-NeuroMab mAbs:</strong></td>  <td>sequences obtained from subcloned hybridoma cell lines producing other mAbs that passed multiple validation criteria but that are not part of the NeuroMab collection</td>
+      </tr>
+      <tr>
+          <td><strong>NeuroMab Alternative Subclones:</strong></td> <td>sequences obtained from alternate subcloned hybridoma cell lines producing the mAbs that comprise the NeuroMab collection</td>
+      </tr>
+      <tr>
+          <td>    <strong>Lead oligoclonal Abs:</strong></td> <td>sequences obtained from non-subcloned/oligoclonal hybridoma cell lines producing one or more mAbs that passed multiple validation criteria</td>
+      </td>
+        <tr>
+          <td><strong>Other oligoclonal Abs:</strong></td> <td>sequences obtained from non-subcloned/oligoclonal hybridoma cell lines producing one or more mAbs that passed one or more validation criteria</td>
+        </tr>
+          <tr>
+          <td><strong>Recombinant mAbs:</strong></td> <td>sequences obtained from plasmids expressing validated recombinant mAbs (see Andrews et al., 2019: eLife 8:e43322. PMID: 300667360)</td>
+          </tr>
+          <tr>
+          <td><strong> NeuroMab mAbs:</strong></td> <td>commercially sequenced: sequences independently obtained by outside vendors from the specific subcloned hybridoma cell lines producing the mAbs that comprise the NeuroMab collection</td>
+          </tr>
+        </table>
+
+      <h3>Why do some entries have more than one light and/or heavy chain sequence?</h3>
+
+    We are displaying any returned sequences that meet the threshold for comprising at least 10% of all Amplicon Sequence Variants (ASVs) from that sample. It is now established that monoclonal hybridomas can express more than one light and/or heavy chain (e.g., Bradbury et al., MABS 10: 539, 2018). Moreover, a subset of these samples are not monoclonal but are oligoclonal, as indicated in the category title. Note that the aberrant light chain sequence derived from SP2/0 myeloma cell partner is not shown.
+
+      <h3>Where is the star system generated and what does it mean?</h3>
+    
+    <img src="{% static "Equations.png" %}" alt="star system" width="500" height="200">
+
+  </div>
+
+
+{% endblock %}

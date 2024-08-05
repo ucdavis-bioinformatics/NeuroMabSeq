@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<style>
+
+
+table {
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.logo {
+
+  background-size: cover;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  border-style: none;
+}
+
+.btn {
+  border: 2px solid black;
+  background-color: white;
+  color: black;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+}
+</style>
+
+
+<!-- Page content -->
+
+
+  <!-- The Header Bio Section -->
+  <div class="w3-container w3-content w3-center w3-padding-20" style="max-width:10000px;background-color:#B3A369" id="about_me">
+    <h2 class="w3-wide">Neuro Mab Sequencing Initiative</h2>
+    <a href="/new_query/?search=&name_choice=&target_choice=&category_choice=&clonality=Monoclonal&ordering=">
+        <button  label="Sequence Database" name="so_link" style="padding: 15px 32px;" class="btn btn-info btn-lg">Access Sequence Data Here</button>
+    </a>
+      <br>
+      <br>
+  </div>
+
+<!-- The Experience Section -->
+  <div class="w3-white" id="experience">
+    <div class="w3-container w3-content w3-padding-16" style="max-width:900px">
+      <h3 class="w3-wide w3-center">Project Information</h3>
+
+            <br>
+            <div style="font-size:18px">
+                We have undertaken the Neuroscience Monoclonal Antibody Sequencing Initiative (NeuroMabSeq),
+                a concerted effort to determine and make publicly available the sequences of monoclonal antibodies
+                valuable to neuroscience research.
+            </div>
+            <br>
+            <div style="font-size:18px">
+                We previously created a valuable collection of mouse monoclonal antibodies (mAbs) validated for
+                neuroscience research. As part of a BRAIN Initiative project (NIH U24 NS109113) to enhance dissemination and utility
+                of this valuable resource, we are applying high-throughput DNA sequencing technologies to determine
+                the sequence of the immunoglobulin heavy and light chain variable domains from our collection of
+                hybridoma cells that are the source of these mAbs.
+            </div>
+            <br>
+            <div style="font-size:18px">
+                These efforts will allow for permanent archiving of this valuable collection as DNA sequence.
+                The availability of these sequences will also allow researchers to generate plasmids for expression
+                of molecularly defined mAbs, leading to enhanced research transparency and reproducibility.
+                This will also allow for engineering of these antibodies into alternate forms including single
+                chain variable fragments or ScFvs.
+            </div>
+            <br>
+            <div style="font-size:18px">
+                This website serves as the public DNA sequence repository for the sequences of these mouse mAb heavy
+                and light chain variable domains and serves as an open resource for enhancing dissemination of this
+                valuable collection of validated mAbs for research purposes.
+
+            </div>
+            <br>
+            <div style="font-size: 18px;">
+              More information on the project can be found <a href="https://www.nature.com/articles/s41598-023-43233-4">in this publication.</a>.
+              Please cite the paper if you use the data in this database and reference the full mAb ID in your usage.
+            </div>
+            <br>
+                <div style="font-size:18px">
+                        <strong>Disclaimer:<strong>
+                            The posted sequences are provided “as-is” and without representation or warranty whatsoever,
+                            and are for research use only. These sequences are owned by The Regents of the
+                            University of California and may only be used for non-commercial research purposes.
+                            Any commercial use is prohibited without receipt of prior written permission from The Regents.
+
+                </div>
+            <br>
+              <table style="table-layout: fixed; width: 100%; font-size:14px">
+                  <tr>
+                    <th></th>
+                    <th>Sequence Entries in Database</th>
+                    <th>Mouse Heavy Chain Sequences</th>
+                    <th>Mouse Light Chain Sequences</th>
+<!--                    <th>Plate</th>-->
+<!--                    <th>Percent Support</th>-->
+                  </tr>
+                  <tr>
+                      <td>Monoclonal</td>
+                      <td style="word-wrap: break-word">{{monoclonal_number_entries}}</td>
+                      <td>{{monoclonal_number_heavy}}</td>
+                      <td>{{monoclonal_number_light}}</td>
+                  </tr>
+                  <tr>
+                      <td>Oligoclonal</td>
+                      <td style="word-wrap: break-word">{{parental_number_entries}}</td>
+                      <td>{{parental_number_heavy}}</td>
+                      <td>{{parental_number_light}}</td>
+                  </tr>
+                  <tr>
+                      <td>Total</td>
+                      <td style="word-wrap: break-word">{{total_number_entries}}</td>
+                      <td>{{total_number_heavy}}</td>
+                      <td>{{total_number_light}}</td>
+                  </tr>
+
+              </table>
+<!--      <ul class="w3-ul w3-border w3-white w3-text-grey">-->
+<!--        <li align="left" id="teaching" class="w3-padding"><font size="4"><b>TEACHING </b></font>-->
+<!--                (With-->
+<!--                <a href="https://www.mimg.ucla.edu/people/jordan-moberg-parker/">-->
+<!--                    Dr. Jordan Moberg Parker-->
+<!--                </a>-->
+<!--                and-->
+<!--                <a href="http://labs.pharmacology.ucla.edu/awulab/profiles/Amanda.htm">-->
+<!--                    Dr. Amanda Freise)-->
+<!--                </a>-->
+<!--                )-->
+<!--        </li>-->
+
+
+<!--          <ul>-->
+<!--              <li align="left"><strong>UCLA MIMG 109AL Teaching Assistant (Winter 2017, Fall 2018)</strong></li>-->
+
+<!--              <li align="left"><strong>UCLA MIMG 109BL Teaching Assistant (Spring 2018)</strong></li>-->
+<!--                <p>Teaching Assistant for the course Research Immersion in Microbiology and Advanced Research Analysis-->
+<!--                  in Microbiology.  The course consists of a  wet lab portion and a portion consisting of-->
+<!--                  bioinformatics pipeline/software execution and construction. Wet lab involved managing students-->
+<!--                  in the lab while they performed PCR protocol, microscopy, functional/biochemical assays, and aseptic-->
+<!--                  techniques. The research analysis portion consisted of the configuration of taxonomic identification-->
+<!--                  file types for microbiome samples and utilization of programs/databases such as QIIME 2, STAMP,-->
+<!--                  EXCEL, KEGG, Cytoscape, etc.-->
+
+<!--                </p>-->
+<!--                <p align="center">-->
+<!--                      <a href="/keithmitchell/student_reviews/">-->
+<!--                        <button  label="Student Reviews" name="so_link" class="btn btn-info">Student Reviews</button>-->
+<!--                      </a>-->
+<!--                      <a href="/keithmitchell/student_work/">-->
+<!--                        <button  label="Student Work" name="so_link" class="btn btn-info">Student Work</button>-->
+<!--                      </a>-->
+<!--                </p>-->
+<!--              <li align="left"><strong>UCLA MIMG 103AL Lab Assistant (Fall 2017)</strong></li>-->
+<!--                <p>Research Immersion Laboratory in Virology experience designed to promote discovery of novel bacterial viruses-->
+<!--                  (phages).  Working in teams, students conduct research projects that incorporate techniques in-->
+<!--                  microbiology, virology, and molecular biology and involve use of bioinformatics tools and computational-->
+<!--                  analysis software. Class activities also highlight critical aspects of the research process,-->
+<!--                  including record keeping, ethics, laboratory safety and citizenry, mechanics of scientific writing,-->
+<!--                  and project responsibilities and ownership.</p>-->
+
+
+<!--          </ul>-->
+<!--      </ul>-->
+
+    </div>
+  </div>
+
+
+    <!--<p class="w3-opacity"><i>We love music</i></p>-->
+  <div class="w3-container w3-content w3-center" style="max-width:10000px;background-color:#B3A369;padding:0px" id="about_me">
+      <h3 class="w3-wide w3-center">Click the logos to learn about the organizations involved</h3>
+
+    <div class="w3-row w3-padding-32">
+      <div class="w3-third" >
+            <a href="http://neuromab.ucdavis.edu/">
+                <img src="{% static "neuromab_logo.jpg" %}" alt="My image" style="width:30%;padding:5px">
+            </a>
+      </div>
+
+
+      <div class="w3-third" >
+            <a href="https://trimmer.faculty.ucdavis.edu/">
+                <img src="{% static "TrimmerLab.png" %}" alt="My image" style="width:60%;padding:5px">
+            </a>
+      </div>
+
+
+      <div class="w3-third" >
+            <a href="https://braininitiative.nih.gov/">
+                <img src="{% static "brain_logo.jpg" %}" alt="My image" style="width:50%;padding:5px">
+            </a>
+      </div>
+
+
+    </div>
+    <div class="w3-row">
+      <div class="w3-half" >
+            <a href="https://dnatech.genomecenter.ucdavis.edu/">
+                <img src="{% static "dnatech_final.svg" %}" alt="My image" style="width:35%;padding:5px">
+            </a>
+      </div>
+
+
+      <div class="w3-half" >
+       <a href="https://bioinformatics.ucdavis.edu/">
+                <img src="{% static "biocore_banner.png" %}" alt="My image" style="width:80%;padding:5px">
+       </a>
+      </div>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+
+{% endblock %}
